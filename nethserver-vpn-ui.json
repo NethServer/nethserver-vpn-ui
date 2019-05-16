@@ -1,0 +1,22 @@
+{
+  "id": "nethserver-vpn-ui",
+  "name": "VPN",
+  "summary": "VPN UI module for NethServer",
+  "description": "This module provides web interface to configure IPSec and OpenVPN tunnels",
+  "homepage": "https://github.com/NethServer/nethserver-vpn-ui",
+  "url": "",
+  "provides": ["nethserver-vpn-ui"],
+  "release": {
+    "version": "1.0.0"
+  },
+  "tags": ["ipsec", "openvpn", "vpn"],
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/NethServer/dev/issues"
+  },
+  "author": {
+    "name": "Edoardo Spadoni, Giacomo Sanchietti",
+    "url": "https://github.com/NethServer/nethserver-vpn-ui",
+    "email": "edoardo.spadoni@nethesis.it, giacomo.sanchietti@nethesis.it"
+  }
+}
