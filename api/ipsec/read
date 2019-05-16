@@ -92,9 +92,28 @@ if ($cmd eq 'tunnels') {
 } elsif ($cmd eq 'algorithms') {
 
     $ret->{'algorithms'} = {
-        'ciphers' => ['3des', 'aes128', 'aes192', 'aes256'],
-        'hashes' => ['md5', 'sha1', 'sha2_256', 'sha2_384', 'sha2_512'],
-        'pfsgroups' => ['modp1024','modp1536', 'modp2048', 'modp3072', 'modp4096', 'modp6144', 'modp8192']
+        'ciphers' => [
+            { "name" => "3des", "description" => "3DES" },
+            { "name" => "aes128", "description" => "AES 128 bit" },
+            { "name" => "aes192", "description" => "AES 192 bit" },
+            { "name" => "aes256", "description" => "AES 256 bit" }
+        ],
+        'hashes' => [
+            { "name" =>  "md5", "description" => "MD5" },
+            { "name" =>  "sha1", "description" => "SHA1" },
+            { "name" =>  "sha2_256", "description" => "SHA2 256 bit" },
+            { "name" =>  "sha2_384", "description" => "SHA2 384 bit" },
+            { "name" =>  "sha2_512", "description" => "SHA2 512 bit" }
+        ],
+        'pfsgroups' => [
+            { "name" =>  "modp1024", "description" => "1024 bit (DH-2)" },
+            { "name" =>  "modp1536", "description" => "1536 bit (DH-5)" },
+            { "name" =>  "modp2048", "description" => "2048 bit (DH-14)" },
+            { "name" =>  "modp3072", "description" => "3072 bit (DH-15)" },
+            { "name" =>  "modp4096", "description" => "4096 bit( DH-16)" },
+            { "name" =>  "modp6144", "description" => "6144 bit (DH-17)" },
+            { "name" =>  "modp8192", "description" => "8192 bit (DH-18)" },
+        ]
     };
 
 
