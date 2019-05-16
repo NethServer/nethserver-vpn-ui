@@ -28,10 +28,10 @@ rm -rf %{buildroot}
 
 mkdir -p %{buildroot}/usr/share/cockpit/%{name}/
 mkdir -p %{buildroot}/usr/share/cockpit/nethserver/applications/
-mkdir -p %{buildroot}/usr/libexec/nethserver/api/%{name}/
+mkdir -p %{buildroot}/usr/libexec/nethserver/api/nethserver-vpn/
 tar xf %{SOURCE1} -C %{buildroot}/usr/share/cockpit/%{name}/
 cp -a %{name}.json %{buildroot}/usr/share/cockpit/nethserver/applications/
-cp -a api/* %{buildroot}/usr/libexec/nethserver/api/%{name}/
+cp -a api/* %{buildroot}/usr/libexec/nethserver/api/nethserver-vpn/
 
 %post
 
@@ -44,7 +44,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 /usr/share/cockpit/%{name}/*
 /usr/share/cockpit/nethserver/applications/*
-/usr/libexec/nethserver/api/%{name}/*
+/usr/libexec/nethserver/api/nethserver-vpn/*
 
 %changelog
 * Thu May 16 2019 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 1.0.0-0
