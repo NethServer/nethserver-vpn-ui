@@ -1,0 +1,105 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use esmith::NetworksDB;
+use NetAddr::IP;
+use JSON;
+
+require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'tunnels') {
+    my $db = esmith::ConfigDB->open_ro('vpn');
+    my @tunnels;
+    my $status = ipsec_status();
+    foreach ($db->get_all_by_prop(type => 'ipsec-tunnel')) {
+        my %props = $_->props;
+        $props{'name'} = $_->key;
+        for my $p (qw(leftsubnets rightsubnets)) {
+            my ($t, $k) = split(/;/, $props{$p});
+            $props{$p} = [split(/,/, $props{$p})];
+        }
+        # map yes and no to true and false
+        foreach my $k (keys %props) {
+            $props{$k} = JSON::true if ($props{$k} eq 'yes');
+            $props{$k} = JSON::false if ($props{$k} eq 'no');
+        }
+        $props{'statistics'} = undef;
+        if ($status->{$_->key}) {
+            $props{'statistics'} = $status->{$_->key};
+        } 
+        
+        push(@tunnels, \%props);
+    }
+
+    $ret->{'tunnels'} = \@tunnels;
+
+} elsif ($cmd eq 'interfaces') {
+
+    my @interfaces;
+    my $ndb = esmith::NetworksDB->open_ro();
+    foreach ($ndb->red()) {
+        next if ($_->prop('type') eq 'xdsl' || $_->prop('type') eq 'xdsl-disabled');
+        my $bootproto = $_->prop('bootproto') || 'none';
+        if ($bootproto eq 'none') {
+            push(@interfaces, {"name" => $_->key, "address" => $_->prop('ipaddr')});
+        } else {
+            push(@interfaces, {"name" => $_->key, "address" => 'dhcp'});
+        }
+    }
+
+    $ret->{'interfaces'} = \@interfaces;
+    
+} elsif ($cmd eq 'subnets') {
+    my @nets;
+    my $ndb = esmith::NetworksDB->open_ro();
+    foreach ($ndb->get_all()) {
+        my $ipaddr = $_->prop('ipaddr') || next;
+        my $mask = $_->prop('netmask') || next;
+        if ($_->prop('role') eq 'green' && $ipaddr) {
+            my $net = NetAddr::IP->new($ipaddr, $mask);
+            push(@nets, $net->network.""); # force string conversion
+        }
+    }
+
+    $ret->{'subnets'} = \@nets;
+} elsif ($cmd eq 'algorithms') {
+
+    $ret->{'algorithms'} = {
+        'ciphers' => ['3des', 'aes128', 'aes192', 'aes256'],
+        'hashes' => ['md5', 'sha1', 'sha2_256', 'sha2_384', 'sha2_512'],
+        'pfsgroups' => ['modp1024','modp1536', 'modp2048', 'modp3072', 'modp4096', 'modp6144', 'modp8192']
+    };
+
+
+} else {
+    error();
+}
+
+print encode_json($ret);
