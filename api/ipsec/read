@@ -45,10 +45,11 @@ if ($cmd eq 'tunnels') {
             my ($t, $k) = split(/;/, $props{$p});
             $props{$p} = [split(/,/, $props{$p})];
         }
-        # map yes and no to true and false
+        $props{'left'} = substr($props{'left'}, 1);
+        # map yes/restart and no/hold to true and false
         foreach my $k (keys %props) {
-            $props{$k} = JSON::true if ($props{$k} eq 'yes');
-            $props{$k} = JSON::false if ($props{$k} eq 'no');
+            $props{$k} = JSON::true if ($props{$k} eq 'yes' || $props{$k} eq 'restart');
+            $props{$k} = JSON::false if ($props{$k} eq 'no' || $props{$k} eq 'hold');
         }
         $props{'statistics'} = undef;
         if ($status->{$_->key}) {

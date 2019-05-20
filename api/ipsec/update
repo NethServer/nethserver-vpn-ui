@@ -1,0 +1,58 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $db = esmith::ConfigDB->open('vpn');
+if ($cmd eq 'update') {
+
+    foreach (qw(leftsubnets rightsubnets)) {
+        if ($input->{$_}) {
+            $db->set_prop($input->{'name'}, $_,  join(",", @{$input->{$_}}));
+        }
+    }
+
+    foreach (qw(pfs compress)) {
+        $db->set_prop($input->{'name'}, $_, $input->{$_} ? 'yes' : 'no');
+    }
+    $db->set_prop($input->{'name'}, 'dpdaction', $input->{'dpdaction'} ? 'restart' : 'hold');
+
+    foreach (qw(esp ikelifetime esphash ikehash espcipher psk esppfsgroup salifetime right ikepfsgroup ikecipher ike leftid rightid)) {
+        $db->set_prop($input->{'name'}, $_, $input->{$_});
+    }
+
+    $db->set_prop($input->{'name'}, 'left', '%'.$input->{'left'});
+} elsif ($cmd eq 'enable' || $cmd eq 'disable') {
+    my $status =( $cmd eq 'enable') ? 'enabled' : 'disabled';
+    $db->set_prop($input->{'name'}, 'status', $status);
+} else {
+    error();
+}
+
+system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-modify", "modify", $input->{'name'}));
