@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use JSON;
+
+require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
+
+my $input = readInput();
+my $features = {
+    openvpn => { installed => (-f '/etc/e-smith/db/configuration/defaults/openvpn\@host-to-net/type') ? JSON::true : JSON::false, packages => ['nethserver-openvpn'] },
+    ipsec => { installed => (-f '/etc/e-smith/db/configuration/defaults/ipsec/type') ? JSON::true : JSON::false, packages => ['nethserver-ipsec-tunnels'] }
+};
+
+my @args = ('/usr/libexec/nethserver/pkgaction', '--json', '--install');
+
+my $feature = $features->{$input->{'name'}} || undef;
+if (!$feature) {
+    error();
+}
+
+if (!$feature->{'installed'}) {
+    push(@args, join(",",@{$feature->{'packages'}}));
+    my $ret = system(@args);
+    exit($ret>>8);
+} else {
+    success();
+}
