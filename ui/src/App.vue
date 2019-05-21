@@ -37,6 +37,34 @@
           </a>
         </li>
         <li class="li-empty"></li>
+        <li
+          id="ipsec-item"
+          v-bind:class="[getCurrentPath('ipsec') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/ipsec">
+            <span class="pficon pficon-locked"></span>
+            <span class="list-group-item-value">{{$t('ipsec.title')}}</span>
+          </a>
+        </li>
+        <li class="li-empty"></li>
+        <li
+          id="openvpn-tun-item"
+          v-bind:class="[getCurrentPath('openvpn-tun') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/openvpn-tun">
+            <span class="pficon pficon-domain"></span>
+            <span class="list-group-item-value">{{$t('openvpn_tun.menu_title')}}</span>
+          </a>
+        </li>
+        <li
+          id="openvpn-rw-item"
+          v-bind:class="[getCurrentPath('openvpn-rw') ? 'active' : '', 'list-group-item']"
+        >
+          <a href="#/openvpn-rw">
+            <span class="pficon pficon-domain"></span>
+            <span class="list-group-item-value">{{$t('openvpn_rw.menu_title')}}</span>
+          </a>
+        </li>
         <li class="li-empty"></li>
         <li
           id="logs-item"

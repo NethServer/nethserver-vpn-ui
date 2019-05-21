@@ -29,15 +29,24 @@ Vue.component("v-select", vSelect);
 import VueToggleButton from "vue-js-toggle-button";
 Vue.use(VueToggleButton);
 
+import VueGoodTable from "vue-good-table";
+Vue.use(VueGoodTable);
+
 import DocInfo from "./components/DocInfo.vue";
 Vue.component("doc-info", DocInfo);
 
 import App from "./App.vue";
 import Dashboard from "./views/Dashboard.vue";
+import IPSec from "./views/IPSec.vue";
+import OpenVPNTun from "./views/OpenVPNTun.vue";
+import OpenVPNRW from "./views/OpenVPNRW.vue";
 import Logs from "./views/Logs.vue";
 import About from "./views/About.vue";
 
 import "./filters";
+
+import UtilService from "./services/util";
+Vue.mixin(UtilService);
 
 Vue.config.productionTip = false;
 
@@ -62,6 +71,18 @@ const router = new Router({
     {
       path: "/dashboard",
       component: Dashboard
+    },
+    {
+      path: "/ipsec",
+      component: IPSec
+    },
+    {
+      path: "/openvpn-tun",
+      component: OpenVPNTun
+    },
+    {
+      path: "/openvpn-rw",
+      component: OpenVPNRW
     },
     {
       path: "/logs",
