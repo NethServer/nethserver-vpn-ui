@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use esmith::NetworksDB;
+use NetAddr::IP;
+use JSON;
+
+require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'tunnels') {
+    my $db = esmith::ConfigDB->open_ro('vpn');
+    my @tunnels;
+    foreach ($db->get_all()) {
+        next if ($_->prop('type') ne 'openvpn-tunnel-server' && $_->prop('type') ne 'tunnel');
+        my %props = $_->props;
+        $props{'name'} = $_->key;
+        for my $p (qw(RemoteHost LocalNetworks RemoteNetworks PublicAddresses)) {
+            my $v = $props{$p} || '';
+            $props{$p} = [split(/,/, $v)];
+        }
+
+        my $running = system("systemctl status openvpn\@".$_->key." &>/dev/null");
+        $props{'running'} = ($running == 0) ? JSON::true : JSON::false;
+        
+        push(@tunnels, \%props);
+    }
+
+    $ret->{'tunnels'} = \@tunnels;
+
+} elsif ($cmd eq 'interfaces') {
+
+    my @interfaces;
+    my $ndb = esmith::NetworksDB->open_ro();
+    foreach ($ndb->red()) {
+        next if ($_->prop('type') eq 'xdsl' || $_->prop('type') eq 'xdsl-disabled');
+        my $bootproto = $_->prop('bootproto') || 'none';
+        if ($bootproto eq 'none') {
+            push(@interfaces, {"name" => $_->key, "address" => $_->prop('ipaddr')});
+        } else {
+            push(@interfaces, {"name" => $_->key, "address" => 'dhcp'});
+        }
+    }
+
+    $ret->{'interfaces'} = \@interfaces;
+    
+} elsif ($cmd eq 'server-defaults') {
+
+   my $port = random(1200, 1300);
+   while (is_used_port($port)) {
+       $port = random(1200, 1300);
+   }
+
+   $ret->{'Port'} = $port;
+
+   my  $net = "10.".random(0,254).".".random(0,254).".0/24";
+   while (is_used_network($net)) {
+       $net = "10.".random(0,254).".".random(0,254).".0/24";
+   }
+   $ret->{'Network'} = $net;
+
+} elsif ($cmd eq 'algorithms') {
+
+    $ret->{'algorithms'} = openvpn_algorithms();
+
+} else {
+    error();
+}
+
+print encode_json($ret);
