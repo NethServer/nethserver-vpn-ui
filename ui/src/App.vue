@@ -61,7 +61,7 @@
           v-bind:class="[getCurrentPath('openvpn-rw') ? 'active' : '', 'list-group-item']"
         >
           <a href="#/openvpn-rw">
-            <span class="pficon pficon-domain"></span>
+            <span class="fa fa-road"></span>
             <span class="list-group-item-value">{{$t('openvpn_rw.menu_title')}}</span>
           </a>
         </li>
