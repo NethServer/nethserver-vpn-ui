@@ -25,24 +25,1227 @@
     <h2>{{ $t('openvpn_rw.title') }}</h2>
 
     <div v-if="!view.isLoaded" class="spinner spinner-lg view-spinner"></div>
-    <div v-show="view.isLoaded"></div>
+    <div v-show="view.isLoaded">
+      <h3>{{ $t('openvpn_rw.rw_server') }}</h3>
+
+      <div v-if="configuration.status == 'disabled'" class="blank-slate-pf">
+        <h1>{{$t('openvpn_rw.openvpn_rw_server_is_disabled')}}</h1>
+        <p>{{$t('openvpn_rw.openvpn_rw_server_is_disabled_desc')}}.</p>
+        <div class="blank-slate-pf-main-action">
+          <button
+            v-if="configuration.status == 'disabled'"
+            @click="toggleStatus(false)"
+            class="btn btn-primary btn-lg"
+          >{{$t('openvpn_rw.enable_openvpn_rw_server')}}</button>
+        </div>
+      </div>
+
+      <div v-show="configuration.status == 'enabled'" class="panel panel-default">
+        <div class="panel-heading">
+          <button
+            v-if="configuration.status == 'enabled'"
+            :disabled="configuration.status == 'disabled'"
+            @click="toggleStatus(true)"
+            class="btn btn-primary right proxy-details"
+          >{{$t('edit')}}</button>
+          <toggle-button
+            class="min-toggle right"
+            :width="40"
+            :height="20"
+            :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+            :value="configuration.status == 'enabled'"
+            :sync="true"
+            @change="toggleStatus(false)"
+          />
+
+          <span class="panel-title">
+            {{$t('openvpn_rw.enabled')}}
+            <span
+              :class="['fa', configuration.status == 'enabled' ? 'fa-check green' : 'fa-times red']"
+            ></span>
+
+            <span class="handle-overflow span-left-margin semi-bold color-link-hover">
+              <span class="semi-bold">{{$t('openvpn_rw.auth_mode')}}:</span>
+              <b class="span-left-margin">Username, password and certificate</b>
+            </span>
+          </span>
+        </div>
+      </div>
+
+      <h3>{{ $t('actions') }}</h3>
+      <button
+        @click="openCreateAccount()"
+        class="btn btn-primary btn-lg"
+      >{{$t('openvpn_rw.add_account')}}</button>
+
+      <h3>{{ $t('openvpn_rw.rw_accounts') }}</h3>
+      <vue-good-table
+        :customRowsPerPageDropdown="[25,50,100]"
+        :perPage="25"
+        :columns="accountsColumns"
+        :rows="accounts"
+        :lineNumbers="false"
+        :defaultSortBy="{field: 'name', type: 'asc'}"
+        :globalSearch="true"
+        :paginate="true"
+        styleClass="table"
+        :nextText="tableLangsTexts.nextText"
+        :prevText="tableLangsTexts.prevText"
+        :rowsPerPageText="tableLangsTexts.rowsPerPageText"
+        :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
+        :ofText="tableLangsTexts.ofText"
+      >
+        <template slot="table-row" slot-scope="props">
+          <td class="fancy">
+            <a @click="openEditAccount(props.row)">
+              <strong>{{ props.row.name}}</strong>
+            </a>
+          </td>
+          <td class="fancy">{{props.row.Port || 'bho'}}</td>
+          <td class="fancy">{{ props.row.OpenVpnIp}}</td>
+          <td class="fancy">{{ props.row.VPNRemoteNetwork}}</td>
+
+          <td>
+            <button @click="openEditAccount(props.row)" class="btn btn-default">
+              <span class="fa fa-pencil span-right-margin"></span>
+              {{$t('edit')}}
+            </button>
+            <div class="dropup pull-right dropdown-kebab-pf">
+              <button
+                class="btn btn-link dropdown-toggle"
+                type="button"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="true"
+              >
+                <span class="fa fa-ellipsis-v"></span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li>
+                  <a @click="toggleStatusAccount(props.row)">
+                    <span
+                      :class="['fa', props.row.status == 'enabled' ? 'fa-lock' : 'fa-check', 'span-right-margin']"
+                    ></span>
+                    {{props.row.status == 'enabled' ? $t('disable') : $t('enable')}}
+                  </a>
+                </li>
+                <li role="presentation" class="divider"></li>
+                <li>
+                  <a @click="openDeleteAccount(props.row)">
+                    <span class="fa fa-times span-right-margin"></span>
+                    {{$t('delete')}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </template>
+      </vue-good-table>
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal" id="configureRWModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('openvpn_rw.configure_rw_server')}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="saveConfiguration(newConfiguration)">
+            <div class="modal-body">
+              <div
+                :class="['form-group', newConfiguration.errors.AuthMode.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.auth_mode')}}</label>
+                <div class="col-sm-9">
+                  <select class="form-control" v-model="newConfiguration.AuthMode">
+                    <option value="username-password">{{$t('openvpn_rw.username_password')}}</option>
+                    <option value="certificate">{{$t('openvpn_rw.certificate')}}</option>
+                    <option
+                      value="password-certificate"
+                    >{{$t('openvpn_rw.username_password_certificate')}}</option>
+                  </select>
+                  <span
+                    v-if="newConfiguration.errors.AuthMode.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.AuthMode.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                :class="['form-group', newConfiguration.errors.Mode.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.mode')}}</label>
+                <div class="col-sm-9">
+                  <select v-model="newConfiguration.Mode" class="form-control">
+                    <option value="routed">{{$t('openvpn_rw.routed')}}</option>
+                    <option value="bridged">{{$t('openvpn_rw.bridged')}}</option>
+                  </select>
+                  <span
+                    v-if="newConfiguration.errors.Mode.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Mode.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                v-if="newConfiguration.Mode == 'routed'"
+                :class="['form-group', newConfiguration.errors.Network.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.network')}}</label>
+                <div class="col-sm-7">
+                  <input type="text" v-model="newConfiguration.Network" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.Network.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Network.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-if="newConfiguration.Mode == 'routed'"
+                :class="['form-group', newConfiguration.errors.Netmask.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.netmask')}}</label>
+                <div class="col-sm-7">
+                  <input type="text" v-model="newConfiguration.Netmask" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.Netmask.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Netmask.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-if="newConfiguration.Mode == 'routed'"
+                :class="['form-group', newConfiguration.errors.RouteToVPN.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.route_traffic_to_vpn')}}</label>
+                <div class="col-sm-7">
+                  <input type="checkbox" v-model="newConfiguration.RouteToVPN" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.RouteToVPN.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.RouteToVPN.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-if="newConfiguration.Mode == 'routed'"
+                :class="['form-group', newConfiguration.errors.ClientToClient.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.client_to_client')}}</label>
+                <div class="col-sm-7">
+                  <input
+                    type="checkbox"
+                    v-model="newConfiguration.ClientToClient"
+                    class="form-control"
+                  >
+                  <span
+                    v-if="newConfiguration.errors.ClientToClient.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.ClientToClient.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                v-if="newConfiguration.Mode == 'bridged'"
+                :class="['form-group', newConfiguration.errors.BridgeName.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.bridge')}}</label>
+                <div class="col-sm-7">
+                  <select v-model="newConfiguration.BridgeName" class="form-control">
+                    <option
+                      v-for="(i,ik) in interfaces"
+                      :key="ik"
+                      :value="i.name"
+                    >{{i.name}} - {{i.address | uppercase}}</option>
+                  </select>
+                  <span
+                    v-if="newConfiguration.errors.BridgeName.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.BridgeName.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-if="newConfiguration.Mode == 'bridged'"
+                :class="['form-group', newConfiguration.errors.BridgeStartIP.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.bridge_start_ip')}}</label>
+                <div class="col-sm-7">
+                  <input type="text" v-model="newConfiguration.BridgeStartIP" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.BridgeStartIP.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.BridgeStartIP.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-if="newConfiguration.Mode == 'bridged'"
+                :class="['form-group', newConfiguration.errors.BridgeEndIP.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.bridge_end_ip')}}</label>
+                <div class="col-sm-7">
+                  <input type="text" v-model="newConfiguration.BridgeEndIP" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.BridgeEndIP.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.BridgeEndIP.message)}}</span>
+                </div>
+              </div>
+
+              <legend class="fields-section-header-pf" aria-expanded="true">
+                <span class="field-section-toggle-pf">{{$t('openvpn_rw.connection_params')}}</span>
+              </legend>
+              <div
+                :class="['form-group', newConfiguration.errors.Remote.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.remote_host_ip_name')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="newConfiguration.Remote" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.Remote.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Remote.message)}}</span>
+                </div>
+              </div>
+              <div
+                :class="['form-group', newConfiguration.errors.UDPPort.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.udp_port')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="newConfiguration.UDPPort" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.UDPPort.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.UDPPort.message)}}</span>
+                </div>
+              </div>
+
+              <legend class="fields-section-header-pf" aria-expanded="true">
+                <span
+                  :class="['fa fa-angle-right field-section-toggle-pf', newConfiguration.advanced ? 'fa-angle-down' : '']"
+                ></span>
+                <a
+                  class="field-section-toggle-pf"
+                  @click="toggleAdvancedConfiguration()"
+                >{{$t('advanced_mode')}}</a>
+              </legend>
+
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.Compression.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.compress')}}</label>
+                <div class="col-sm-9">
+                  <input
+                    type="checkbox"
+                    v-model="newConfiguration.Compression"
+                    class="form-control"
+                  >
+                  <span
+                    v-if="newConfiguration.errors.Compression.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Compression.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.PushExtraRoutes.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.push_static_routes')}}</label>
+                <div class="col-sm-9">
+                  <input
+                    type="checkbox"
+                    v-model="newConfiguration.PushExtraRoutes"
+                    class="form-control"
+                  >
+                  <span
+                    v-if="newConfiguration.errors.PushExtraRoutes.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.PushExtraRoutes.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.PushDomain.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.dhcp_domain')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="newConfiguration.PushDomain" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.PushDomain.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.PushDomain.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.PushDns.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.dhcp_dns')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="newConfiguration.PushDns" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.PushDns.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.PushDns.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.PushWins.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.dhcp_wins')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="newConfiguration.PushWins" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.PushWins.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.PushWins.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.PushNbdd.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.dhcp_nbdd')}}</label>
+                <div class="col-sm-9">
+                  <input type="text" v-model="newConfiguration.PushNbdd" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.PushNbdd.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.PushNbdd.message)}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div v-if="newConfiguration.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
+              <button
+                @click="resetConfiguration()"
+                class="btn btn-default"
+                type="button"
+                data-dismiss="modal"
+              >{{$t('cancel')}}</button>
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >{{newConfiguration.isEdit ? $t('edit') : $t('save')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="createAccountModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4
+              class="modal-title"
+            >{{currentAccount.isEdit ? $t('openvpn_rw.edit_account') + ' '+ currentAccount.name : $t('openvpn_rw.add_account')}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="saveAccount(currentAccount)">
+            <div class="modal-body">
+              <div :class="['form-group', currentAccount.errors.Mode.hasError ? 'has-error' : '']">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.mode')}}</label>
+                <div class="col-sm-9">
+                  <select v-model="currentAccount.Mode" class="form-control">
+                    <option value="vpn">{{$t('openvpn_rw.vpn_only')}}</option>
+                    <option value="system">{{$t('openvpn_rw.system_user')}}</option>
+                  </select>
+                  <span
+                    v-if="currentAccount.errors.Mode.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentAccount.errors.Mode.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                v-if="currentAccount.Mode == 'vpn'"
+                :class="['form-group', currentAccount.errors.name.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.username')}}</label>
+                <div class="col-sm-7">
+                  <input required type="text" v-model="currentAccount.name" class="form-control">
+                  <span
+                    v-if="currentAccount.errors.name.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentAccount.errors.name.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                v-if="currentAccount.Mode == 'system'"
+                :class="['form-group', currentAccount.errors.name.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.user')}}</label>
+                <div class="col-sm-7">
+                  <select required v-model="currentAccount.name" class="form-control">
+                    <option v-for="(u,uk) in users" :key="uk" :value="user">{{u}}</option>
+                  </select>
+                  <span
+                    v-if="currentAccount.errors.name.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentAccount.errors.name.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                :class="['form-group', currentAccount.errors.OpenVpnIp.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.reserved_ip')}}</label>
+                <div class="col-sm-9">
+                  <input
+                    required
+                    type="text"
+                    v-model="currentAccount.OpenVpnIp"
+                    class="form-control"
+                  >
+                  <span
+                    v-if="currentAccount.errors.OpenVpnIp.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentAccount.errors.OpenVpnIp.message)}}</span>
+                </div>
+              </div>
+
+              <legend class="fields-section-header-pf" aria-expanded="true">
+                <span class="field-section-toggle-pf">{{$t('openvpn_rw.remote_network')}}</span>
+              </legend>
+              <div
+                :class="['form-group', currentAccount.errors.VPNRemoteNetwork.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.vpn_remote_network')}}</label>
+                <div class="col-sm-7">
+                  <input
+                    required
+                    type="text"
+                    v-model="currentAccount.VPNRemoteNetwork"
+                    class="form-control"
+                  >
+                  <span
+                    v-if="currentAccount.errors.VPNRemoteNetwork.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentAccount.errors.VPNRemoteNetwork.message)}}</span>
+                </div>
+              </div>
+              <div
+                :class="['form-group', currentAccount.errors.VPNRemoteNetmask.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.vpn_remote_netmask')}}</label>
+                <div class="col-sm-7">
+                  <input
+                    required
+                    type="text"
+                    v-model="currentAccount.VPNRemoteNetmask"
+                    class="form-control"
+                  >
+                  <span
+                    v-if="currentAccount.errors.VPNRemoteNetmask.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentAccount.errors.VPNRemoteNetmask.message)}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <div v-if="currentAccount.isLoading" class="spinner spinner-sm form-spinner-loader"></div>
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button
+                class="btn btn-primary"
+                type="submit"
+              >{{currentAccount.isEdit ? $t('edit') : $t('save')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="deleteAccountModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('openvpn_rw.delete_account')}} {{toDeleteAccount.name}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="deleteAccount(toDeleteAccount)">
+            <div class="modal-body">
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('are_you_sure')}}?</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-danger" type="submit">{{$t('delete')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- END MODALS -->
   </div>
 </template>
 
 <script>
 export default {
   name: "OpenVPNRW",
-  mounted() {},
+  mounted() {
+    this.getConfiguration();
+    this.getAccounts();
+    this.getInterfaces();
+    this.getUsers();
+  },
   data() {
     return {
       view: {
-        isLoaded: false
-      }
+        isLoaded: true
+      },
+      configuration: {},
+      newConfiguration: {
+        isLoading: false,
+        isEdit: false,
+        advanced: false,
+        errors: this.initConfigurationErrors()
+      },
+      users: [],
+      interfaces: [],
+      accounts: [],
+      accountsColumns: [
+        {
+          label: this.$i18n.t("openvpn_rw.name"),
+          field: "name",
+          filterable: true
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.certificate_expiration"),
+          field: "Certificate",
+          filterable: true
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.reserved_ip"),
+          field: "OpenVpnIp",
+          filterable: true,
+          sortFn: function(a, b, col, rowX, rowY) {
+            a = a.split(".");
+            b = b.split(".");
+            for (var i = 0; i < a.length; i++) {
+              if ((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i]))) return -1;
+              else if (a[i] > b[i]) return 1;
+            }
+          }
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.remote_network"),
+          field: "VPNRemoteNetwork",
+          filterable: true,
+          sortFn: function(a, b, col, rowX, rowY) {
+            a = a.split(".");
+            b = b.split(".");
+            for (var i = 0; i < a.length; i++) {
+              if ((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i]))) return -1;
+              else if (a[i] > b[i]) return 1;
+            }
+          }
+        },
+        {
+          label: this.$i18n.t("action"),
+          field: "",
+          filterable: true,
+          sortable: false
+        }
+      ],
+      tableLangsTexts: this.tableLangs(),
+      currentAccount: this.initAccount(),
+      toDeleteAccount: {}
     };
   },
-  methods: {}
+  methods: {
+    initAccount() {
+      return {
+        name: "",
+        OpenVpnIp: "",
+        VPNRemoteNetmask: "",
+        VPNRemoteNetwork: "",
+        Mode: "vpn",
+        errors: this.initAccountErrors()
+      };
+    },
+    initAccountErrors() {
+      return {
+        name: {
+          hasError: false,
+          message: ""
+        },
+        OpenVpnIp: {
+          hasError: false,
+          message: ""
+        },
+        VPNRemoteNetmask: {
+          hasError: false,
+          message: ""
+        },
+        VPNRemoteNetwork: {
+          hasError: false,
+          message: ""
+        },
+        Mode: {
+          hasError: false,
+          message: ""
+        }
+      };
+    },
+    initConfigurationErrors() {
+      return {
+        AuthMode: {
+          hasError: false,
+          message: ""
+        },
+        BridgeEndIP: {
+          hasError: false,
+          message: ""
+        },
+        BridgeName: {
+          hasError: false,
+          message: ""
+        },
+        BridgeStartIP: {
+          hasError: false,
+          message: ""
+        },
+        Cipher: {
+          hasError: false,
+          message: ""
+        },
+        ClientToClient: {
+          hasError: false,
+          message: ""
+        },
+        Compression: {
+          hasError: false,
+          message: ""
+        },
+        Digest: {
+          hasError: false,
+          message: ""
+        },
+        Mode: {
+          hasError: false,
+          message: ""
+        },
+        Netmask: {
+          hasError: false,
+          message: ""
+        },
+        Network: {
+          hasError: false,
+          message: ""
+        },
+        PushDns: {
+          hasError: false,
+          message: ""
+        },
+        PushDomain: {
+          hasError: false,
+          message: ""
+        },
+        PushExtraRoutes: {
+          hasError: false,
+          message: ""
+        },
+        PushNbdd: {
+          hasError: false,
+          message: ""
+        },
+        PushWins: {
+          hasError: false,
+          message: ""
+        },
+        Remote: {
+          hasError: false,
+          message: ""
+        },
+        RouteToVPN: {
+          hasError: false,
+          message: ""
+        },
+        TapInterface: {
+          hasError: false,
+          message: ""
+        },
+        TlsVersionMin: {
+          hasError: false,
+          message: ""
+        },
+        UDPPort: {
+          hasError: false,
+          message: ""
+        },
+        status: {
+          hasError: false,
+          message: ""
+        },
+        BridgeEndIP: {
+          hasError: false,
+          message: ""
+        },
+        BridgeName: {
+          hasError: false,
+          message: ""
+        },
+        BridgeStartIP: {
+          hasError: false,
+          message: ""
+        }
+      };
+    },
+    getConfiguration() {
+      var context = this;
+
+      context.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/read"],
+        {
+          action: "configuration"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.configuration = success.configuration;
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    getAccounts() {
+      var context = this;
+
+      context.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/read"],
+        {
+          action: "accounts"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.accounts = success.accounts;
+
+          context.view.isLoaded = true;
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    getInterfaces() {
+      var context = this;
+
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/read"],
+        {
+          action: "interfaces"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.interfaces = success.interfaces;
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    getUsers() {
+      var context = this;
+
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/read"],
+        {
+          action: "users"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.users = success.users;
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    toggleAdvancedConfiguration() {
+      this.newConfiguration.advanced = !this.newConfiguration.advanced;
+      this.$forceUpdate();
+    },
+    toggleStatus(isEdit) {
+      var context = this;
+      if (!isEdit) {
+        context.configuration.status =
+          context.configuration.status == "enabled" ? "disabled" : "enabled";
+      }
+      context.configuration.isEdit = isEdit;
+
+      if (context.configuration.status == "enabled") {
+        $("#configureRWModal").modal("show");
+        context.newConfiguration = JSON.parse(
+          JSON.stringify(context.configuration)
+        );
+        context.newConfiguration.errors = context.initConfigurationErrors();
+        context.newConfiguration.isLoading = false;
+        context.newConfiguration.isEdit = false;
+        context.newConfiguration.advanced = false;
+      } else {
+        // notification
+        nethserver.notifications.success = context.$i18n.t(
+          "openvpn_rw.configuration_updated_ok"
+        );
+        nethserver.notifications.error = context.$i18n.t(
+          "openvpn_rw.configuration_updated_error"
+        );
+
+        // update values
+        nethserver.exec(
+          ["nethserver-vpn/openvpn-rw/update"],
+          {
+            status: "disabled",
+            action: "configuration"
+          },
+          function(stream) {
+            console.info("update-config", stream);
+          },
+          function(success) {
+            // get all
+            context.getConfiguration();
+          },
+          function(error, data) {
+            console.error(error, data);
+          }
+        );
+      }
+    },
+    resetConfiguration(isEdit) {
+      if (!isEdit) {
+        this.configuration.status =
+          this.configuration.status == "enabled" ? "disabled" : "enabled";
+      }
+    },
+    saveConfiguration() {
+      var context = this;
+
+      var configObj = {
+        status: this.newConfiguration.status,
+        action: "configuration"
+      };
+
+      context.newConfiguration.isLoading = true;
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/validate"],
+        configObj,
+        null,
+        function(success) {
+          context.newConfiguration.isLoading = false;
+          $("#configureRWModal").modal("hide");
+
+          // notification
+          nethserver.notifications.success = context.$i18n.t(
+            "openvpn_rw.configuration_updated_ok"
+          );
+          nethserver.notifications.error = context.$i18n.t(
+            "openvpn_rw.configuration_updated_error"
+          );
+
+          // update values
+          nethserver.exec(
+            ["nethserver-vpn/openvpn-rw/update"],
+            configObj,
+            function(stream) {
+              console.info("update-config", stream);
+            },
+            function(success) {
+              // get all
+              context.getConfiguration();
+            },
+            function(error, data) {
+              console.error(error, data);
+            }
+          );
+        },
+        function(error, data) {
+          var errorData = {};
+          context.newConfiguration.isLoading = false;
+
+          context.newConfiguration.errors = context.initConfigurationErrors();
+          try {
+            errorData = JSON.parse(data);
+            for (var e in errorData.attributes) {
+              var attr = errorData.attributes[e];
+              context.newConfiguration.errors[attr.parameter].hasError = true;
+              context.newConfiguration.errors[attr.parameter].message =
+                attr.error;
+            }
+
+            context.$forceUpdate();
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      );
+    },
+    openCreateAccount() {
+      this.currentAccount = this.initAccount();
+
+      $("#createAccountModal").modal("show");
+    },
+    openEditAccount(account) {
+      this.currentAccount = JSON.parse(JSON.stringify(account));
+      this.currentAccount.errors = this.initAccountErrors();
+
+      this.currentAccount.isEdit = true;
+      this.currentAccount.isLoading = false;
+      this.currentAccount.advanced = false;
+      $("#createAccountModal").modal("show");
+    },
+    saveAccount(account) {
+      var context = this;
+
+      var accountObj = {
+        action: account.isEdit ? "update" : "create",
+
+        name: context.currentAccount.name
+      };
+
+      context.currentAccount.isLoading = true;
+      context.$forceUpdate();
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/validate"],
+        accountObj,
+        null,
+        function(success) {
+          context.currentAccount.isLoading = false;
+          $("#createAccountModal").modal("hide");
+
+          // notification
+          nethserver.notifications.success = context.$i18n.t(
+            "openvpn_rw.account_" +
+              (context.currentAccount.isEdit ? "updated" : "created") +
+              "_ok"
+          );
+          nethserver.notifications.error = context.$i18n.t(
+            "openvpn_rw.account_" +
+              (context.currentAccount.isEdit ? "updated" : "created") +
+              "_error"
+          );
+
+          // update values
+          if (account.isEdit) {
+            nethserver.exec(
+              ["nethserver-vpn/openvpn-rw/update"],
+              accountObj,
+              function(stream) {
+                console.info("account-edit", stream);
+              },
+              function(success) {
+                // get all
+                context.getAccounts();
+              },
+              function(error, data) {
+                console.error(error, data);
+              }
+            );
+          } else {
+            nethserver.exec(
+              ["nethserver-vpn/openvpn-rw/create"],
+              accountObj,
+              function(stream) {
+                console.info("account-create", stream);
+              },
+              function(success) {
+                // get all
+                context.getAccounts();
+              },
+              function(error, data) {
+                console.error(error, data);
+              }
+            );
+          }
+        },
+        function(error, data) {
+          var errorData = {};
+          context.currentAccount.isLoading = false;
+          context.currentAccount.errors = context.initAccountErrors();
+
+          try {
+            errorData = JSON.parse(data);
+            for (var e in errorData.attributes) {
+              var attr = errorData.attributes[e];
+              context.currentAccount.errors[attr.parameter].hasError = true;
+              context.currentAccount.errors[attr.parameter].message =
+                attr.error;
+              context.$forceUpdate();
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      );
+    },
+    openDeleteAccount(account) {
+      this.toDeleteAccount = JSON.parse(JSON.stringify(account));
+      $("#deleteAccountModal").modal("show");
+    },
+    deleteAccount(account) {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "openvpn_rw.account_deleted_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "openvpn_rw.account_deleted_error"
+      );
+
+      $("#deleteAccountModal").modal("hide");
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/delete"],
+        {
+          name: account.name
+        },
+        function(stream) {
+          console.info("account-delete", stream);
+        },
+        function(success) {
+          // get all
+          context.getAccounts();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
+    toggleStatusAccount(account) {
+      var context = this;
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "openvpn_rw.account_updated_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "openvpn_rw.account_updated_error"
+      );
+
+      // update values
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/update"],
+        {
+          action: account.status == "enabled" ? "disable" : "enable",
+          name: account.name
+        },
+        function(stream) {
+          console.info("update-status", stream);
+        },
+        function(success) {
+          // get all
+          context.getAccounts();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    }
+  }
 };
 </script>
 
 <style scoped>
+.span-left-margin {
+  margin-left: 5px;
+}
+.proxy-details {
+  margin-left: 10px;
+}
+.semi-bold {
+  font-weight: 500;
+}
 </style>
