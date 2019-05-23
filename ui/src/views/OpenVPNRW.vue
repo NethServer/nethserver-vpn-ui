@@ -370,11 +370,11 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.compress')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="checkbox"
-                    v-model="newConfiguration.Compression"
-                    class="form-control"
-                  >
+                  <select v-model="newConfiguration.Compression" class="form-control">
+                    <option value="disabled">{{$t('openvpn_rw.disabled')}}</option>
+                    <option value="lzo">{{$t('openvpn_rw.lzo')}}</option>
+                    <option value="lz4">{{$t('openvpn_rw.lz4')}}</option>
+                  </select>
                   <span
                     v-if="newConfiguration.errors.Compression.hasError"
                     class="help-block"
@@ -835,10 +835,6 @@ export default {
           message: ""
         },
         TapInterface: {
-          hasError: false,
-          message: ""
-        },
-        TlsVersionMin: {
           hasError: false,
           message: ""
         },

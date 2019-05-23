@@ -54,7 +54,7 @@
         >
           <div v-if="serverTunnels.length == 0 && view.isLoaded" class="blank-slate-pf" id>
             <div class="blank-slate-pf-icon">
-              <span class="pficon pficon-locked"></span>
+              <span class="pficon pficon-domain"></span>
             </div>
             <h1>{{$t('openvpn_tun.no_tunnels_servers_found')}}</h1>
             <p>{{$t('openvpn_tun.no_tunnels_servers_found_desc')}}.</p>
@@ -91,33 +91,45 @@
               :ofText="tableLangsTexts.ofText"
             >
               <template slot="table-row" slot-scope="props">
-                <td class="fancy">
-                  <a @click="openEditServer(props.row)">
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                  <a
+                    :class="[props.row.status == 'enabled' ? '' : 'gray']"
+                    @click="props.row.status == 'enabled' ? openEditServer(props.row) : undefined"
+                  >
                     <strong>{{ props.row.name}}</strong>
                   </a>
                 </td>
-                <td class="fancy">{{props.row.Port}} ({{props.row.Protocol | uppercase}})</td>
-                <td class="fancy">
+                <td
+                  :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
+                >{{props.row.Port}} ({{props.row.Protocol | uppercase}})</td>
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <b>{{ props.row.Topology | uppercase}}</b>
                 </td>
-                <td class="fancy">{{ props.row.Network}}</td>
-                <td class="fancy">
+                <td
+                  :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
+                >{{ props.row.Network}}</td>
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div class="mg-top-view" v-for="(i,ik) in props.row.LocalNetworks" :key="ik">{{i}}</div>
                 </td>
-                <td class="fancy">
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
                     class="mg-top-view"
                     v-for="(i,ik) in props.row.RemoteNetworks"
                     :key="ik"
                   >{{i}}</div>
                 </td>
-                <td class="fancy">
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times red']"></span>
                 </td>
                 <td>
-                  <button @click="openEditServer(props.row)" class="btn btn-default">
-                    <span class="fa fa-pencil span-right-margin"></span>
-                    {{$t('edit')}}
+                  <button
+                    @click="props.row.status == 'disabled' ? toggleStatusServer(props.row) : openEditServer(props.row)"
+                    :class="['btn btn-default', props.row.status == 'disabled' ? 'btn-primary' : '']"
+                  >
+                    <span
+                      :class="['fa', props.row.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"
+                    ></span>
+                    {{props.row.status == 'disabled' ? $t('enable') : $t('edit')}}
                   </button>
                   <div class="dropup pull-right dropdown-kebab-pf">
                     <button
@@ -167,7 +179,7 @@
         >
           <div v-if="clientTunnels.length == 0 && view.isLoaded" class="blank-slate-pf" id>
             <div class="blank-slate-pf-icon">
-              <span class="pficon pficon-locked"></span>
+              <span class="pficon pficon-domain"></span>
             </div>
             <h1>{{$t('openvpn_tun.no_tunnels_clients_found')}}</h1>
             <p>{{$t('openvpn_tun.no_tunnels_clients_found_desc')}}.</p>
@@ -242,25 +254,35 @@
               :ofText="tableLangsTexts.ofText"
             >
               <template slot="table-row" slot-scope="props">
-                <td class="fancy">
-                  <a @click="openEditClient(props.row)">
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                  <a
+                    :class="[props.row.status == 'enabled' ? '' : 'gray']"
+                    @click="props.row.status == 'enabled' ? openEditClient(props.row) : undefined"
+                  >
                     <strong>{{ props.row.name}}</strong>
                   </a>
                 </td>
-                <td class="fancy">{{props.row.RemotePort}}</td>
-                <td class="fancy">
+                <td
+                  :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
+                >{{props.row.RemotePort}}</td>
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <b>{{ props.row.Topology | uppercase}}</b>
                 </td>
-                <td class="fancy">
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div class="mg-top-view" v-for="(i,ik) in props.row.RemoteHost" :key="ik">{{i}}</div>
                 </td>
-                <td class="fancy">
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times red']"></span>
                 </td>
                 <td>
-                  <button @click="openEditClient(props.row)" class="btn btn-default">
-                    <span class="fa fa-pencil span-right-margin"></span>
-                    {{$t('edit')}}
+                  <button
+                    @click="props.row.status == 'disabled' ? toggleStatusClient(props.row) : openEditClient(props.row)"
+                    :class="['btn btn-default', props.row.status == 'disabled' ? 'btn-primary' : '']"
+                  >
+                    <span
+                      :class="['fa', props.row.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"
+                    ></span>
+                    {{props.row.status == 'disabled' ? $t('enable') : $t('edit')}}
                   </button>
                   <div class="dropup pull-right dropdown-kebab-pf">
                     <button
@@ -535,7 +557,7 @@
                 <div class="col-sm-9">
                   <select v-model="currentTunnelServer.Protocol" class="form-control">
                     <option value="udp">{{$t('openvpn_tun.udp')}}</option>
-                    <option value="tcp">{{$t('openvpn_tun.tcp')}}</option>
+                    <option value="tcp-server">{{$t('openvpn_tun.tcp')}}</option>
                   </select>
                   <span
                     v-if="currentTunnelServer.errors.Protocol.hasError"
@@ -553,11 +575,11 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.compress')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="checkbox"
-                    v-model="currentTunnelServer.Compression"
-                    class="form-control"
-                  >
+                  <select v-model="currentTunnelServer.Compression" class="form-control">
+                    <option value="disabled">{{$t('openvpn_tun.disabled')}}</option>
+                    <option value="lzo">{{$t('openvpn_tun.lzo')}}</option>
+                    <option value="lz4">{{$t('openvpn_tun.lz4')}}</option>
+                  </select>
                   <span
                     v-if="currentTunnelServer.errors.Compression.hasError"
                     class="help-block"
@@ -588,6 +610,7 @@
                 <div class="col-sm-9">
                   <select v-model="currentTunnelServer.Cipher" class="form-control">
                     <option
+                      v-show="currentTunnelServer.Topology == 'p2p' ? i.name.includes('CBC') : true"
                       v-for="(i,ik) in ciphers"
                       :key="ik"
                       :value="i.name"
@@ -602,7 +625,7 @@
                 >{{$t('openvpn_tun.tls_min_version')}}</label>
                 <div class="col-sm-9">
                   <select v-model="currentTunnelServer.TlsVersionMin" class="form-control">
-                    <option value="auto">{{$t('openvpn_tun.auto')}}</option>
+                    <option value>{{$t('openvpn_tun.auto')}}</option>
                     <option value="1.1">1.1</option>
                     <option value="1.2">1.2</option>
                   </select>
@@ -683,29 +706,38 @@
                 >{{$t('openvpn_tun.tunnel_client_configuration')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
                   <button
-                    @click="downloadServer('client')"
+                    @click="downloadServer(toDownloadTunnelServer.name, 'configuration')"
                     class="btn btn-primary"
+                    type="button"
                   >{{$t('download')}}</button>
                 </div>
               </div>
 
-              <div class="form-group">
+              <div v-if="toDownloadTunnelServer.Topology == 'subnet'" class="form-group">
                 <label
                   class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.private_key_tun_ca')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
-                  <button @click="downloadServer('key')" class="btn btn-primary">{{$t('download')}}</button>
+                  <button
+                    @click="downloadServer(toDownloadTunnelServer.name, 'certificate')"
+                    class="btn btn-primary"
+                    type="button"
+                  >{{$t('download')}}</button>
                 </div>
               </div>
 
-              <div class="form-group">
+              <div v-if="toDownloadTunnelServer.Topology == 'p2p'" class="form-group">
                 <label
                   class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.psk_download')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
-                  <button @click="downloadServer('psk')" class="btn btn-primary">{{$t('download')}}</button>
+                  <button
+                    @click="downloadServer(toDownloadTunnelServer.name, 'psk')"
+                    class="btn btn-primary"
+                    type="button"
+                  >{{$t('download')}}</button>
                 </div>
               </div>
             </div>
@@ -842,7 +874,7 @@
 
               <div
                 v-if="currentTunnelClient.Topology == 'subnet' && currentTunnelClient.AuthMode == 'certificate'"
-                :class="['form-group', currentTunnelClient.errors.Certificate.hasError ? 'has-error' : '']"
+                :class="['form-group', currentTunnelClient.errors.Crt.hasError ? 'has-error' : '']"
               >
                 <label
                   class="col-sm-5 control-label"
@@ -852,13 +884,13 @@
                   <textarea
                     required
                     type="text"
-                    v-model="currentTunnelClient.Certificate"
+                    v-model="currentTunnelClient.Crt"
                     class="form-control min-textarea-height"
                   ></textarea>
                   <span
-                    v-if="currentTunnelClient.errors.Certificate.hasError"
+                    v-if="currentTunnelClient.errors.Crt.hasError"
                     class="help-block"
-                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnelClient.errors.Certificate.message)}}</span>
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnelClient.errors.Crt.message)}}</span>
                 </div>
               </div>
 
@@ -915,7 +947,7 @@
 
               <div
                 v-if="currentTunnelClient.Topology == 'subnet' && currentTunnelClient.AuthMode == 'password-certificate'"
-                :class="['form-group', currentTunnelClient.errors.Certificate.hasError ? 'has-error' : '']"
+                :class="['form-group', currentTunnelClient.errors.Crt.hasError ? 'has-error' : '']"
               >
                 <label
                   class="col-sm-5 control-label"
@@ -925,13 +957,13 @@
                   <textarea
                     required
                     type="text"
-                    v-model="currentTunnelClient.Certificate"
+                    v-model="currentTunnelClient.Crt"
                     class="form-control min-textarea-height"
                   ></textarea>
                   <span
-                    v-if="currentTunnelClient.errors.Certificate.hasError"
+                    v-if="currentTunnelClient.errors.Crt.hasError"
                     class="help-block"
-                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnelClient.errors.Certificate.message)}}</span>
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnelClient.errors.Crt.message)}}</span>
                 </div>
               </div>
 
@@ -1062,7 +1094,7 @@
                 <div class="col-sm-9">
                   <select v-model="currentTunnelClient.Protocol" class="form-control">
                     <option value="udp">{{$t('openvpn_tun.udp')}}</option>
-                    <option value="tcp">{{$t('openvpn_tun.tcp')}}</option>
+                    <option value="tcp-client">{{$t('openvpn_tun.tcp')}}</option>
                   </select>
                   <span
                     v-if="currentTunnelClient.errors.Protocol.hasError"
@@ -1080,11 +1112,11 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.compress')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="checkbox"
-                    v-model="currentTunnelClient.Compression"
-                    class="form-control"
-                  >
+                  <select v-model="currentTunnelClient.Compression" class="form-control">
+                    <option value="disabled">{{$t('openvpn_tun.disabled')}}</option>
+                    <option value="lzo">{{$t('openvpn_tun.lzo')}}</option>
+                    <option value="lz4">{{$t('openvpn_tun.lz4')}}</option>
+                  </select>
                   <span
                     v-if="currentTunnelClient.errors.Compression.hasError"
                     class="help-block"
@@ -1115,6 +1147,7 @@
                 <div class="col-sm-9">
                   <select v-model="currentTunnelClient.Cipher" class="form-control">
                     <option
+                      v-show="currentTunnelClient.Topology == 'p2p' ? i.name.includes('CBC') : true"
                       v-for="(i,ik) in ciphers"
                       :key="ik"
                       :value="i.name"
@@ -1133,7 +1166,6 @@
                 >{{$t('openvpn_tun.wan_priorities')}}</label>
                 <div class="col-sm-9">
                   <input
-                    required
                     type="checkbox"
                     v-model="currentTunnelClient.WanPriorities"
                     class="form-control"
@@ -1408,7 +1440,8 @@ export default {
         name: ""
       },
       toDownloadTunnelServer: {
-        name: ""
+        name: "",
+        Topology: ""
       },
       currentTunnelClient: this.initTunnelClient(),
       toDeleteTunnelClient: {
@@ -1456,7 +1489,7 @@ export default {
       return {
         name: "",
         Cipher: "auto",
-        Compression: false,
+        Compression: "disabled",
         Digest: "auto",
         Network: "",
         Port: null,
@@ -1464,7 +1497,7 @@ export default {
         PublicAddresses: [],
         LocalNetworks: [],
         RemoteNetworks: [],
-        TlsVersionMin: "auto",
+        TlsVersionMin: "",
         Topology: "subnet",
         Psk: "",
         LocalPeer: "",
@@ -1545,7 +1578,7 @@ export default {
         name: "",
         AuthMode: "certificate",
         Cipher: "auto",
-        Compression: false,
+        Compression: "disabled",
         Digest: "auto",
         Mode: "bridged",
         Password: "",
@@ -1560,7 +1593,7 @@ export default {
         User: "",
         WanPriorities: false,
         WanPrioritiesIFace: [],
-        Certificate: "",
+        Crt: "",
         Psk: "",
         status: "enabled",
         errors: this.initErrorsClient(),
@@ -1639,7 +1672,7 @@ export default {
           hasError: false,
           message: ""
         },
-        Certificate: {
+        Crt: {
           hasError: false,
           message: ""
         },
@@ -1833,10 +1866,14 @@ export default {
       this.currentTunnelServer.Psk = this.defaults.Psk;
       this.currentTunnelServer.Network = this.defaults.Network;
       this.currentTunnelServer.Port = this.defaults.Port;
-      this.currentTunnelServer.PublicAddresses = this.defaults.PublicAddresses;
+      this.currentTunnelServer.PublicAddresses = this.defaults.PublicAddresses.join(
+        "\n"
+      );
       this.currentTunnelServer.LocalPeer = this.defaults.LocalPeer;
       this.currentTunnelServer.RemotePeer = this.defaults.RemotePeer;
-      this.currentTunnelServer.LocalNetworks = this.defaults.LocalNetworks;
+      this.currentTunnelServer.LocalNetworks = this.defaults.LocalNetworks.join(
+        "\n"
+      );
 
       $("#createServerTunnelModal").modal("show");
     },
@@ -1861,6 +1898,14 @@ export default {
         this.currentTunnelServer.RemoteNetworks.length > 0
           ? this.currentTunnelServer.RemoteNetworks.join("\n")
           : [];
+      this.currentTunnelServer.Digest =
+        this.currentTunnelServer.Digest == ""
+          ? "auto"
+          : this.currentTunnelServer.Digest;
+      this.currentTunnelServer.Cipher =
+        this.currentTunnelServer.Cipher == ""
+          ? "auto"
+          : this.currentTunnelServer.Cipher;
       this.currentTunnelServer.isEdit = true;
       this.currentTunnelServer.isLoading = false;
       this.currentTunnelServer.advanced = false;
@@ -1877,12 +1922,20 @@ export default {
         this.currentTunnelClient.RemoteNetworks.length > 0
           ? this.currentTunnelClient.RemoteNetworks.join("\n")
           : [];
-      this.currentTunnelClient.WanPriorities =
-        this.currentTunnelClient.WanPriorities.length > 0;
       this.currentTunnelClient.WanPrioritiesIFace =
         this.currentTunnelClient.WanPriorities.length > 0
-          ? this.currentTunnelClient.WanPriorities.split(",")
+          ? this.currentTunnelClient.WanPriorities
           : [];
+      this.currentTunnelClient.WanPriorities =
+        this.currentTunnelClient.WanPriorities.length > 0;
+      this.currentTunnelClient.Digest =
+        this.currentTunnelClient.Digest == ""
+          ? "auto"
+          : this.currentTunnelClient.Digest;
+      this.currentTunnelClient.Cipher =
+        this.currentTunnelClient.Cipher == ""
+          ? "auto"
+          : this.currentTunnelClient.Cipher;
       this.currentTunnelClient.togglePass = false;
       this.currentTunnelClient.isEdit = true;
       this.currentTunnelClient.isLoading = false;
@@ -1893,32 +1946,48 @@ export default {
       var context = this;
 
       var tunnelObj = {
-        action: tunnel.isEdit ? "update" : "create",
+        action: tunnel.isEdit ? "update-server" : "create-server",
+        status: context.currentTunnelServer.status,
 
+        Network:
+          context.currentTunnelServer.Topology == "subnet"
+            ? context.currentTunnelServer.Network
+            : undefined,
+        PublicAddresses:
+          context.currentTunnelServer.PublicAddresses.length > 0
+            ? context.currentTunnelServer.PublicAddresses.split("\n")
+            : [],
+        Topology: context.currentTunnelServer.Topology,
+        Digest:
+          context.currentTunnelServer.Digest == "auto"
+            ? ""
+            : context.currentTunnelServer.Digest,
+        Compression: context.currentTunnelServer.Compression,
+        Cipher:
+          context.currentTunnelServer.Cipher == "auto"
+            ? ""
+            : context.currentTunnelServer.Cipher,
         name: context.currentTunnelServer.name,
+        Port: context.currentTunnelServer.Port,
+        TlsVersionMin: context.currentTunnelServer.TlsVersionMin,
+        RemoteNetworks:
+          context.currentTunnelServer.RemoteNetworks.length > 0
+            ? context.currentTunnelServer.RemoteNetworks.split("\n")
+            : [],
+        Protocol: context.currentTunnelServer.Protocol,
+        LocalNetworks:
+          context.currentTunnelServer.LocalNetworks.length > 0
+            ? context.currentTunnelServer.LocalNetworks.split("\n")
+            : [],
         Psk: context.currentTunnelServer.Psk,
-
-        left: context.currentTunnelServer.left,
-        right: context.currentTunnelServer.right,
-        rightid: context.currentTunnelServer.rightid,
-        leftid: context.currentTunnelServer.leftid,
-
-        esp: context.currentTunnelServer.esp,
-        ike: context.currentTunnelServer.ike,
-
-        esphash: context.currentTunnelServer.esphash,
-        espcipher: context.currentTunnelServer.espcipher,
-        esppfsgroup: context.currentTunnelServer.esppfsgroup,
-        salifetime: context.currentTunnelServer.salifetime,
-        ikehash: context.currentTunnelServer.ikehash,
-        ikecipher: context.currentTunnelServer.ikecipher,
-        ikepfsgroup: context.currentTunnelServer.ikepfsgroup,
-        ikelifetime: context.currentTunnelServer.ikelifetime,
-
-        status: "enabled",
-        pfs: context.currentTunnelServer.pfs,
-        dpdaction: context.currentTunnelServer.dpdaction,
-        compress: context.currentTunnelServer.compress
+        LocalPeer:
+          context.currentTunnelServer.Topology == "p2p"
+            ? context.currentTunnelServer.LocalPeer
+            : undefined,
+        RemotePeer:
+          context.currentTunnelServer.Topology == "p2p"
+            ? context.currentTunnelServer.RemotePeer
+            : undefined
       };
 
       context.currentTunnelServer.isLoading = true;
@@ -2001,35 +2070,68 @@ export default {
     saveTunnelClient(tunnel) {
       var context = this;
 
-      console.log(context.currentTunnelClient);
-
       var tunnelObj = {
-        action: tunnel.isEdit ? "update" : "create",
+        action: tunnel.isEdit ? "update-client" : "create-client",
+        status: context.currentTunnelClient.status,
 
+        LocalPeer:
+          context.currentTunnelClient.Topology == "p2p"
+            ? context.currentTunnelClient.LocalPeer
+            : undefined,
+        Topology: context.currentTunnelClient.Topology,
+        RemoteHost:
+          context.currentTunnelClient.RemoteHost.length > 0
+            ? context.currentTunnelClient.RemoteHost.split("\n")
+            : [],
+        Digest:
+          context.currentTunnelClient.Digest == "auto"
+            ? ""
+            : context.currentTunnelClient.Digest,
+        Compression: context.currentTunnelClient.Compression,
+        Cipher:
+          context.currentTunnelClient.Cipher == "auto"
+            ? ""
+            : context.currentTunnelClient.Cipher,
+        Mode: context.currentTunnelClient.Mode,
+        RemotePort: context.currentTunnelClient.RemotePort,
+        AuthMode:
+          context.currentTunnelClient.Topology == "subnet"
+            ? context.currentTunnelClient.AuthMode
+            : undefined,
+        RemotePeer:
+          context.currentTunnelClient.Topology == "p2p"
+            ? context.currentTunnelClient.RemotePeer
+            : undefined,
+        Psk:
+          context.currentTunnelClient.Topology == "p2p"
+            ? context.currentTunnelClient.Psk
+            : undefined,
         name: context.currentTunnelClient.name,
-        Psk: context.currentTunnelClient.Psk,
-
-        left: context.currentTunnelClient.left,
-        right: context.currentTunnelClient.right,
-        rightid: context.currentTunnelClient.rightid,
-        leftid: context.currentTunnelClient.leftid,
-
-        esp: context.currentTunnelClient.esp,
-        ike: context.currentTunnelClient.ike,
-
-        esphash: context.currentTunnelClient.esphash,
-        espcipher: context.currentTunnelClient.espcipher,
-        esppfsgroup: context.currentTunnelClient.esppfsgroup,
-        salifetime: context.currentTunnelClient.salifetime,
-        ikehash: context.currentTunnelClient.ikehash,
-        ikecipher: context.currentTunnelClient.ikecipher,
-        ikepfsgroup: context.currentTunnelClient.ikepfsgroup,
-        ikelifetime: context.currentTunnelClient.ikelifetime,
-
-        status: "enabled",
-        pfs: context.currentTunnelClient.pfs,
-        dpdaction: context.currentTunnelClient.dpdaction,
-        compress: context.currentTunnelClient.compress
+        RemoteNetworks:
+          context.currentTunnelClient.Topology == "p2p"
+            ? context.currentTunnelClient.RemoteNetworks.length > 0
+              ? context.currentTunnelClient.RemoteNetworks.split("\n")
+              : []
+            : undefined,
+        Protocol: context.currentTunnelClient.Protocol,
+        WanPriorities:
+          context.currentTunnelClient.WanPrioritiesIFace.length > 0
+            ? context.currentTunnelClient.WanPrioritiesIFace
+            : [],
+        User:
+          context.currentTunnelClient.Topology == "subnet" &&
+          context.currentTunnelClient.AuthMode == "password-certificate"
+            ? context.currentTunnelClient.User
+            : undefined,
+        Password:
+          context.currentTunnelClient.Topology == "subnet" &&
+          context.currentTunnelClient.AuthMode == "password-certificate"
+            ? context.currentTunnelClient.Password
+            : undefined,
+        Crt:
+          context.currentTunnelClient.Topology == "subnet"
+            ? context.currentTunnelClient.Crt
+            : undefined
       };
 
       context.currentTunnelClient.isLoading = true;
@@ -2179,17 +2281,41 @@ export default {
       this.toDownloadTunnelServer = JSON.parse(JSON.stringify(tunnel));
       $("#downloadServerTunnelModal").modal("show");
     },
-    downloadServer(action) {
-      switch (action) {
-        case "client":
+    downloadServer(name, type) {
+      var extension = "";
+      switch (type) {
+        case "configuration":
+          extension = ".json";
           break;
-
-        case "key":
+        case "certificate":
+          extension = ".crt";
           break;
-
         case "psk":
+          extension = ".key";
           break;
       }
+
+      // download actions
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-tunnel/read"],
+        {
+          action: "download",
+          type: type,
+          name: name
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          require("downloadjs")(atob(success.data), success.filename);
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
     },
     openUploadClient() {
       this.toUploadTunnelClient.file = "";
@@ -2200,7 +2326,7 @@ export default {
     onChangeInput(event) {
       var context = this;
       this.getBase64(event.target.files[0], function(resp) {
-        context.toUploadTunnelClient.file = resp;
+        context.toUploadTunnelClient.file = resp.split(",")[1];
         context.$forceUpdate();
       });
     },
@@ -2208,12 +2334,12 @@ export default {
       var context = this;
 
       var configUp = {
-        action: "upload-client",
-        file: context.toUploadTunnelClient.file
+        action: "upload",
+        data: context.toUploadTunnelClient.file
       };
 
       context.toUploadTunnelClient.errors.isLoading = true;
-      context.exec(
+      nethserver.exec(
         ["nethserver-vpn/openvpn-tunnel/validate"],
         configUp,
         null,
@@ -2230,8 +2356,8 @@ export default {
           );
 
           // upload config
-          context.exec(
-            ["nethserver-vpn/openvpn-tunnel/update"],
+          nethserver.exec(
+            ["nethserver-vpn/openvpn-tunnel/create"],
             configUp,
             function(stream) {
               console.info("upload-tunnel", stream);

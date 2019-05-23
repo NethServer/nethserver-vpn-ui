@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "c3": "^0.7.0",
+    "downloadjs": "^1.4.7",
     "moment": "^2.24.0",
     "vue": "^2.6.10",
     "vue-good-table": "^1.21.0",

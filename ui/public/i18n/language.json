@@ -109,7 +109,7 @@
     "protocol": "Protocol",
     "udp": "UDP",
     "tcp": "TCP",
-    "compress": "Enable compression",
+    "compress": "Compression",
     "digest": "Digest",
     "cipher": "Cipher",
     "tls_min_version": "Enforce a minimum TLS version",
@@ -138,7 +138,10 @@
     "weak": "Weak",
     "strong": "Strong",
     "auto": "Auto",
-    "auto_choose": "Auto choose strong algorithms"
+    "auto_choose": "Auto choose strong algorithms",
+    "disabled": "Disabled",
+    "lzo": "LZO",
+    "lz4": "LZ4"
   },
   "openvpn_rw": {
     "menu_title": "OVPN RoadWarrior",
@@ -165,7 +168,7 @@
     "connection_params": "Connection parameters",
     "remote_host_ip_name": "Contact this server on public IP / host",
     "udp_port": "UDP port",
-    "compress": "Enable compression",
+    "compress": "Compression",
     "push_static_routes": "Push all static routes",
     "dhcp_domain": "DHCP Domain",
     "dhcp_dns": "DHCP DNS",
@@ -195,7 +198,10 @@
     "vpn_remote_netmask": "VPN Remote netmask",
     "openvpn_rw_server_is_disabled": "OpenVPN RoadWarrior server is disabled",
     "openvpn_rw_server_is_disabled_desc": "Click on the button below to configure it",
-    "enable_openvpn_rw_server": "Enable OpenVPN RoadWarrior server"
+    "enable_openvpn_rw_server": "Enable OpenVPN RoadWarrior server",
+    "disabled": "Disabled",
+    "lzo": "LZO",
+    "lz4": "LZ4"
   },
   "logs": {
     "title": "Logs",
