@@ -26,6 +26,8 @@ use esmith::ConfigDB;
 use esmith::NetworksDB;
 use NetAddr::IP;
 use JSON;
+use File::Temp qw/tempfile/;
+use MIME::Base64;
 
 require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
 
@@ -38,17 +40,34 @@ if ($cmd eq 'tunnels') {
     my $db = esmith::ConfigDB->open_ro('vpn');
     my @tunnels;
     foreach ($db->get_all()) {
-        next if ($_->prop('type') ne 'openvpn-tunnel-server' && $_->prop('type') ne 'tunnel');
+        my @params = qw(LocalNetworks RemoteNetworks);
+        my $path = '';
+        if ($_->prop('type') eq 'openvpn-tunnel-server') {
+            push(@params, 'PublicAddresses');
+            $path = "/var/lib/nethserver/openvpn-tunnels/";
+        } elsif ($_->prop('type') eq 'tunnel') {
+            push(@params, qw(RemoteHost WanPriorities));
+            $path = "/var/lib/nethserver/certs/clients/";
+        } else {
+            next;
+        }
         my %props = $_->props;
         $props{'name'} = $_->key;
-        for my $p (qw(RemoteHost LocalNetworks RemoteNetworks PublicAddresses)) {
+        for my $p (@params) {
             my $v = $props{$p} || '';
             $props{$p} = [split(/,/, $v)];
+        }
+        # read PSK
+        if ($props{'Topology'} eq 'p2p') {
+            $props{'Psk'} = read_file($path.$_->key.".key");
+        }
+        if ($props{'Topology'} eq 'subnet' && $_->prop('type') eq 'tunnel') {
+            $props{'Crt'} = read_file($path.$_->key.".pem");
         }
 
         my $running = system("systemctl status openvpn\@".$_->key." &>/dev/null");
         $props{'running'} = ($running == 0) ? JSON::true : JSON::false;
-        
+
         push(@tunnels, \%props);
     }
 
@@ -69,25 +88,47 @@ if ($cmd eq 'tunnels') {
     }
 
     $ret->{'interfaces'} = \@interfaces;
-    
+
 } elsif ($cmd eq 'server-defaults') {
 
-   my $port = random(1200, 1300);
-   while (is_used_port($port)) {
-       $port = random(1200, 1300);
-   }
+    my $port = random(1200, 1300);
+    while (is_used_port($port)) {
+        $port = random(1200, 1300);
+    }
 
-   $ret->{'Port'} = $port;
+    $ret->{'Port'} = $port;
 
-   my  $net = "10.".random(0,254).".".random(0,254).".0/24";
-   while (is_used_network($net)) {
-       $net = "10.".random(0,254).".".random(0,254).".0/24";
-   }
-   $ret->{'Network'} = $net;
+    my  $net = "10.".random(0,254).".".random(0,254).".0/24";
+    while (is_used_network($net)) {
+        $net = "10.".random(0,254).".".random(0,254).".0/24";
+    }
+    $ret->{'Network'} = $net;
+    $ret->{'LocalPeer'} = substr($net,0,-4)."1";
+    $ret->{'RemotePeer'} = substr($net,0,-4)."2";
+    $ret->{'LocalNetworks'} = get_local_networks();
+    $ret->{'PublicAddresses'} = get_public_addresses();
+    $ret->{'Psk'} = `/usr/sbin/openvpn --genkey --secret /dev/stdout`;
 
 } elsif ($cmd eq 'algorithms') {
 
     $ret->{'algorithms'} = openvpn_algorithms();
+
+} elsif ($cmd eq 'download') {
+
+    if ($input->{'type'} eq 'psk') {
+        $ret->{'data'} = encode_base64(read_file("/var/lib/nethserver/openvpn-tunnels/".$input->{'name'}.".key"));
+        $ret->{'filename'} = $input->{'name'}.".key";
+    } elsif ($input->{'type'} eq 'configuration') {
+        system(("/usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/download-json", $input->{'name'}));
+        exit $?;
+    } elsif ($input->{'type'} eq 'certificate') {
+        my ($fh, $filename) = tempfile();
+        system(("/usr/libexec/nethserver/openvpn-tunnel-pem", $input->{'name'}, $filename));
+        $ret->{'data'} = encode_base64(read_file($filename));
+        $ret->{'filename'} = $input->{'name'}.".pem";
+    } else {
+        error();
+    }
 
 } else {
     error();

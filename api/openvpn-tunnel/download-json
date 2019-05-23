@@ -1,0 +1,68 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+function downloadJson($name)
+{
+    $ret = array("data" => null, "filename" => null);
+    $db = new EsmithDatabase('vpn');
+    $record = $db->getKey($name);
+    if (!$record) {
+        print json_encode($ret);
+        return;
+    }
+    $ret['filename'] = "$name.json";
+
+    $client = array(
+        'name' => substr("c$name",0,13),
+        'type' => 'tunnel',
+        'Mode' => 'routed',
+        'status' => 'enabled',
+        'Compression' => $record['Compression'],
+        'RemotePort' => $record['Port'],
+        'RemoteHost' => $record['PublicAddresses'],
+        'Digest' =>  $record['Digest'],
+        'Cipher' =>  $record['Cipher'],
+        'Topology' => $record['Topology'],
+        'Protocol' => $record['Protocol']
+    );
+    if ($record['Topology'] == 'p2p') {
+        $client['Psk'] = file_get_contents("/var/lib/nethserver/openvpn-tunnels/$name.key");
+        $client['LocalPeer'] = $record['RemotePeer'];
+        $client['RemotePeer'] = $record['LocalPeer'];
+        $client['RemoteNetworks'] = $record['LocalNetworks'];
+        $client['AuthMode'] = 'psk';
+    } else {
+        $client['AuthMode'] = 'certificate';
+        $pem = tempnam(sys_get_temp_dir(), "tunnel-pem");
+        exec("/usr/bin/sudo /usr/libexec/nethserver/openvpn-tunnel-pem $name $pem");
+        $client['Crt'] = file_get_contents($pem);
+        unlink($pem);
+    }
+    $ret['data'] = base64_encode(json_encode($client));
+
+    print json_encode($ret);
+}
+
+downloadJson($argv[1]);

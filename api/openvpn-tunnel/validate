@@ -1,0 +1,170 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+
+function validate_wrapper($data, $key, $current = '') {
+    global $v;
+
+    if (!isset($data[$key])) {
+        return;
+    }
+    $action = strtolower($key);
+    if ($current) {
+        exec("/usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/is-free $action {$data[$key]} $current", $output, $ret);
+    } else {
+        exec("/usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/is-free $action {$data[$key]}", $output, $ret);
+    }
+
+    if ($ret) {
+        $v->addValidationError($key, $action.'_in_use');
+    }
+}
+
+function getWanInterfaces()
+{
+    $db = new EsmithDatabase('networks');
+    $providers = $db->getAll('provider');
+    // sort providers by weight:
+    uasort($providers, function($r1, $r2) {
+        $a = intval($r1['weight']);
+        $b = intval($r2['weight']);
+        if($a === $b) {
+            return 0;
+        }
+        return $a < $b ? -1 : 1;
+    });
+    foreach ($providers as $name => $provider) {
+        $ret[$provider['interface']] = sprintf('%s (%s)', $name, $provider['interface']);
+    }
+    return $ret;
+}
+
+
+$data = readInput();
+$v = new LegacyValidator($data);
+
+$sdb = new EsmithDatabase('vpn');
+
+if ($data['action'] == 'upload') {
+    $file = base64_decode($data['data'], true);
+    if (!$file) {
+        $v->addValidationError('data', 'invalid_base64_file');
+        error($v);
+    } else {
+        $json = json_decode($file, true);
+        if (!$json) {
+            $v->addValidationError('data', 'invalid_json_file');
+            error($v);
+        }
+    }
+    success();
+}
+
+if ($data['action'] == 'update-client' || $data['action'] == 'update-server') {
+    if (!$sdb->getKey($data['name'])) {
+        $v->addValidationError('name', 'tunnel_not_found');
+    }
+    validate_wrapper($data, 'RemotePort', $data['name']);
+    if ($data['Topology'] == 'subnet') {
+        validate_wrapper($data, 'Network',  $data['name']);
+    }
+} else if ($data['action'] == 'create-client' || $data['action'] == 'create-server') {
+    if ($sdb->getKey($data['name'])) {
+        $v->addValidationError('name', 'tunnel_already_exists');
+    }
+    validate_wrapper($data, 'Port');
+    if ($data['Topology'] == 'subnet') {
+        validate_wrapper($data, 'Network');
+    }
+}
+
+$v->declareParameter('name', $v->createValidator(Validate::USERNAME)->maxLength(13));
+$v->declareParameter('Port', Validate::PORTNUMBER);
+$v->declareParameter('RemotePort', Validate::PORTNUMBER);
+$v->declareParameter('Network', $v->createValidator()->cidrBlock());
+$v->declareParameter('Protocol', $v->createValidator()->memberOf(array('tcp-server','tcp-client','udp')));
+$v->declareParameter('Compression', $v->createValidator()->memberOf(array('disabled','lzo','lz4')));
+$v->declareParameter('Topology', $v->createValidator()->memberOf(array('subnet','p2p')));
+$v->declareParameter('LocalPeer', Validate::IPv4);
+$v->declareParameter('RemotePeer', Validate::IPv4);
+$v->declareParameter('TlsVersionMin', $v->createValidator()->memberOf(array('','1.1','1.2')));
+$v->declareParameter('Psk', $v->createValidator()->minLength(8));
+
+$v_cidr = $v->createValidator()->cidrBlock();
+foreach (array('LocalNetworks', 'RemoteNetworks') as $param) {
+    if (!isset($data[$param])) {
+        continue;
+    }
+    foreach ($data[$param] as $net) {
+        if( ! $v_cidr->evaluate($net)) {
+            $v->addValidationError($param, 'invalid_cidr'); 
+        }
+    }
+}
+
+if ($data['Topology'] == 'p2p' && !$data['Psk']) {
+    $v->addValidationError("Psk", 'psk_not_empty'); 
+}
+
+if (isset($data['PublicAddresses'])) {
+    $v_host = $v->createValidator(Validate::HOSTADDRESS);
+    if (!$data['PublicAddresses']) {
+        $v->addValidationError("PublicAddresses", 'public_address_not_empty'); 
+    } 
+    foreach ($data['PublicAddresses'] as $host) {
+        if ( ! $v_host->evaluate($host) ) {
+            $v->addValidationError("PublicAddresses", 'invalid_host_address'); 
+        }
+    }
+}
+
+if(isset($data['Crt'])) {
+    $temp = tempnam(sys_get_temp_dir(), "openvpn-tunnel");
+    file_put_contents($temp, $data['Crt']);
+    exec("openssl x509 -in $temp -text -noout >/dev/null", $out, $ret);
+    if ($ret > 0) {
+        $v->addValidationError('Crt', 'invalid_certificate');
+    }
+    unlink($temp);
+}
+
+if ($data['Topology'] == 'p2p' && ( $data['Cipher'] && ! preg_match ("/CBC/",$data['Cipher']))) {
+    $v->addValidationError('Cipher', 'Cipher_Not_Compatible');
+}
+
+if (($data['action'] == 'update-client' || $data['action'] == 'create-client') && $data['WanPriorities']) {
+    $wanInterfaces = array_keys(getWanInterfaces());
+    $adiff = array_merge(array_diff($wanInterfaces, $data['WanPriorities']), array_diff($data['WanPriorities'], $wanInterfaces));
+    if($adiff !== array()) {
+        $v->addValidationError('WanPriorities', 'missing_wanpriority_rules');
+    }
+}
+
+# Validate the input
+if ($v->validate()) {
+    success();
+} else {
+    error($v);
+}

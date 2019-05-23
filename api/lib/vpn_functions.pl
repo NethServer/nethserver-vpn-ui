@@ -24,6 +24,7 @@ use strict;
 use warnings;
 use JSON;
 use esmith::ConfigDB;
+use esmith::NetworksDB;
 use NetAddr::IP;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
@@ -70,7 +71,7 @@ sub is_used_network {
 
     # check inside tunnels
     foreach ($vdb->get_all()) {
-        next if ($_->key eq $exclude || $_->prop('type') eq 'openvpn-tunnel-server');
+        next if ($_->key eq $exclude || $_->prop('type') ne 'openvpn-tunnel-server');
         return 1 if (($_->prop('Network') || '') eq $net);
     }
 
@@ -94,7 +95,7 @@ sub is_used_port {
 
     # check inside tunnels
     foreach ($vdb->get_all()) {
-        next if ($_->key eq $exclude || $_->prop('type') eq 'openvpn-tunnel-server');
+        next if ($_->key eq $exclude || $_->prop('type') ne 'openvpn-tunnel-server');
         return 1 if (($_->prop('Port') || '') eq $port);
     }
 
@@ -102,6 +103,41 @@ sub is_used_port {
     return 1 if ($db->get_prop('openvpn@host-to-net','UDPPort') eq $port);
 
     return 0;
+}
+
+sub get_local_networks {
+    my @ret;
+
+    my $ndb = esmith::NetworksDB->open_ro();
+    foreach ($ndb->get_all()) {
+        my $ipaddr = $_->prop('ipaddr') || next;
+        my $netmask = $_->prop('netmask') || next;
+        my $role = $_->prop('role') || next;
+        if ($role eq 'green') {
+            my $net = NetAddr::IP->new($ipaddr, $netmask);
+            push(@ret, $net->network.""); # force string conversion
+        }
+
+    }
+
+    return \@ret;
+}
+
+sub get_public_addresses {
+    my %ips;
+    my $ndb = esmith::NetworksDB->open_ro();
+    foreach ($ndb->get_all()) {
+        my $ipaddr = $_->prop('ipaddr') || next;
+        my $role = $_->prop('role') || next;
+        if ($role eq 'green' || $role eq 'red') {
+            my $out = `/usr/bin/timeout -s 4 -k 1 1 /usr/bin/dig -b $ipaddr +short +time=1 myip.opendns.com \@resolver1.opendns.com`;
+            chomp $out;
+            if ($out) {
+                $ips{$out} = '';
+            }
+        }
+    }
+    return [keys %ips];
 }
 
 sub openvpn_algorithms {
@@ -135,3 +171,32 @@ sub openvpn_algorithms {
 
     return $ret;
 }
+
+sub write_file {
+
+    my $filename = shift;
+    my $data = shift;
+
+    open(my $fh, '>', $filename) or return 0;
+    print $fh $data;
+    close $fh;
+
+    return 1
+}
+
+sub read_file {
+    my $ret = '';
+    my $path = shift;
+
+    if (-f $path) {
+        local $/; #Enable 'slurp' mode
+        open my $fh, '<:encoding(UTF-8)', $path or return '';
+        $ret = <$fh>;
+        chomp $ret;
+        close($fh);
+    }
+
+    return $ret;
+}
+
+
