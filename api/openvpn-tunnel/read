@@ -108,7 +108,6 @@ if ($cmd eq 'tunnels') {
     $ret->{'LocalNetworks'} = get_local_networks();
     $ret->{'PublicAddresses'} = get_public_addresses();
     $ret->{'Psk'} = `/usr/sbin/openvpn --genkey --secret /dev/stdout`;
-    $ret->{'Passtos'} = 'enabled';
 
 } elsif ($cmd eq 'algorithms') {
 

@@ -45,8 +45,7 @@ function downloadJson($name)
         'Digest' =>  $record['Digest'],
         'Cipher' =>  $record['Cipher'],
         'Topology' => $record['Topology'],
-        'Protocol' => $record['Protocol'],
-        'Passtos' => $record['Passtos']
+        'Protocol' => $record['Protocol']
     );
     if ($record['Topology'] == 'p2p') {
         $client['Psk'] = file_get_contents("/var/lib/nethserver/openvpn-tunnels/$name.key");

@@ -36,7 +36,7 @@ if ($cmd eq 'create-client') {
 
     $db->new_record($input->{'name'}, {'type' => 'tunnel', 'status' => 'enabled'});
 
-    foreach (qw(LocalPeer Topology Digest Compression Cipher Mode RemotePort AuthMode RemotePeer Protocol Password User Passtos)) {
+    foreach (qw(LocalPeer Topology Digest Compression Cipher Mode RemotePort AuthMode RemotePeer Protocol Password User)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_}) if (exists($input->{$_}))
     }
 
@@ -60,7 +60,7 @@ if ($cmd eq 'create-client') {
         $db->set_prop($input->{'name'}, $_, join(',',@{$input->{$_}})) if (exists($input->{$_}));
     }
 
-    foreach (qw(Topology Digest Compression Cipher TlsVersionMin Protocol Port Network Passtos)) {
+    foreach (qw(Topology Digest Compression Cipher TlsVersionMin Protocol Port Network)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_}) if (exists($input->{$_}));
     }
 
