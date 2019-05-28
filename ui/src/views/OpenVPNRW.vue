@@ -664,9 +664,11 @@ export default {
   data() {
     return {
       view: {
-        isLoaded: true
+        isLoaded: false
       },
-      configuration: {},
+      configuration: {
+        status: "disabled"
+      },
       newConfiguration: {
         isLoading: false,
         isEdit: false,
