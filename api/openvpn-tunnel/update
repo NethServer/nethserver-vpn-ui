@@ -32,7 +32,7 @@ my $cmd = $input->{'action'};
 my $db = esmith::ConfigDB->open('vpn');
 if ($cmd eq 'update-client') {
 
-    foreach (qw(LocalPeer Topology Digest Compression Cipher Mode RemotePort AuthMode RemotePeer Protocol Password User)) {
+    foreach (qw(LocalPeer Topology Digest Compression Cipher Mode RemotePort AuthMode RemotePeer Protocol Password User Passtos)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_}) if (exists($input->{$_}))
     }
 
@@ -54,7 +54,7 @@ if ($cmd eq 'update-client') {
         $db->set_prop($input->{'name'}, $_, join(',',@{$input->{$_}})) if (exists($input->{$_}));
     }
 
-    foreach (qw(Topology Digest Compression Cipher TlsVersionMin Protocol Port Network)) {
+    foreach (qw(Topology Digest Compression Cipher TlsVersionMin Protocol Port Network Passtos)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_}) if (exists($input->{$_}));
     }
 
