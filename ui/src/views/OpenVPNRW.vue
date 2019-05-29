@@ -98,12 +98,12 @@
         <template slot="table-row" slot-scope="props">
           <td class="fancy">
             <a @click="openEditAccount(props.row)">
-              <strong>{{ props.row.name}}</strong>
+              <strong>{{ props.row.ShortName}}</strong>
             </a>
           </td>
-          <td class="fancy">{{props.row.Port || 'bho'}}</td>
-          <td class="fancy">{{ props.row.OpenVpnIp}}</td>
-          <td class="fancy">{{ props.row.VPNRemoteNetwork}}</td>
+          <td class="fancy">{{props.row.Expiration ?  (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.Status+'_status') + ")") : "-" }}</td>
+          <td class="fancy">{{ props.row.OpenVpnIp || '-'}}</td>
+          <td class="fancy">{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
 
           <td>
             <button @click="openEditAccount(props.row)" class="btn btn-default">
@@ -234,7 +234,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.route_traffic_to_vpn')}}</label>
                 <div class="col-sm-7">
-                  <input type="checkbox" v-model="newConfiguration.RouteToVPN" class="form-control">
+                  <input type="checkbox" v-model="newConfiguration.RouteToVPN" true-value="enabled" false-value="disabled" class="form-control">
                   <span
                     v-if="newConfiguration.errors.RouteToVPN.hasError"
                     class="help-block"
@@ -254,6 +254,8 @@
                     type="checkbox"
                     v-model="newConfiguration.ClientToClient"
                     class="form-control"
+                    true-value="enabled"
+                    false-value="disabled"
                   >
                   <span
                     v-if="newConfiguration.errors.ClientToClient.hasError"
@@ -381,6 +383,36 @@
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Compression.message)}}</span>
                 </div>
               </div>
+              <div v-show="newConfiguration.advanced" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_tun.digest')}}</label>
+                <div class="col-sm-9">
+                  <select v-model="newConfiguration.Digest" class="form-control">
+                    <option
+                      v-for="(i,ik) in digests"
+                      :key="ik"
+                      :value="i.name"
+                    >{{i.name | uppercase}} ({{$t('openvpn_tun.'+i.description)}})</option>
+                  </select>
+                </div>
+              </div>
+              <div v-show="newConfiguration.advanced" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_tun.cipher')}}</label>
+                <div class="col-sm-9">
+                  <select v-model="newConfiguration.Cipher" class="form-control">
+                    <option
+                      v-for="(i,ik) in ciphers"
+                      :key="ik"
+                      :value="i.name"
+                    >{{i.name | uppercase}} ({{$t('openvpn_tun.'+i.description)}})</option>
+                  </select>
+                </div>
+              </div>
               <div
                 v-show="newConfiguration.advanced"
                 :class="['form-group', newConfiguration.errors.PushExtraRoutes.hasError ? 'has-error' : '']"
@@ -394,6 +426,8 @@
                     type="checkbox"
                     v-model="newConfiguration.PushExtraRoutes"
                     class="form-control"
+                    true-value="enabled"
+                    false-value="disabled"
                   >
                   <span
                     v-if="newConfiguration.errors.PushExtraRoutes.hasError"
@@ -539,7 +573,7 @@
                 >{{$t('openvpn_rw.user')}}</label>
                 <div class="col-sm-7">
                   <select required v-model="currentAccount.name" class="form-control">
-                    <option v-for="(u,uk) in users" :key="uk" :value="user">{{u}}</option>
+                    <option v-for="(u,uk) in users" :key="uk" :value="u.name">{{u.name}} ({{u.gecos}})</option>
                   </select>
                   <span
                     v-if="currentAccount.errors.name.hasError"
@@ -660,6 +694,7 @@ export default {
     this.getAccounts();
     this.getInterfaces();
     this.getUsers();
+    this.getCustoms();
   },
   data() {
     return {
@@ -678,6 +713,8 @@ export default {
       users: [],
       interfaces: [],
       accounts: [],
+      ciphers: [],
+      digests: [],
       accountsColumns: [
         {
           label: this.$i18n.t("openvpn_rw.name"),
@@ -948,6 +985,53 @@ export default {
             console.error(e);
           }
           context.users = success.users;
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    getCustoms() {
+      var context = this;
+
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-tunnel/read"],
+        {
+          action: "algorithms"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.ciphers = [
+            { name: "auto", description: "auto_choose" }
+          ].concat(
+            success.algorithms.ciphers.sort((a, b) =>
+              a.description > b.description
+                ? 1
+                : a.description === b.description
+                ? a.name > b.name
+                  ? 1
+                  : -1
+                : -1
+            )
+          );
+          context.digests = [
+            { name: "auto", description: "auto_choose" }
+          ].concat(
+            success.algorithms.digests.sort((a, b) =>
+              a.description > b.description
+                ? 1
+                : a.description === b.description
+                ? a.name > b.name
+                  ? 1
+                  : -1
+                : -1
+            )
+          );
         },
         function(error) {
           console.error(error);

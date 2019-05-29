@@ -1,0 +1,87 @@
+#!/usr/bin/perl
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+use strict;
+use warnings;
+use esmith::ConfigDB;
+use esmith::NetworksDB;
+use NetAddr::IP;
+use JSON;
+use File::Temp qw/tempfile/;
+use MIME::Base64;
+
+require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
+
+my $input = readInput();
+my $cmd = $input->{'action'};
+
+my $ret = {};
+
+if ($cmd eq 'users') {
+
+    my @tmp;
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users -s`);
+    foreach (keys %$users) {
+        push(@tmp, {'name' =>  $_, 'gecos' => $users->{$_}{'gecos'}});
+    }
+    $ret->{'users'} = \@tmp;;
+
+} elsif ($cmd eq 'interfaces') {
+
+    my @interfaces;
+    my $ndb = esmith::NetworksDB->open_ro();
+    foreach ($ndb->red()) {
+        next if (!$_->prop('role'));
+        next if ($_->prop('type') ne 'bridge'); 
+        my $bootproto = $_->prop('bootproto') || 'none';
+        if ($bootproto eq 'none') {
+            push(@interfaces, {"name" => $_->key, "address" => $_->prop('ipaddr')});
+        } else {
+            push(@interfaces, {"name" => $_->key, "address" => 'dhcp'});
+        }
+    }
+
+    $ret->{'interfaces'} = \@interfaces;
+
+} elsif ($cmd eq 'configuration') {
+
+    my $db = esmith::ConfigDB->open_ro();
+    my $record = $db->get('openvpn@host-to-net');
+    my %props = $record->props;
+    $props{'Remote'} = [split(",",$props{'Remote'})];
+    $props{'Provider'} = $db->get_prop('sssd', 'Provider');
+    $ret->{'configuration'} = \%props;
+
+} elsif ($cmd eq 'algorithms') {
+
+    $ret->{'algorithms'} = openvpn_algorithms();
+
+} elsif ($cmd eq 'accounts') {
+
+    my $accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/list-accounts`);
+    $ret->{'accounts'} = $accounts;
+
+} else {
+    error();
+}
+
+print encode_json($ret);

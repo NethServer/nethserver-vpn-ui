@@ -138,7 +138,7 @@
     "weak": "Weak",
     "strong": "Strong",
     "auto": "Auto",
-    "auto_choose": "Auto choose strong algorithms",
+    "auto_choose": "Server/client negotiation",
     "disabled": "Disabled",
     "lzo": "LZO",
     "lz4": "LZ4"
@@ -201,7 +201,10 @@
     "enable_openvpn_rw_server": "Enable OpenVPN RoadWarrior server",
     "disabled": "Disabled",
     "lzo": "LZO",
-    "lz4": "LZ4"
+    "lz4": "LZ4",
+    "V_status": "Valid",
+    "E_status": "Expired",
+    "R_status": "Revoked"
   },
   "logs": {
     "title": "Logs",

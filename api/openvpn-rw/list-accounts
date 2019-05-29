@@ -1,0 +1,104 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+function getUsers() {
+    return json_decode(shell_exec("/usr/libexec/nethserver/list-users"));
+}
+
+function formatDate($date) {
+    if (!trim($date)) {
+        return "-";
+    }
+    return "20{$date[0]}{$date[1]}-{$date[2]}{$date[3]}-{$date[4]}{$date[5]}";
+}
+
+function parseCN($str) {
+    if (!trim($str)) {
+        return "-";
+    }
+    $tmp = explode("/",$str);
+    $tmp = explode("=",$tmp[6]);
+    return $tmp[1];
+}
+
+function readCertIndexAccounts() {
+    $ret = array();
+    $certindex = "/var/lib/nethserver/certs/certindex";
+    $db = new EsmithDatabase('configuration');
+    $vdb = new EsmithDatabase('vpn');
+    $domain = $db->getType('DomainName');
+    // get all vpn-users linked to system users
+    $users = getUsers();
+    foreach($users as $user => $props) {
+        $vpn_user = $vdb->getKey($user);
+        if ($vpn_user) {
+            list($short, $domain) = explode("@", $user);
+            $ret[$user] = array(
+                'name' => $user,
+                'Mode' => 'system',
+                'ShortName' => $short,
+                'VPNRemoteNetwork' => $vpn_user['VPNRemoteNetwork'],
+                'VPNRemoteNetmask' => $vpn_user['VPNRemoteNetmask'],
+                'OpenVpnIp' => $vpn_user['OpenVpnIp'],
+            );
+        }
+    }
+    // get all vpn accounts
+    $users = $vdb->getAll('vpn');
+    foreach($users as $user => $props) {
+        $ret[$user] = array(
+            'name' => $user,
+            'Mode' => 'vpn',
+            'ShortName' => $user,
+            'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],
+            'VPNRemoteNetmask' => $props['VPNRemoteNetmask'],
+            'OpenVpnIp' => $props['OpenVpnIp'],
+        );
+    }
+    // read certificate expiration for certificate associated with each account
+    $lines = file($certindex);
+    if ($lines !== FALSE) {
+        foreach ($lines as $line) {
+            list($status, $exp_date, $rev_date, $index, $name, $cn) = explode("\t", trim($line, "\n"));
+            $cn = parseCN($cn);
+            if ( !isset($ret[$cn]) ) {
+                # check certificates from NS 6
+                #   user = goofy@nethserver.org
+                #   cn = goofy
+                if ( !isset($ret[$cn."@$domain"]) ) {
+                    continue;
+                } else { # map to full user name
+                    $cn = $cn."@$domain";
+                }
+            }
+            $ret[$cn]['Expiration'] = formatDate($exp_date);
+            $ret[$cn]['Status'] = $status; # V=valid, R=revoked, E=expired
+        }
+    }
+
+    return array_values($ret);
+}
+
+print json_encode(readCertIndexAccounts());
