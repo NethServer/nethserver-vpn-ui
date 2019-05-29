@@ -207,7 +207,11 @@
     "R_status": "Revoked",
     "system_mode": "System user",
     "vpn_mode": "VPN-only",
-    "user_mode": "Type"
+    "user_mode": "Type",
+    "dhcp_params": "DHCP configuration",
+    "security_params": "Security",
+    "extra_params": "Extra parameters",
+    "routes_params": "Static routes"
   },
   "logs": {
     "title": "Logs",

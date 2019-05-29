@@ -84,7 +84,7 @@ if ($cmd eq 'users') {
         delete($props{$_});
     }
     $props{'Remote'} = [split(",",$props{'Remote'})];
-    $props{'Provider'} = $db->get_prop('sssd', 'Provider');
+    $props{'HasUsers'} = ($db->get_prop('sssd', 'Provider') ne "") ? JSON::true : JSON::false;
     $ret->{'configuration'} = \%props;
 
 } elsif ($cmd eq 'algorithms') {
