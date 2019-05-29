@@ -31,6 +31,17 @@ use MIME::Base64;
 
 require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
 
+sub find_host {
+    my $db = shift;
+    my $ip = shift;
+
+    foreach ($db->get_all_by_prop('type' => 'host')) {
+        return $_->key if ($_->prop('IpAddress') eq $ip);
+    }
+
+    return '';
+}
+
 my $input = readInput();
 my $cmd = $input->{'action'};
 
@@ -39,9 +50,11 @@ my $ret = {};
 if ($cmd eq 'users') {
 
     my @tmp;
-    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users -s`);
+    my $users = safe_decode_json(`/usr/libexec/nethserver/list-users`);
     foreach (keys %$users) {
-        push(@tmp, {'name' =>  $_, 'gecos' => $users->{$_}{'gecos'}});
+        my $short = $_;
+        $short =~ s/(@.*)$//;
+        push(@tmp, {'name' =>  $_, 'shortname' => $short, 'gecos' => $users->{$_}{'gecos'}});
     }
     $ret->{'users'} = \@tmp;;
 
@@ -67,6 +80,9 @@ if ($cmd eq 'users') {
     my $db = esmith::ConfigDB->open_ro();
     my $record = $db->get('openvpn@host-to-net');
     my %props = $record->props;
+    foreach (qw(type access TapInterface)) {
+        delete($props{$_});
+    }
     $props{'Remote'} = [split(",",$props{'Remote'})];
     $props{'Provider'} = $db->get_prop('sssd', 'Provider');
     $ret->{'configuration'} = \%props;
@@ -77,7 +93,12 @@ if ($cmd eq 'users') {
 
 } elsif ($cmd eq 'accounts') {
 
+    my $db = esmith::HostsDB->open_ro();
     my $accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/list-accounts`);
+    foreach (@{$accounts}) {
+        my $host = find_host($db, $_->{'OpenVpnIp'}) || '';
+        $_->{'Host'} = $host;
+    }
     $ret->{'accounts'} = $accounts;
 
 } else {

@@ -25,6 +25,7 @@ use warnings;
 use JSON;
 use esmith::ConfigDB;
 use esmith::NetworksDB;
+use esmith::HostsDB;
 use NetAddr::IP;
 
 require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
@@ -170,6 +171,25 @@ sub openvpn_algorithms {
     close(FH);
 
     return $ret;
+}
+
+sub openvpn_create_host {
+
+    my $name = shift;
+    my $ip = shift;
+
+    # do nothing if the host already exists
+    my $ndb = esmith::HostsDB->open();
+    foreach ($ndb->get_all_by_prop('type' => 'host')) {
+       return if ($_->prop('IpAddress') eq $ip);
+    }
+
+    my $i = 1;
+    my $key = "ovpn$name";
+    while ($ndb->get($key)) {
+        $key = "ovpn$name$key";
+    }
+    $ndb->new_record($key, {'type' => 'host', 'IpAddress' => $ip});
 }
 
 sub write_file {

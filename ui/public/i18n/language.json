@@ -204,7 +204,10 @@
     "lz4": "LZ4",
     "V_status": "Valid",
     "E_status": "Expired",
-    "R_status": "Revoked"
+    "R_status": "Revoked",
+    "system_mode": "System user",
+    "vpn_mode": "VPN-only",
+    "user_mode": "Type"
   },
   "logs": {
     "title": "Logs",

@@ -96,13 +96,15 @@
         :ofText="tableLangsTexts.ofText"
       >
         <template slot="table-row" slot-scope="props">
+
           <td class="fancy">
             <a @click="openEditAccount(props.row)">
               <strong>{{ props.row.ShortName}}</strong>
             </a>
           </td>
+          <td class="fancy"><span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span> {{$t("openvpn_rw."+props.row.Mode+'_mode') }}</td>
           <td class="fancy">{{props.row.Expiration ?  (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.Status+'_status') + ")") : "-" }}</td>
-          <td class="fancy">{{ props.row.OpenVpnIp || '-'}}</td>
+          <td class="fancy">{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</td>
           <td class="fancy">{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
 
           <td>
@@ -330,7 +332,12 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.remote_host_ip_name')}}</label>
                 <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.Remote" class="form-control">
+                  <textarea
+                    required
+                    type="text"
+                    v-model="newConfiguration.Remote"
+                    class="form-control min-textarea-height"
+                  ></textarea>
                   <span
                     v-if="newConfiguration.errors.Remote.hasError"
                     class="help-block"
@@ -410,6 +417,19 @@
                       :key="ik"
                       :value="i.name"
                     >{{i.name | uppercase}} ({{$t('openvpn_tun.'+i.description)}})</option>
+                  </select>
+                </div>
+              </div>
+              <div v-show="newConfiguration.advanced" class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_tun.tls_min_version')}}</label>
+                <div class="col-sm-9">
+                  <select v-model="newConfiguration.TlsVersionMin" class="form-control">
+                    <option value>{{$t('openvpn_tun.auto')}}</option>
+                    <option value="1.1">1.1</option>
+                    <option value="1.2">1.2</option>
                   </select>
                 </div>
               </div>
@@ -529,12 +549,12 @@
           </div>
           <form class="form-horizontal" v-on:submit.prevent="saveAccount(currentAccount)">
             <div class="modal-body">
-              <div :class="['form-group', currentAccount.errors.Mode.hasError ? 'has-error' : '']">
+              <div :class="['form-group', currentAccount.errors.Mode.hasError ? 'has-error' : '']" v-if="!currentAccount.isEdit">
                 <label
                   class="col-sm-3 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.mode')}}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-9" >
                   <select v-model="currentAccount.Mode" class="form-control">
                     <option value="vpn">{{$t('openvpn_rw.vpn_only')}}</option>
                     <option value="system">{{$t('openvpn_rw.system_user')}}</option>
@@ -547,7 +567,7 @@
               </div>
 
               <div
-                v-if="currentAccount.Mode == 'vpn'"
+                v-if="currentAccount.Mode == 'vpn' && !currentAccount.isEdit"
                 :class="['form-group', currentAccount.errors.name.hasError ? 'has-error' : '']"
               >
                 <label
@@ -564,7 +584,7 @@
               </div>
 
               <div
-                v-if="currentAccount.Mode == 'system'"
+                v-if="currentAccount.Mode == 'system' && !currentAccount.isEdit"
                 :class="['form-group', currentAccount.errors.name.hasError ? 'has-error' : '']"
               >
                 <label
@@ -573,7 +593,7 @@
                 >{{$t('openvpn_rw.user')}}</label>
                 <div class="col-sm-7">
                   <select required v-model="currentAccount.name" class="form-control">
-                    <option v-for="(u,uk) in users" :key="uk" :value="u.name">{{u.name}} ({{u.gecos}})</option>
+                    <option v-for="(u,uk) in users" :key="uk" :value="u.name">{{u.shortname}} ({{u.gecos}})</option>
                   </select>
                   <span
                     v-if="currentAccount.errors.name.hasError"
@@ -591,7 +611,6 @@
                 >{{$t('openvpn_rw.reserved_ip')}}</label>
                 <div class="col-sm-9">
                   <input
-                    required
                     type="text"
                     v-model="currentAccount.OpenVpnIp"
                     class="form-control"
@@ -615,7 +634,6 @@
                 >{{$t('openvpn_rw.vpn_remote_network')}}</label>
                 <div class="col-sm-7">
                   <input
-                    required
                     type="text"
                     v-model="currentAccount.VPNRemoteNetwork"
                     class="form-control"
@@ -635,7 +653,6 @@
                 >{{$t('openvpn_rw.vpn_remote_netmask')}}</label>
                 <div class="col-sm-7">
                   <input
-                    required
                     type="text"
                     v-model="currentAccount.VPNRemoteNetmask"
                     class="form-control"
@@ -708,6 +725,9 @@ export default {
         isLoading: false,
         isEdit: false,
         advanced: false,
+        Digest: "auto",
+        Cipher: "auto",
+        Remote: [],
         errors: this.initConfigurationErrors()
       },
       users: [],
@@ -719,6 +739,11 @@ export default {
         {
           label: this.$i18n.t("openvpn_rw.name"),
           field: "name",
+          filterable: true
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.user_mode"),
+          field: "Mode",
           filterable: true
         },
         {
@@ -873,10 +898,6 @@ export default {
           hasError: false,
           message: ""
         },
-        TapInterface: {
-          hasError: false,
-          message: ""
-        },
         UDPPort: {
           hasError: false,
           message: ""
@@ -894,6 +915,10 @@ export default {
           message: ""
         },
         BridgeStartIP: {
+          hasError: false,
+          message: ""
+        },
+        TlsVersionMin: {
           hasError: false,
           message: ""
         }
@@ -916,6 +941,7 @@ export default {
             console.error(e);
           }
           context.configuration = success.configuration;
+          context.configuration.Remote = context.configuration.Remote.join("\n");
         },
         function(error) {
           console.error(error);
@@ -1099,6 +1125,26 @@ export default {
 
       var configObj = {
         status: this.newConfiguration.status,
+        PushDomain: this.newConfiguration.PushDomain,
+        PushExtraRoutes : this.newConfiguration.PushExtraRoutes,
+        PushDns: this.newConfiguration.PushDns,
+        PushWins: this.newConfiguration.PushWins,
+        Digest: this.newConfiguration.Digest,
+        Netmask: this.newConfiguration.Netmask,
+        Compression: this.newConfiguration.Compression,
+        Mode: this.newConfiguration.Mode,
+        Cipher: this.newConfiguration.Cipher,
+        UDPPort: this.newConfiguration.UDPPort,
+        PushNbdd: this.newConfiguration.PushNbdd,
+        RouteToVPN: this.newConfiguration.RouteToVPN,
+        Remote: this.newConfiguration.Remote.split("\n"),
+        Network: this.newConfiguration.Network,
+        BridgeStartIP: this.newConfiguration.BridgeStartIP,
+        AuthMode: this.newConfiguration.AuthMode,
+        BridgeName: this.newConfiguration.BridgeName,
+        TlsVersionMin: this.newConfiguration.TlsVersionMin,
+        ClientToClient: this.newConfiguration.ClientToClient,
+        BridgeEndIP: this.newConfiguration.BridgeEndIP,
         action: "configuration"
       };
 
@@ -1174,9 +1220,12 @@ export default {
       var context = this;
 
       var accountObj = {
-        action: account.isEdit ? "update" : "create",
-
-        name: context.currentAccount.name
+        action: account.isEdit ? "update-account" : "create-account",
+        type: context.currentAccount.Mode == "system" ? "vpn-user" : "vpn",
+        name: context.currentAccount.name,
+        OpenVpnIp: context.currentAccount.OpenVpnIp,
+        VPNRemoteNetmask: context.currentAccount.VPNRemoteNetmask,
+        VPNRemoteNetwork: context.currentAccount.VPNRemoteNetwork
       };
 
       context.currentAccount.isLoading = true;
@@ -1329,5 +1378,8 @@ export default {
 }
 .semi-bold {
   font-weight: 500;
+}
+.min-textarea-height {
+  min-height: 100px;
 }
 </style>

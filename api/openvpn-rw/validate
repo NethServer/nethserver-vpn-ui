@@ -1,0 +1,151 @@
+#!/usr/bin/php
+<?php
+/*
+ * Copyright (C) 2019 Nethesis S.r.l.
+ * http://www.nethesis.it - nethserver@nethesis.it
+ *
+ * This script is part of NethServer.
+ *
+ * NethServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or any later version.
+ *
+ * NethServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NethServer.  If not, see COPYING.
+*/
+
+
+require_once("/usr/libexec/nethserver/api/lib/Helpers.php");
+
+
+function getBridges()
+{
+    $ret = array();
+    $db = new EsmithDatabase('networks');
+    foreach ($db->getAll() as $key => $props) {
+        if ($props['type'] == 'bridge' && isset($props['role']) && $props['role']) {
+            $ret[] = $key;
+        }
+    } 
+    return $ret;
+}
+
+function ipInRange( $ip, $range ) {
+    if ( strpos( $range, '/' ) == false ) {
+        $range .= '/32';
+    }
+    // $range is in IP/CIDR format eg 127.0.0.1/24
+    list( $range, $netmask ) = explode( '/', $range, 2 );
+    $range_decimal = ip2long( $range );
+    $ip_decimal = ip2long( $ip );
+    $wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+    $netmask_decimal = ~ $wildcard_decimal;
+    return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+}
+
+function maskToCidr($mask){
+    $long = ip2long($mask);
+    $base = ip2long('255.255.255.255');
+    return 32-log(($long ^ $base)+1,2);
+}
+
+$data = readInput();
+$v = new LegacyValidator($data);
+
+$sdb = new EsmithDatabase('vpn');
+
+if ($data['action'] == 'create-account') {
+    if ($sdb->getKey($data['name'])) {
+        $v->addValidationError('name', 'account_already_exists');
+    }
+    if ($data['OpenVpnIp']) {
+        $v->declareParameter('OpenVpnIp', Validate::IPv4);
+    }
+    if ($data['VPNRemoteNetwork'] || $data['VPNRemoteNetmask']) {
+        $v->declareParameter('VPNRemoteNetmask', Validate::NETMASK);
+        $v->declareParameter('VPNRemoteNetwork', Validate::IPv4);
+    }
+} else if ($data['action'] == 'update-account') {
+    if (!$sdb->getKey($data['name'])) {
+        $v->addValidationError('name', 'account_not_found');
+    }
+    if ($data['OpenVpnIp']) {
+        $v->declareParameter('OpenVpnIp', Validate::IPv4);
+    }
+    if ($data['VPNRemoteNetwork'] || $data['VPNRemoteNetmask']) {
+        $v->declareParameter('VPNRemoteNetmask', Validate::NETMASK);
+        $v->declareParameter('VPNRemoteNetwork', Validate::IPv4);
+    }
+} else if ($data['action'] == 'configuration') {
+
+    $authModes = $v->createValidator()->memberOf(array('password', 'certificate','password-certificate'));
+    $modes = $v->createValidator()->memberOf(array('bridged', 'routed'));
+    $bridges = $v->createValidator()->memberOf(getBridges());
+
+    $v->declareParameter('ServerStatus', Validate::SERVICESTATUS);
+    $v->declareParameter('AuthMode', $authModes);
+    $v->declareParameter('Mode', $modes);
+    if ($data['Mode'] == 'bridged') {
+        $v->declareParameter('Bridge', $bridges);
+        $v->declareParameter('BridgeStartIP', Validate::IPv4);
+        $v->declareParameter('BridgeEndIP', Validate::IPv4);
+    }
+    $v->declareParameter('ClientToClient', Validate::SERVICESTATUS);
+    $v->declareParameter('RouteToVPN', Validate::SERVICESTATUS);
+    $v->declareParameter('PushExtraRoutes', Validate::SERVICESTATUS);
+    if ($data['PushDomain']) {
+        $v->declareParameter('PushDomain', $v->createValidator()->hostname(1));
+    }
+    $v->declareParameter('PushDns', Validate::IPv4_OR_EMPTY);
+    $v->declareParameter('PushWins', Validate::IPv4_OR_EMPTY);
+    $v->declareParameter('PushNbdd', Validate::IPv4_OR_EMPTY);
+    $v->declareParameter('Netmask', Validate::NETMASK);
+    $v->declareParameter('Network', Validate::IPv4);
+    $v->declareParameter('UDPPort', Validate::PORTNUMBER);
+    $v->declareParameter('Remote', Validate::ANYTHING);
+    $v->declareParameter('Compression', $v->createValidator()->memberOf(array('disabled','lzo','lz4')));
+
+    if (isset($data['Remote'])) {
+        $v_host = $v->createValidator(Validate::HOSTADDRESS);
+        foreach ($data['Remote'] as $host) {
+            if ( ! $v_host->evaluate($host) ) {
+                $v->addValidationError("Remote", 'invalid_host_address'); 
+            }
+        }
+    }
+
+    // check the "network" parameter is consistent with its "Mask" (only 0-bits in tail)
+    $net = long2ip(ip2long($data['Network']) & ip2long($data['Netmask']));
+    if ($net != $data['Network']) {
+        $v->addValidationError('Network', 'invalid_network');
+    }
+    // For OpenVPN network must be 255.255.255.248 (/29) or lower
+    $cidr_net = maskToCidr($data['Netmask']);
+    if ($cidr_net > 29) {
+        $v->addValidationError('Netmask', 'netmask_lower_than_29');
+    }
+    // check the network is not already used
+    $ndb = new EsmithDatabase('networks');
+    $interfaces = $ndb->getAll();
+    foreach ($interfaces as $interface => $props) {
+        if(isset($props['role']) && isset($props['ipaddr']) ) {
+            $cidr = $data['Network']."/".maskToCidr($data['Netmask']);
+            if (ipInRange($props['ipaddr'], $cidr)) {
+                $v->addValidationError('Network', 'used_network');
+            }
+        }
+    }
+}
+
+# Validate the input
+if ($v->validate()) {
+    success();
+} else {
+    error($v);
+}
