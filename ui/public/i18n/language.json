@@ -219,7 +219,15 @@
     "pkcs12_download": "Certificate and private key (PKCS12 format)",
     "pem_download": "Certificate, private key and CA (PEM format)",
     "download_configuration": "Download account configuration of ",
-    "pkcs12_password": "Password for p12 file is"
+    "pkcs12_password": "Password for p12 file is",
+    "not_connected": "Not connected",
+    "connected": "Connected",
+    "since": "Connected since",
+    "bytes_received": "Received",
+    "bytes_sent": "Sent",
+    "real_address": "Real address",
+    "virtual_address": "Virtual address",
+    "state": "State"
   },
   "logs": {
     "title": "Logs",

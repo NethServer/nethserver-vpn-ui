@@ -102,10 +102,29 @@
               <strong>{{ props.row.ShortName}}</strong>
             </a>
           </td>
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"><span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span> {{$t("openvpn_rw."+props.row.Mode+'_mode') }}</td>
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"><span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span> <span class="span-left-margin">{{$t("openvpn_rw."+props.row.Mode+'_mode') }}</span></td>
           <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{props.row.Expiration ?  (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.CertificateStatus+'_status') + ")") : "-" }}</td>
           <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</td>
           <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+            <div
+              v-if="props.row.statistics"
+              data-toggle="tooltip"
+              data-placement="top"
+              data-html="true"
+              :title="showStatistics(props.row.statistics)"
+              class="handle-overflow"
+            >
+            <span class="fa fa-check green"></span>
+            {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
+          </div>
+          <div v-else>
+              <span class="fa fa-times grey"></span>
+             {{$t('openvpn_rw.not_connected')}}
+          </div>
+        </span>
+          </td>
+
 
           <td>
             <button
@@ -915,6 +934,12 @@ export default {
           }
         },
         {
+          label: this.$i18n.t("openvpn_rw.state"),
+          field: "",
+          filterable: true,
+          sortable: false
+        },
+        {
           label: this.$i18n.t("action"),
           field: "",
           filterable: true,
@@ -1108,6 +1133,9 @@ export default {
           }
           context.accounts = success.accounts;
 
+          setTimeout(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+          }, 750);
           context.view.isLoaded = true;
         },
         function(error) {
@@ -1267,6 +1295,7 @@ export default {
     resetConfiguration(isEdit) {
       if (this.configuration) {
         this.newConfiguration = this.configuration
+        this.newConfiguration.errors = this.initConfigurationErrors()
       }
     },
     saveConfiguration() {
@@ -1555,6 +1584,19 @@ export default {
         }
       );
     },
+    showStatistics(stats) {
+      var html = "";
+
+      html += "<dl>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.since")+"</dt><dd>"+stats.since+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.virtual_address")+"</dt><dd>"+stats.virtual_address+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.real_address")+"</dt><dd>"+stats.real_address+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_sent")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_sent)+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_received")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_received)+"</dd>";
+      html += "</dl>";
+
+      return html;
+    }
   }
 };
 </script>
