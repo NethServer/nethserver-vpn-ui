@@ -97,20 +97,23 @@
       >
         <template slot="table-row" slot-scope="props">
 
-          <td class="fancy">
-            <a @click="openEditAccount(props.row)">
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+            <a :class="props.row.status == 'disabled' ? 'gray': ''" @click="openEditAccount(props.row)">
               <strong>{{ props.row.ShortName}}</strong>
             </a>
           </td>
-          <td class="fancy"><span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span> {{$t("openvpn_rw."+props.row.Mode+'_mode') }}</td>
-          <td class="fancy">{{props.row.Expiration ?  (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.Status+'_status') + ")") : "-" }}</td>
-          <td class="fancy">{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</td>
-          <td class="fancy">{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"><span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span> {{$t("openvpn_rw."+props.row.Mode+'_mode') }}</td>
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{props.row.Expiration ?  (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.CertificateStatus+'_status') + ")") : "-" }}</td>
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</td>
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
 
           <td>
-            <button @click="openEditAccount(props.row)" class="btn btn-default">
-              <span class="fa fa-pencil span-right-margin"></span>
-              {{$t('edit')}}
+            <button
+              @click="props.row.status == 'disabled' ? toggleStatusAccount(props.row) : openEditAccount(props.row)"
+              :class="['btn btn-default', props.row.status == 'disabled' ? 'btn-primary' : '']"
+            >
+              <span :class="['fa', props.row.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"></span>
+              {{props.row.status == 'disabled' ? $t('enable') : $t('edit')}}
             </button>
             <div class="dropup pull-right dropdown-kebab-pf">
               <button
@@ -1446,5 +1449,8 @@ export default {
 }
 .min-textarea-height {
   min-height: 100px;
+}
+.gray {
+  color: #72767b;
 }
 </style>

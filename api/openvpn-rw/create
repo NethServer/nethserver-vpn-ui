@@ -31,7 +31,7 @@ my $cmd = $input->{'action'};
 
 if ($cmd eq 'create-account') {
     my $vdb = esmith::ConfigDB->open('vpn');
-    $vdb->new_record($input->{'name'}, {type => $input->{'type'}});
+    $vdb->new_record($input->{'name'}, {type => $input->{'type'}, status => 'enabled'});
 
     foreach (qw(OpenVpnIp VPNRemoteNetmask VPNRemoteNetwork)) {
         $vdb->set_prop($input->{'name'}, $_, $input->{$_});

@@ -60,7 +60,14 @@ if ($cmd eq 'update-account') {
             $db->set_prop('openvpn@host-to-net', $_, $input->{$_});
         }
     }
-
+} elsif ($cmd eq 'disable') {
+     my $vdb = esmith::ConfigDB->open('vpn');
+     $vdb->set_prop($input->{'name'}, 'status', 'disabled');
+     success();
+} elsif ($cmd eq 'enable') {
+     my $vdb = esmith::ConfigDB->open('vpn');
+     $vdb->set_prop($input->{'name'}, 'status', 'enabled');
+     success();
 } else {
     error();
 }

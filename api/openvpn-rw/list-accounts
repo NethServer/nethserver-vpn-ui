@@ -54,6 +54,7 @@ function readCertIndexAccounts() {
     foreach($users as $user => $props) {
         $vpn_user = $vdb->getKey($user);
         if ($vpn_user) {
+            $status =  isset($vpn_user['status']) ? $vpn_user['status'] : 'enabled';
             list($short, $domain) = explode("@", $user);
             $ret[$user] = array(
                 'name' => $user,
@@ -62,12 +63,14 @@ function readCertIndexAccounts() {
                 'VPNRemoteNetwork' => $vpn_user['VPNRemoteNetwork'],
                 'VPNRemoteNetmask' => $vpn_user['VPNRemoteNetmask'],
                 'OpenVpnIp' => $vpn_user['OpenVpnIp'],
+                'status' => $status
             );
         }
     }
     // get all vpn accounts
     $users = $vdb->getAll('vpn');
     foreach($users as $user => $props) {
+        $status =  isset($props['status']) ? $props['status'] : 'enabled';
         $ret[$user] = array(
             'name' => $user,
             'Mode' => 'vpn',
@@ -75,6 +78,7 @@ function readCertIndexAccounts() {
             'VPNRemoteNetwork' => $props['VPNRemoteNetwork'],
             'VPNRemoteNetmask' => $props['VPNRemoteNetmask'],
             'OpenVpnIp' => $props['OpenVpnIp'],
+            'status' => $status
         );
     }
     // read certificate expiration for certificate associated with each account
@@ -94,7 +98,7 @@ function readCertIndexAccounts() {
                 }
             }
             $ret[$cn]['Expiration'] = formatDate($exp_date);
-            $ret[$cn]['Status'] = $status; # V=valid, R=revoked, E=expired
+            $ret[$cn]['CertificateStatus'] = $status; # V=valid, R=revoked, E=expired
         }
     }
 
