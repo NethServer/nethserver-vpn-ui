@@ -68,6 +68,13 @@ if ($cmd eq 'update-account') {
      my $vdb = esmith::ConfigDB->open('vpn');
      $vdb->set_prop($input->{'name'}, 'status', 'enabled');
      success();
+} elsif ($cmd eq 'kill') {
+    system(("/usr/libexec/nethserver/openvpn-kill", "/var/spool/openvpn/host-to-net", $input->{'name'}));
+    if ($? > 0) {
+        error();
+    } else {
+        success();
+    }
 } else {
     error();
 }

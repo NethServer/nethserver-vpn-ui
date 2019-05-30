@@ -145,6 +145,13 @@
                 <span class="fa fa-ellipsis-v"></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-right">
+                <li v-if="props.row.statistics">
+                  <a @click="killAccount(props.row.name)">
+                    <span class="fa fa-times-circle span-right-margin"></span>
+                    {{$t('openvpn_rw.kill')}}
+                  </a>
+                </li>
+                <li v-if="props.row.statistics" role="presentation" class="divider"></li>
                 <li>
                   <a @click="openDownloadAccount(props.row)">
                     <span class="fa fa-arrow-down span-right-margin"></span>
@@ -1596,6 +1603,28 @@ export default {
       html += "</dl>";
 
       return html;
+    },
+    killAccount(name) {
+      var context = this;
+
+      // kill actions
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/update"],
+        {
+          action: "kill",
+          name: name
+        },
+        function(stream) {
+          console.info("update-kill", stream);
+        },
+        function(success) {
+          // get all
+          context.getAccounts();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
     }
   }
 };

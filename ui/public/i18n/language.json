@@ -227,7 +227,8 @@
     "bytes_sent": "Sent",
     "real_address": "Real address",
     "virtual_address": "Virtual address",
-    "state": "State"
+    "state": "State",
+    "kill": "Disconnect"
   },
   "logs": {
     "title": "Logs",
