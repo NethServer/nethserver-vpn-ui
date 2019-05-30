@@ -127,6 +127,12 @@
               </button>
               <ul class="dropdown-menu dropdown-menu-right">
                 <li>
+                  <a @click="openDownloadAccount(props.row)">
+                    <span class="fa fa-arrow-down span-right-margin"></span>
+                    {{$t('download')}}
+                  </a>
+                </li>
+                <li>
                   <a @click="toggleStatusAccount(props.row)">
                     <span
                       :class="['fa', props.row.status == 'enabled' ? 'fa-lock' : 'fa-check', 'span-right-margin']"
@@ -166,7 +172,7 @@
                 >{{$t('openvpn_rw.auth_mode')}}</label>
                 <div class="col-sm-9">
                   <select class="form-control" v-model="newConfiguration.AuthMode">
-                    <option value="username-password">{{$t('openvpn_rw.username_password')}}</option>
+                    <option value="password">{{$t('openvpn_rw.username_password')}}</option>
                     <option value="certificate">{{$t('openvpn_rw.certificate')}}</option>
                     <option
                       value="password-certificate"
@@ -645,7 +651,7 @@
                 </div>
               </div>
 
-              <legend class="fields-section-header-pf" aria-expanded="true">
+              <legend class="fields-section-header-pf" aria-expanded="true" v-if="!currentAccount.isEdit">
                 <span
                   :class="['fa fa-angle-right field-section-toggle-pf', currentAccount.advanced ? 'fa-angle-down' : '']"
                 ></span>
@@ -758,6 +764,75 @@
         </div>
       </div>
     </div>
+
+    <div
+      class="modal"
+      id="downloadAccountModal"
+      tabindex="-1"
+      role="dialog"
+      data-backdrop="static"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4
+              class="modal-title"
+            >{{$t('openvpn_rw.download_configuration')}} {{toDownloadAccount.ShortName}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="undefined">
+            <div class="modal-body">
+              <div class="form-group">
+                <label
+                  class="col-sm-7 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.ovpn_download')}}</label>
+                <div class="col-sm-5 control-div" for="textInput-modal-markup">
+                  <button
+                    @click="downloadAccount(toDownloadAccount.name, 'ovpn')"
+                    class="btn btn-primary"
+                    type="button"
+                  >{{$t('download')}}</button>
+                </div>
+              </div>
+
+              <div class="form-group" v-show="configuration.AuthMode == 'certificate' || configuration.AuthMode == 'certificate-password'">
+                <label
+                  class="col-sm-7 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.pem_download')}}</label>
+                <div class="col-sm-5 control-div" for="textInput-modal-markup">
+                  <button
+                    @click="downloadAccount(toDownloadAccount.name, 'pem')"
+                    class="btn btn-primary"
+                    type="button"
+                  >{{$t('download')}}</button>
+                </div>
+              </div>
+
+              <div class="form-group" v-show="configuration.AuthMode == 'certificate' || configuration.AuthMode == 'certificate-password'">
+                <label
+                  class="col-sm-7 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.pkcs12_download')}}</label>
+                <span
+                  class="col-sm-7 control-label"
+                >{{$t('openvpn_rw.pkcs12_password')}}: <tt>{{toDownloadAccount.name}}</tt></span>
+                <div class="col-sm-5 control-div" for="textInput-modal-markup">
+                  <button
+                    @click="downloadAccount(toDownloadAccount.name, 'pkcs12')"
+                    class="btn btn-primary"
+                    type="button"
+                  >{{$t('download')}}</button>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- END MODALS -->
   </div>
 </template>
@@ -794,6 +869,9 @@ export default {
       accounts: [],
       ciphers: [],
       digests: [],
+      toDownloadAccount: {
+        name: "",
+      },
       accountsColumns: [
         {
           label: this.$i18n.t("openvpn_rw.name"),
@@ -1133,7 +1211,11 @@ export default {
       this.$forceUpdate();
     },
     toggleAdvancedAccount() {
-      this.currentAccount.advanced = !this.currentAccount.advanced;
+      if (currentAccount.isEdit) {
+        this.currentAccount.advanced = true
+      } else {
+        this.currentAccount.advanced = !this.currentAccount.advanced;
+      }
       this.$forceUpdate();
     },
     toggleStatus(isEdit) {
@@ -1281,7 +1363,7 @@ export default {
 
       this.currentAccount.isEdit = true;
       this.currentAccount.isLoading = false;
-      this.currentAccount.advanced = false;
+      this.currentAccount.advanced = true;
       $("#createAccountModal").modal("show");
     },
     saveAccount(account) {
@@ -1432,7 +1514,47 @@ export default {
           console.error(error, data);
         }
       );
-    }
+    },
+    openDownloadAccount(account) {
+      this.toDownloadAccount = JSON.parse(JSON.stringify(account));
+      $("#downloadAccountModal").modal("show");
+    },
+    downloadAccount(name, type) {
+      var extension = "";
+      switch (type) {
+        case "ovpn":
+          extension = ".ovpn";
+          break;
+        case "pem":
+          extension = ".pem";
+          break;
+        case "pkcs12":
+          extension = ".p12";
+          break;
+      }
+
+      // download actions
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/read"],
+        {
+          action: "download",
+          type: type,
+          name: name
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          require("downloadjs")(atob(success.data), success.filename);
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
   }
 };
 </script>

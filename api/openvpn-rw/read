@@ -111,6 +111,24 @@ if ($cmd eq 'users') {
     }
     $ret->{'accounts'} = $accounts;
 
+} elsif ($cmd eq 'download') {
+
+    if ($input->{'type'} eq 'ovpn') {
+        my $name = $input->{'name'};
+        $ret->{'data'} = encode_base64(`/usr/libexec/nethserver/openvpn-local-client '$name'`);
+        $ret->{'filename'} = $input->{'name'}.".ovpn";
+    } elsif ($input->{'type'} eq 'pem') {
+        my $name = $input->{'name'};
+        $ret->{'data'} = encode_base64(`cat /var/lib/nethserver/certs/$name.key /var/lib/nethserver/certs/$name.crt /etc/pki/tls/certs/NSRV.crt`);
+        $ret->{'filename'} = $input->{'name'}.".pem";
+    } elsif ($input->{'type'} eq 'pkcs12') {
+        my $name = $input->{'name'};
+        $ret->{'data'} = encode_base64(`cat /var/lib/nethserver/certs/$name.p12`);
+        $ret->{'filename'} = $input->{'name'}.".p12";
+    } else {
+        error();
+    }
+
 } else {
     error();
 }
