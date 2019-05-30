@@ -317,20 +317,41 @@
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Remote.message)}}</span>
                 </div>
               </div>
+
               <div
                 v-show="newConfiguration.advanced"
-                :class="['form-group', newConfiguration.errors.UDPPort.hasError ? 'has-error' : '']"
+                :class="['form-group', newConfiguration.errors.Protocol.hasError ? 'has-error' : '']"
               >
                 <label
                   class="col-sm-5 control-label"
                   for="textInput-modal-markup"
-                >{{$t('openvpn_rw.udp_port')}}</label>
+                >{{$t('openvpn_rw.protocol')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="newConfiguration.UDPPort" class="form-control">
+                  <select v-model="newConfiguration.Protocol" class="form-control">
+                    <option value="udp">{{$t('openvpn_rw.udp')}}</option>
+                    <option value="tcp">{{$t('openvpn_rw.tcp')}}</option>
+                  </select>
                   <span
-                    v-if="newConfiguration.errors.UDPPort.hasError"
+                    v-if="newConfiguration.errors.Protocol.hasError"
                     class="help-block"
-                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.UDPPort.message)}}</span>
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Protocol.message)}}</span>
+                </div>
+              </div>
+
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.Port.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.port')}}</label>
+                <div class="col-sm-7">
+                  <input type="text" v-model="newConfiguration.Port" class="form-control">
+                  <span
+                    v-if="newConfiguration.errors.Port.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Port.message)}}</span>
                 </div>
               </div>
 
@@ -934,7 +955,11 @@ export default {
           hasError: false,
           message: ""
         },
-        UDPPort: {
+        Port: {
+          hasError: false,
+          message: ""
+        },
+        Protocol: {
           hasError: false,
           message: ""
         },
@@ -978,7 +1003,6 @@ export default {
           }
           context.configuration = success.configuration;
           context.configuration.Remote = context.configuration.Remote.join("\n");
-          console.log("hasusers="+context.configuration.AccountProvider)
         },
         function(error) {
           console.error(error);
@@ -1156,7 +1180,9 @@ export default {
       }
     },
     resetConfiguration(isEdit) {
-      this.newConfiguration = this.configuration
+      if (this.configuration) {
+        this.newConfiguration = this.configuration
+      }
     },
     saveConfiguration() {
       var context = this;
@@ -1172,7 +1198,7 @@ export default {
         Compression: this.newConfiguration.Compression,
         Mode: this.newConfiguration.Mode,
         Cipher: this.newConfiguration.Cipher,
-        UDPPort: this.newConfiguration.UDPPort,
+        Port: this.newConfiguration.Port,
         PushNbdd: this.newConfiguration.PushNbdd,
         RouteToVPN: this.newConfiguration.RouteToVPN,
         Remote: this.newConfiguration.Remote.split("\n"),
@@ -1183,6 +1209,7 @@ export default {
         TlsVersionMin: this.newConfiguration.TlsVersionMin,
         ClientToClient: this.newConfiguration.ClientToClient,
         BridgeEndIP: this.newConfiguration.BridgeEndIP,
+        Protocol: this.newConfiguration.Protocol,
         action: "configuration"
       };
 

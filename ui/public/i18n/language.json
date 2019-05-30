@@ -167,7 +167,7 @@
     "bridge_end_ip": "IP range stop",
     "connection_params": "Connection parameters",
     "remote_host_ip_name": "Contact this server on public IP / host",
-    "udp_port": "UDP port",
+    "port": "Port",
     "compress": "Compression",
     "push_static_routes": "Push all static routes",
     "dhcp_domain": "DHCP Domain",
@@ -211,7 +211,10 @@
     "dhcp_params": "DHCP configuration",
     "security_params": "Security",
     "extra_params": "Extra parameters",
-    "routes_params": "Static routes"
+    "routes_params": "Static routes",
+    "protocol": "Protocol",
+    "tcp": "TCP",
+    "udp": "UDP"
   },
   "logs": {
     "title": "Logs",

@@ -44,7 +44,16 @@ if ($cmd eq 'update-account') {
 
     my $db = esmith::ConfigDB->open();
     foreach (keys %$input) {
-        next if ($_ eq 'action');
+        next if ($_ eq 'action' || $_ eq 'Protocol');
+        if ($_ eq 'Port') {
+            if ($input->{'Protocol'} eq 'udp') {
+                $db->set_prop('openvpn@host-to-net', 'UDPPort', $input->{'Port'});
+                $db->set_prop('openvpn@host-to-net', 'TCPPort', '');
+            } elsif ($input->{'Protocol'} eq 'tcp') {
+                $db->set_prop('openvpn@host-to-net', 'TCPPort', $input->{'Port'});
+                $db->set_prop('openvpn@host-to-net', 'UDPPort', '');
+            }
+        }
         if ($_ eq 'Remote') {
             $db->set_prop('openvpn@host-to-net', $_, join(",",@{$input->{$_}}));
         } else {

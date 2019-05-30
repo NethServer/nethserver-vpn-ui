@@ -88,6 +88,7 @@ if ($data['action'] == 'create-account') {
     $modes = $v->createValidator()->memberOf(array('bridged', 'routed'));
     $bridges = $v->createValidator()->memberOf(getBridges());
 
+    $v->declareParameter('Protocol', $v->createValidator()->memberOf(array('tcp', 'udp')));
     $v->declareParameter('ServerStatus', Validate::SERVICESTATUS);
     $v->declareParameter('AuthMode', $authModes);
     $v->declareParameter('Mode', $modes);
@@ -107,7 +108,7 @@ if ($data['action'] == 'create-account') {
     $v->declareParameter('PushNbdd', Validate::IPv4_OR_EMPTY);
     $v->declareParameter('Netmask', Validate::NETMASK);
     $v->declareParameter('Network', Validate::IPv4);
-    $v->declareParameter('UDPPort', Validate::PORTNUMBER);
+    $v->declareParameter('Port', Validate::PORTNUMBER);
     $v->declareParameter('Remote', Validate::ANYTHING);
     $v->declareParameter('Compression', $v->createValidator()->memberOf(array('disabled','lzo','lz4')));
 

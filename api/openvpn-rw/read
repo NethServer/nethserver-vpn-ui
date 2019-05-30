@@ -83,8 +83,18 @@ if ($cmd eq 'users') {
     foreach (qw(type access TapInterface)) {
         delete($props{$_});
     }
+    if ($props{'UDPPort'} ne '') {
+        $props{'Protocol'} = 'udp';
+        $props{'Port'} = $props{'UDPPort'};
+        delete($props{'UDPPort'});
+    }
+    if ($props{'TCPPort'} ne '') {
+        $props{'Protocol'} = 'tcp';
+        $props{'Port'} = $props{'TCPPort'};
+        delete($props{'TCPPort'});
+    }
     $props{'Remote'} = [split(",",$props{'Remote'})];
-    $props{'HasUsers'} = ($db->get_prop('sssd', 'Provider') ne "") ? JSON::true : JSON::false;
+    $props{'AccountProvider'} = ($db->get_prop('sssd', 'Provider') ne '') ? JSON::true : JSON::false;
     $ret->{'configuration'} = \%props;
 
 } elsif ($cmd eq 'algorithms') {
