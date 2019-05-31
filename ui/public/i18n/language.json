@@ -28,7 +28,23 @@
   "dashboard": {
     "menu_title": "VPN",
     "title": "VPN dashboard",
-    "empty_piechart_label": "Statistics are not available"
+    "empty_piechart_label": "Statistics are not available",
+    "ipsec_stats": "IPSec statistics",
+    "ipsec_connected": "IPSec connected",
+    "ipsec_total": "IPSec total",
+    "openvpn_tun_stats": "OpenVPN tunnels statistics",
+    "openvpn_tun_connected": "OpenVPN tunnels connected",
+    "openvpn_tun_total": "OpenVPN tunnels total",
+    "openvpn_rw_stats": "OpenVPN roadwarrior statistics",
+    "openvpn_rw_connected": "OpenVPN roadwarrior connected",
+    "openvpn_rw_total": "OpenVPN roadwarrior total",
+    "openvpn_rw_auth": "Auth",
+    "openvpn_rw_mode": "Mode",
+    "openvpn_rw_port": "Port",
+    "openvpn_rw_status": "Status",
+    "openvpn_tun_interfaces": "OpenVPN tunnels interfaces",
+    "openvpn_rw_interfaces": "OpenVPN roadwarrior interfaces",
+    "connections": "Connections"
   },
   "ipsec": {
     "title": "IPSec",
