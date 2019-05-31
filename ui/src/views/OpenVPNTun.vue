@@ -119,7 +119,22 @@
                   >{{i}}</div>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
-                  <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times red']"></span>
+                  <span class="right-20"><span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span> {{$t('openvpn_tun.running')}}</span>
+                  <span
+                    v-if="props.row.statistics"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    data-html="true"
+                    :title="showServerStatistics(props.row.statistics)"
+                    class="handle-overflow"
+                  >
+                  <span class="fa fa-check green"></span>
+                    {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
+                  </span>
+                  <span v-else>
+                    <span class="fa fa-times grey"></span>
+                   {{$t('openvpn_rw.not_connected')}}
+                 </span>
                 </td>
                 <td>
                   <button
@@ -272,7 +287,22 @@
                   <div class="mg-top-view" v-for="(i,ik) in props.row.RemoteHost" :key="ik">{{i}}</div>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
-                  <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times red']"></span>
+                  <span class="right-20"><span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span> {{$t('openvpn_tun.running')}}</span>
+                  <span
+                    v-if="props.row.statistics && props.row.statistics.state == 'connected'"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    data-html="true"
+                    :title="showClientStatistics(props.row.statistics)"
+                    class="handle-overflow"
+                  >
+                  <span class="fa fa-check green"></span>
+                    {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
+                  </span>
+                  <span v-else>
+                    <span class="fa fa-times grey"></span>
+                   {{$t('openvpn_rw.not_connected')}}
+                 </span>
                 </td>
                 <td>
                   <button
@@ -1705,6 +1735,9 @@ export default {
             t.WanPrioritiesIFace = [];
             return t.type == "tunnel";
           });
+          setTimeout(function() {
+            $('[data-toggle="tooltip"]').tooltip();
+          }, 750);
           context.view.isLoaded = true;
         },
         function(error) {
@@ -2392,6 +2425,30 @@ export default {
           }
         }
       );
+    },
+    showServerStatistics(stats) {
+      var html = "";
+
+      html += "<dl>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.since")+"</dt><dd>"+stats.since+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.virtual_address")+"</dt><dd>"+stats.virtual_address+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.real_address")+"</dt><dd>"+stats.real_address+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_sent")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_sent)+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_received")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_received)+"</dd>";
+      html += "</dl>";
+
+      return html;
+    },
+    showClientStatistics(stats) {
+      var html = "";
+
+      html += "<dl>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.since")+"</dt><dd>"+this.$options.filters.dateFormat(stats.since*1000)+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_rw.virtual_address")+"</dt><dd>"+stats.virtual_address+"</dd>";
+      html += "<dt>"+this.$i18n.t("openvpn_tun.remote_server")+"</dt><dd>"+stats.remote_server+"</dd>";
+      html += "</dl>";
+
+      return html;
     }
   }
 };
@@ -2433,5 +2490,9 @@ export default {
 
 .mg-top-view {
   margin-top: -10px;
+}
+
+.right-20 {
+  padding-right: 20px;
 }
 </style>

@@ -40,6 +40,7 @@ if ($cmd eq 'tunnels') {
     my $db = esmith::ConfigDB->open_ro('vpn');
     my @tunnels;
     foreach ($db->get_all()) {
+        my $name = $_->key;
         my @params = qw(LocalNetworks RemoteNetworks);
         my $path = '';
         if ($_->prop('type') eq 'openvpn-tunnel-server') {
@@ -52,21 +53,40 @@ if ($cmd eq 'tunnels') {
             next;
         }
         my %props = $_->props;
-        $props{'name'} = $_->key;
+        $props{'name'} = $name;
         for my $p (@params) {
             my $v = $props{$p} || '';
             $props{$p} = [split(/,/, $v)];
         }
         # read PSK
         if ($props{'Topology'} eq 'p2p') {
-            $props{'Psk'} = read_file($path.$_->key.".key");
+            $props{'Psk'} = read_file($path.$name.".key");
         }
         if ($props{'Topology'} eq 'subnet' && $_->prop('type') eq 'tunnel') {
-            $props{'Crt'} = read_file($path.$_->key.".pem");
+            $props{'Crt'} = read_file($path.$name.".pem");
         }
 
-        my $running = system("systemctl status openvpn\@".$_->key." &>/dev/null");
-        $props{'running'} = ($running == 0) ? JSON::true : JSON::false;
+        # read running status and statistics
+        $props{'statistics'} = undef;
+        my $running = system("systemctl status openvpn\@$name &>/dev/null");
+        if ($running == 0) {
+            my $statistics;
+            $props{'running'} = JSON::true;
+            if ($_->prop('type') eq 'openvpn-tunnel-server') {
+                $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/n2n-$name`);
+                my $k = (keys %$statistics)[0]; # find first key, assume tat one tunnel has only one connected client
+                $statistics = $statistics->{$k};
+            } else {
+                use Data::Dumper;
+                $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-state /var/spool/openvpn/n2n-$name`);
+            }
+            # set only if not empty
+            if ($? == 0 && (scalar(keys %$statistics) > 0)) {
+                $props{'statistics'} = $statistics;
+            }
+        } else {
+            $props{'running'} = JSON::false;
+        }
 
         push(@tunnels, \%props);
     }

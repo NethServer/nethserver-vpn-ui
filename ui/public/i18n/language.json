@@ -141,7 +141,9 @@
     "auto_choose": "Server/client negotiation",
     "disabled": "Disabled",
     "lzo": "LZO",
-    "lz4": "LZ4"
+    "lz4": "LZ4",
+    "running": "Running",
+    "remote_server": "Remote server"
   },
   "openvpn_rw": {
     "menu_title": "OVPN RoadWarrior",
