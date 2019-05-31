@@ -77,7 +77,6 @@ if ($cmd eq 'tunnels') {
                 my $k = (keys %$statistics)[0]; # find first key, assume tat one tunnel has only one connected client
                 $statistics = $statistics->{$k};
             } else {
-                use Data::Dumper;
                 $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-state /var/spool/openvpn/n2n-$name`);
             }
             # set only if not empty

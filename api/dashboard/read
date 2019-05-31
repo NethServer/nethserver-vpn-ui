@@ -27,19 +27,81 @@ use JSON;
 
 require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
 
+sub read_netdata
+{
+    my $api = shift;
+    return `curl 'http://localhost:19999/$api' 2>/dev/null`;
+}
+
+
 my $input = readInput();
 my $cmd = $input->{'action'};
 
 my $ret = {};
 
 if ($cmd eq 'status') {
-    my $db = esmith::ConfigDB->open_ro('vpn');
+    my $vdb = esmith::ConfigDB->open_ro('vpn');
+    my $db = esmith::ConfigDB->open_ro();
+    my $rw;
+    my $tunnels;
 
-    $ret->{'ipsec'}{'tunnels'} = scalar $db->get_all_by_prop(type => 'ipsec-tunnel');
-    $ret->{'ipsec'}{'status'} = ipsec_status();
+    # number of ipsec servers
+    # nu,ber of connected clients
+    $ret->{'ipsec'}{'total'} = scalar $vdb->get_all_by_prop(type => 'ipsec-tunnel');
+    my $ipsec_status = ipsec_status();
+    $ret->{'ipsec'}{'connected'} = scalar(keys %$ipsec_status);
 
-    print encode_json($ret);
+    $rw->{'total'} = scalar($vdb->get_all_by_prop(type => 'vpn')) + scalar($vdb->get_all_by_prop(type => 'vpn-user'));
+    my $rw_status = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net`);
+    $rw->{'connected'} = scalar(keys %$rw_status);
+    $rw->{'status'} = $db->get_prop('openvpn@host-to-net', 'status');
+    $rw->{'mode'} = $db->get_prop('openvpn@host-to-net', 'Mode');
+    $rw->{'auth'} = $db->get_prop('openvpn@host-to-net', 'AuthMode');
+    $rw->{'port'} = $db->get_prop('openvpn@host-to-net', 'TCPPort') || $db->get_prop('openvpn@host-to-net', 'UDPPort');
+    $rw->{'interfaces'} = ['tunrw'];
+
+    $tunnels->{'total'} = 0;
+    $tunnels->{'connected'} = 0;
+    $tunnels->{'interfaces'} = [];
+
+    foreach ($vdb->get_all()) {
+        my $statistics;
+        my $name = $_->key;
+        if ($_->prop('type') eq 'openvpn-tunnel-server') {
+            $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/n2n-$name`);
+        } elsif ($_->prop('type') eq 'tunnel') {
+            $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-state /var/spool/openvpn/n2n-$name`);
+        } else {
+            next;
+        }
+        push(@{$tunnels->{'interfaces'}}, "tun$name");
+        $tunnels->{'connected'}++ if (scalar(keys %$statistics) > 0);
+        $tunnels->{'total'}++;
+    }
+
+    $ret->{'openvpn'}{'roadwarrior'} = $rw;
+    $ret->{'openvpn'}{'tunnels'} = $tunnels;
+
+} elsif ($cmd eq 'chart') {
+
+    my $interface = $input->{'name'};
+
+    my $txt = read_netdata("/api/v1/data?chart=net.$interface&format=csv&before=0&after=-300&options=abs,seconds");
+    if ($txt && index($txt, "Chart is not found") < 0) {
+        my @lines = split("\n",$txt);
+        $ret->{'labels'} = ['time', 'received', 'sent'];
+        $ret->{'data'} = [];
+        shift @lines; # remove header
+        foreach my $line (@lines) {
+            my @values = split(",",$line);
+            my @tmp = map(int, @values);
+            push($ret->{'data'}, \@tmp);
+        }
+    }
+
 
 } else {
     error();
 }
+
+print encode_json($ret);
