@@ -23,7 +23,7 @@
 <template>
   <div>
     <h2>{{$t('logs.title')}}</h2>
-    <form class="form-horizontal">
+    <form v-show="view.logsLoaded" class="form-horizontal">
       <div class="form-group">
         <div class="col-xs-12 col-sm-3 col-md-2">
           <select
@@ -32,8 +32,7 @@
             v-model="view.path"
             v-on:change="handleLogs()"
           >
-            <option selected>/var/log/openvpn/openvpn.log</option>
-            <option>/var/log/openvpn/openvpn.log</option>
+            <option v-for="(l,lk) in logsFiles" :key="lk">{{l}}</option>
           </select>
         </div>
         <div class="col-xs-12 col-sm-6 col-md-8">
@@ -44,7 +43,7 @@
         </div>
       </div>
     </form>
-    <form role="form" class="search-pf has-button form-horizontal">
+    <form v-show="view.logsLoaded" role="form" class="search-pf has-button form-horizontal">
       <div class="form-group has-clear">
         <div class="search-pf-input-group">
           <label for="search1" class="sr-only">Search</label>
@@ -77,7 +76,6 @@ export default {
   name: "Logs",
   mounted() {
     var context = this;
-    window.jQuery("#selectLogPath").selectpicker();
     (function($) {
       $(document).ready(function() {
         // Hide the clear button if the search input is empty
@@ -106,19 +104,20 @@ export default {
         });
       });
     })(window.jQuery);
-    this.getLogs();
+    this.getLogsFile();
   },
   data() {
     return {
       view: {
-        path: "/var/log/openvpn/openvpn.log",
+        path: "",
         logsLoaded: false,
         logsContent: "",
         follow: false,
         filter: "",
         lines: 5000,
         process: null
-      }
+      },
+      logsFiles: []
     };
   },
   beforeRouteLeave(to, from, next) {
@@ -135,6 +134,32 @@ export default {
       this.view.logsContent = "";
       this.$forceUpdate();
       this.getLogs();
+    },
+    getLogsFile() {
+      var context = this;
+
+      context.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-vpn/logs/read"],
+        null,
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          context.logsFiles = success.logs;
+          context.getLogs();
+
+          setTimeout(function() {
+            window.jQuery("#selectLogPath").selectpicker();
+          }, 250);
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
     },
     getLogs() {
       var context = this;
