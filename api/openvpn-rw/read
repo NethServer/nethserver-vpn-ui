@@ -93,7 +93,9 @@ if ($cmd eq 'users') {
         $props{'Port'} = $props{'TCPPort'};
         delete($props{'TCPPort'});
     }
-    $props{'Remote'} = [split(",",$props{'Remote'})];
+    foreach (qw(Remote CustomRoutes)) {
+       $props{$_} = [split(",",$props{$_})];
+    }
     $props{'AccountProvider'} = ($db->get_prop('sssd', 'Provider') ne '') ? JSON::true : JSON::false;
     $ret->{'configuration'} = \%props;
 

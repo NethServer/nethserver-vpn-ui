@@ -121,6 +121,16 @@ if ($data['action'] == 'create-account') {
         }
     }
 
+    if (isset($data['CustomRoutes'])) {
+        $v_cidr = $v->createValidator(Validate::CIDR_BLOCK);
+        foreach ($data['CustomRoutes'] as $cidr) {
+            if ( ! $v_cidr->evaluate($cidr) ) {
+                $v->addValidationError("CustomRoutes", 'invalid_network');
+            }
+        }
+
+    }
+
     // check the "network" parameter is consistent with its "Mask" (only 0-bits in tail)
     $net = long2ip(ip2long($data['Network']) & ip2long($data['Netmask']));
     if ($net != $data['Network']) {

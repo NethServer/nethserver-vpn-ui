@@ -54,7 +54,7 @@ if ($cmd eq 'update-account') {
                 $db->set_prop('openvpn@host-to-net', 'UDPPort', '');
             }
         }
-        if ($_ eq 'Remote') {
+        if ($_ eq 'Remote' || $_ eq 'CustomRoutes') {
             $db->set_prop('openvpn@host-to-net', $_, join(",",@{$input->{$_}}));
         } else {
             $db->set_prop('openvpn@host-to-net', $_, $input->{$_});
