@@ -58,6 +58,7 @@ if ($cmd eq 'users') {
         $short =~ s/(@.*)$//;
         push(@tmp, {'name' =>  $_, 'shortname' => $short, 'gecos' => $users->{$_}{'gecos'}});
     }
+    @tmp = sort { $a->{'shortname'} cmp $b->{'shortname'} } @tmp;
     $ret->{'users'} = \@tmp;;
 
 } elsif ($cmd eq 'interfaces') {
