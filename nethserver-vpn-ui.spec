@@ -9,7 +9,7 @@ Source1: %{name}-cockpit.tar.gz
 
 BuildArch: noarch
 
-Requires: nethserver-firewall-base, nethserver-pulledpork
+Requires: nethserver-firewall-base
 
 BuildRequires: nethserver-devtools
 
