@@ -127,7 +127,7 @@
                   </div>
                   <div v-if="r.statistics" class="list-view-pf-additional-info-item">
                     <span class="fa fa-clock-o"></span>
-                    {{r.statistics.started | secondsInHour}} {{$t('ipsec.started')}}
+                    {{r.statistics.started | dateFormat}} {{$t('ipsec.started')}}
                   </div>
                 </div>
               </div>
@@ -543,6 +543,10 @@
 <script>
 export default {
   name: "IPSec",
+  beforeRouteLeave(to, from, next) {
+    $(".modal").modal("hide");
+    next();
+  },
   mounted() {
     this.getTunnels();
     this.getInterfaces();

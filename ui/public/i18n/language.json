@@ -44,7 +44,7 @@
     "openvpn_rw_status": "Status",
     "openvpn_tun_interfaces": "OpenVPN tunnels interfaces",
     "openvpn_rw_interfaces": "OpenVPN roadwarrior interfaces",
-    "connections": "Connections"
+    "bytes": "Bytes"
   },
   "ipsec": {
     "title": "IPSec",
@@ -246,7 +246,14 @@
     "real_address": "Real address",
     "virtual_address": "Virtual address",
     "state": "State",
-    "kill": "Disconnect"
+    "kill": "Disconnect",
+    "custom_routes": "Custom routes",
+    "send_email_configuration": "Send configuration via email",
+    "address": "Email address",
+    "email_sent_ok": "Email sent successfully!",
+    "email_sent_error": "Email not sent.",
+    "send": "Send",
+    "send_with_email": "Send with email"
   },
   "logs": {
     "title": "Logs",
@@ -258,6 +265,9 @@
     "title": "About",
     "website": "Web site",
     "bug_tracker": "Bug tracker"
+  },
+  "validation": {
+    "validation_failed": "Validation failed"
   },
   "docs": {
     "more_info_about": "More info about {docsLink}."

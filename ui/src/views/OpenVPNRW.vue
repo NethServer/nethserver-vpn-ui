@@ -96,16 +96,27 @@
         :ofText="tableLangsTexts.ofText"
       >
         <template slot="table-row" slot-scope="props">
-
           <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
-            <a :class="props.row.status == 'disabled' ? 'gray': ''" @click="openEditAccount(props.row)">
+            <a
+              :class="props.row.status == 'disabled' ? 'gray': ''"
+              @click="openEditAccount(props.row)"
+            >
               <strong>{{ props.row.ShortName}}</strong>
             </a>
           </td>
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"><span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span> <span class="span-left-margin">{{$t("openvpn_rw."+props.row.Mode+'_mode') }}</span></td>
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{props.row.Expiration ?  (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.CertificateStatus+'_status') + ")") : "-" }}</td>
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</td>
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+            <span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span>
+            <span class="span-left-margin">{{$t("openvpn_rw."+props.row.Mode+'_mode') }}</span>
+          </td>
+          <td
+            :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"
+          >{{props.row.Expiration ? (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.CertificateStatus+'_status') + ")") : "-" }}</td>
+          <td
+            :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"
+          >{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</td>
+          <td
+            :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"
+          >{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
           <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <div
               v-if="props.row.statistics"
@@ -115,23 +126,23 @@
               :title="showStatistics(props.row.statistics)"
               class="handle-overflow"
             >
-            <span class="fa fa-check green"></span>
-            {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
-          </div>
-          <div v-else>
+              <span class="fa fa-check green"></span>
+              {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
+            </div>
+            <div v-else>
               <span class="fa fa-times grey"></span>
-             {{$t('openvpn_rw.not_connected')}}
-          </div>
-        </span>
+              {{$t('openvpn_rw.not_connected')}}
+            </div>
           </td>
-
 
           <td>
             <button
               @click="props.row.status == 'disabled' ? toggleStatusAccount(props.row) : openEditAccount(props.row)"
               :class="['btn btn-default', props.row.status == 'disabled' ? 'btn-primary' : '']"
             >
-              <span :class="['fa', props.row.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"></span>
+              <span
+                :class="['fa', props.row.status == 'disabled' ? 'fa-check' : 'fa-pencil', 'span-right-margin']"
+              ></span>
               {{props.row.status == 'disabled' ? $t('enable') : $t('edit')}}
             </button>
             <div class="dropup pull-right dropdown-kebab-pf">
@@ -156,6 +167,12 @@
                   <a @click="openDownloadAccount(props.row)">
                     <span class="fa fa-arrow-down span-right-margin"></span>
                     {{$t('download')}}
+                  </a>
+                </li>
+                <li>
+                  <a @click="openSendEmailAccount(props.row)">
+                    <span class="fa fa-envelope span-right-margin"></span>
+                    {{$t('openvpn_rw.send_with_email')}}
                   </a>
                 </li>
                 <li>
@@ -328,7 +345,11 @@
                 >{{$t('advanced_mode')}}</a>
               </legend>
 
-              <legend v-show="newConfiguration.advanced" class="fields-section-header-pf" aria-expanded="true">
+              <legend
+                v-show="newConfiguration.advanced"
+                class="fields-section-header-pf"
+                aria-expanded="true"
+              >
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.connection_params')}}</span>
               </legend>
               <div
@@ -390,7 +411,11 @@
                 </div>
               </div>
 
-              <legend v-show="newConfiguration.advanced" class="fields-section-header-pf" aria-expanded="true">
+              <legend
+                v-show="newConfiguration.advanced"
+                class="fields-section-header-pf"
+                aria-expanded="true"
+              >
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.security_params')}}</span>
               </legend>
 
@@ -482,7 +507,11 @@
                 </div>
               </div>
 
-              <legend v-show="newConfiguration.advanced" class="fields-section-header-pf" aria-expanded="true">
+              <legend
+                v-show="newConfiguration.advanced"
+                class="fields-section-header-pf"
+                aria-expanded="true"
+              >
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.routes_params')}}</span>
               </legend>
 
@@ -519,7 +548,13 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.route_traffic_to_vpn')}}</label>
                 <div class="col-sm-7">
-                  <input type="checkbox" v-model="newConfiguration.RouteToVPN" true-value="enabled" false-value="disabled" class="form-control">
+                  <input
+                    type="checkbox"
+                    v-model="newConfiguration.RouteToVPN"
+                    true-value="enabled"
+                    false-value="disabled"
+                    class="form-control"
+                  >
                   <span
                     v-if="newConfiguration.errors.RouteToVPN.hasError"
                     class="help-block"
@@ -527,7 +562,33 @@
                 </div>
               </div>
 
-              <legend v-show="newConfiguration.advanced" class="fields-section-header-pf" aria-expanded="true">
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.CustomRoutes.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.custom_routes')}}</label>
+                <div class="col-sm-7">
+                  <textarea
+                    required
+                    type="text"
+                    v-model="newConfiguration.CustomRoutes"
+                    class="form-control min-textarea-height"
+                  ></textarea>
+                  <span
+                    v-if="newConfiguration.errors.CustomRoutes.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.CustomRoutes.message)}}</span>
+                </div>
+              </div>
+
+              <legend
+                v-show="newConfiguration.advanced"
+                class="fields-section-header-pf"
+                aria-expanded="true"
+              >
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.extra_params')}}</span>
               </legend>
 
@@ -624,12 +685,15 @@
           </div>
           <form class="form-horizontal" v-on:submit.prevent="saveAccount(currentAccount)">
             <div class="modal-body">
-              <div :class="['form-group', currentAccount.errors.Mode.hasError ? 'has-error' : '']" v-if="!currentAccount.isEdit && configuration.AccountProvider">
+              <div
+                :class="['form-group', currentAccount.errors.Mode.hasError ? 'has-error' : '']"
+                v-if="!currentAccount.isEdit && configuration.AccountProvider"
+              >
                 <label
                   class="col-sm-3 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.mode')}}</label>
-                <div class="col-sm-9" >
+                <div class="col-sm-9">
                   <select v-model="currentAccount.Mode" class="form-control">
                     <option value="vpn">{{$t('openvpn_rw.vpn_only')}}</option>
                     <option value="system">{{$t('openvpn_rw.system_user')}}</option>
@@ -668,7 +732,11 @@
                 >{{$t('openvpn_rw.user')}}</label>
                 <div class="col-sm-7">
                   <select required v-model="currentAccount.name" class="form-control">
-                    <option v-for="(u,uk) in users" :key="uk" :value="u.name">{{u.shortname}} ({{u.gecos}})</option>
+                    <option
+                      v-for="(u,uk) in users"
+                      :key="uk"
+                      :value="u.name"
+                    >{{u.shortname}} ({{u.gecos}})</option>
                   </select>
                   <span
                     v-if="currentAccount.errors.name.hasError"
@@ -677,7 +745,11 @@
                 </div>
               </div>
 
-              <legend class="fields-section-header-pf" aria-expanded="true" v-if="!currentAccount.isEdit">
+              <legend
+                class="fields-section-header-pf"
+                aria-expanded="true"
+                v-if="!currentAccount.isEdit"
+              >
                 <span
                   :class="['fa fa-angle-right field-section-toggle-pf', currentAccount.advanced ? 'fa-angle-down' : '']"
                 ></span>
@@ -687,7 +759,11 @@
                 >{{$t('advanced_mode')}}</a>
               </legend>
 
-              <legend v-if="currentAccount.advanced" class="fields-section-header-pf" aria-expanded="true">
+              <legend
+                v-if="currentAccount.advanced"
+                class="fields-section-header-pf"
+                aria-expanded="true"
+              >
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.dhcp_params')}}</span>
               </legend>
               <div
@@ -699,11 +775,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.reserved_ip')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="text"
-                    v-model="currentAccount.OpenVpnIp"
-                    class="form-control"
-                  >
+                  <input type="text" v-model="currentAccount.OpenVpnIp" class="form-control">
                   <span
                     v-if="currentAccount.errors.OpenVpnIp.hasError"
                     class="help-block"
@@ -711,7 +783,11 @@
                 </div>
               </div>
 
-              <legend v-if="currentAccount.advanced" class="fields-section-header-pf" aria-expanded="true">
+              <legend
+                v-if="currentAccount.advanced"
+                class="fields-section-header-pf"
+                aria-expanded="true"
+              >
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.remote_network')}}</span>
               </legend>
               <div
@@ -723,11 +799,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.vpn_remote_network')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="text"
-                    v-model="currentAccount.VPNRemoteNetwork"
-                    class="form-control"
-                  >
+                  <input type="text" v-model="currentAccount.VPNRemoteNetwork" class="form-control">
                   <span
                     v-if="currentAccount.errors.VPNRemoteNetwork.hasError"
                     class="help-block"
@@ -743,11 +815,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.vpn_remote_netmask')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="text"
-                    v-model="currentAccount.VPNRemoteNetmask"
-                    class="form-control"
-                  >
+                  <input type="text" v-model="currentAccount.VPNRemoteNetmask" class="form-control">
                   <span
                     v-if="currentAccount.errors.VPNRemoteNetmask.hasError"
                     class="help-block"
@@ -791,13 +859,7 @@
       </div>
     </div>
 
-    <div
-      class="modal"
-      id="downloadAccountModal"
-      tabindex="-1"
-      role="dialog"
-      data-backdrop="static"
-    >
+    <div class="modal" id="downloadAccountModal" tabindex="-1" role="dialog" data-backdrop="static">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
@@ -821,7 +883,10 @@
                 </div>
               </div>
 
-              <div class="form-group" v-show="configuration.AuthMode == 'certificate' || configuration.AuthMode == 'certificate-password'">
+              <div
+                class="form-group"
+                v-show="configuration.AuthMode == 'certificate' || configuration.AuthMode == 'certificate-password'"
+              >
                 <label
                   class="col-sm-7 control-label"
                   for="textInput-modal-markup"
@@ -835,14 +900,18 @@
                 </div>
               </div>
 
-              <div class="form-group" v-show="configuration.AuthMode == 'certificate' || configuration.AuthMode == 'certificate-password'">
+              <div
+                class="form-group"
+                v-show="configuration.AuthMode == 'certificate' || configuration.AuthMode == 'certificate-password'"
+              >
                 <label
                   class="col-sm-7 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.pkcs12_download')}}</label>
-                <span
-                  class="col-sm-7 control-label"
-                >{{$t('openvpn_rw.pkcs12_password')}}: <tt>{{toDownloadAccount.name}}</tt></span>
+                <span class="col-sm-7 control-label">
+                  {{$t('openvpn_rw.pkcs12_password')}}:
+                  <tt>{{toDownloadAccount.name}}</tt>
+                </span>
                 <div class="col-sm-5 control-div" for="textInput-modal-markup">
                   <button
                     @click="downloadAccount(toDownloadAccount.name, 'pkcs12')"
@@ -859,6 +928,39 @@
         </div>
       </div>
     </div>
+
+    <div
+      class="modal"
+      id="sendEmailAccountModal"
+      tabindex="-1"
+      role="dialog"
+      data-backdrop="static"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('openvpn_rw.send_email_configuration')}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="sendEmailAccount()">
+            <div class="modal-body">
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.address')}}</label>
+                <div class="col-sm-9 control-div" for="textInput-modal-markup">
+                  <input class="form-control" type="email" v-model="toSendEmailAccount.address">
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-primary" type="submit">{{$t('openvpn_rw.send')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- END MODALS -->
   </div>
 </template>
@@ -866,9 +968,12 @@
 <script>
 export default {
   name: "OpenVPNRW",
+  beforeRouteLeave(to, from, next) {
+    $(".modal").modal("hide");
+    next();
+  },
   mounted() {
     this.getConfiguration();
-    this.getAccounts();
     this.getInterfaces();
     this.getUsers();
     this.getCustoms();
@@ -896,7 +1001,10 @@ export default {
       ciphers: [],
       digests: [],
       toDownloadAccount: {
-        name: "",
+        name: ""
+      },
+      toSendEmailAccount: {
+        address: ""
       },
       accountsColumns: [
         {
@@ -1095,6 +1203,10 @@ export default {
         TlsVersionMin: {
           hasError: false,
           message: ""
+        },
+        CustomRoutes: {
+          hasError: false,
+          message: ""
         }
       };
     },
@@ -1115,7 +1227,14 @@ export default {
             console.error(e);
           }
           context.configuration = success.configuration;
-          context.configuration.Remote = context.configuration.Remote.join("\n");
+          context.configuration.Remote = context.configuration.Remote.join(
+            "\n"
+          );
+          context.configuration.CustomRoutes = context.configuration.CustomRoutes.join(
+            "\n"
+          );
+
+          context.getAccounts();
         },
         function(error) {
           console.error(error);
@@ -1147,6 +1266,8 @@ export default {
         },
         function(error) {
           console.error(error);
+          context.view.isLoaded = true;
+          context.accounts = [];
         }
       );
     },
@@ -1246,8 +1367,8 @@ export default {
       this.$forceUpdate();
     },
     toggleAdvancedAccount() {
-      if (currentAccount.isEdit) {
-        this.currentAccount.advanced = true
+      if (this.currentAccount.isEdit) {
+        this.currentAccount.advanced = true;
       } else {
         this.currentAccount.advanced = !this.currentAccount.advanced;
       }
@@ -1301,8 +1422,8 @@ export default {
     },
     resetConfiguration(isEdit) {
       if (this.configuration) {
-        this.newConfiguration = this.configuration
-        this.newConfiguration.errors = this.initConfigurationErrors()
+        this.newConfiguration = this.configuration;
+        this.newConfiguration.errors = this.initConfigurationErrors();
       }
     },
     saveConfiguration() {
@@ -1311,7 +1432,7 @@ export default {
       var configObj = {
         status: this.newConfiguration.status,
         PushDomain: this.newConfiguration.PushDomain,
-        PushExtraRoutes : this.newConfiguration.PushExtraRoutes,
+        PushExtraRoutes: this.newConfiguration.PushExtraRoutes,
         PushDns: this.newConfiguration.PushDns,
         PushWins: this.newConfiguration.PushWins,
         Digest: this.newConfiguration.Digest,
@@ -1331,6 +1452,7 @@ export default {
         ClientToClient: this.newConfiguration.ClientToClient,
         BridgeEndIP: this.newConfiguration.BridgeEndIP,
         Protocol: this.newConfiguration.Protocol,
+        CustomRoutes: this.newConfiguration.CustomRoutes.split("\n"),
         action: "configuration"
       };
 
@@ -1591,15 +1713,76 @@ export default {
         }
       );
     },
+    openSendEmailAccount(account) {
+      this.toSendEmailAccount = JSON.parse(JSON.stringify(account));
+      this.toSendEmailAccount.address =
+        account.Mode == "system" ? account.name : "";
+      $("#sendEmailAccountModal").modal("show");
+    },
+    sendEmailAccount() {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "openvpn_rw.email_sent_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "openvpn_rw.email_sent_error"
+      );
+
+      // send email action
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/read"],
+        {
+          action: "mail",
+          name: this.toSendEmailAccount.name,
+          address: this.toSendEmailAccount.address
+        },
+        function(stream) {
+          console.log("send with mail", stream);
+        },
+        function(success) {
+          $("#sendEmailAccountModal").modal("hide");
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
     showStatistics(stats) {
       var html = "";
 
       html += "<dl>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.since")+"</dt><dd>"+stats.since+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.virtual_address")+"</dt><dd>"+stats.virtual_address+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.real_address")+"</dt><dd>"+stats.real_address+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_sent")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_sent)+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_received")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_received)+"</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.since") +
+        "</dt><dd>" +
+        stats.since +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.virtual_address") +
+        "</dt><dd>" +
+        stats.virtual_address +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.real_address") +
+        "</dt><dd>" +
+        stats.real_address +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.bytes_sent") +
+        "</dt><dd>" +
+        this.$options.filters.byteFormat(stats.bytes_sent) +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.bytes_received") +
+        "</dt><dd>" +
+        this.$options.filters.byteFormat(stats.bytes_received) +
+        "</dd>";
       html += "</dl>";
 
       return html;

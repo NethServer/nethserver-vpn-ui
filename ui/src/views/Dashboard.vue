@@ -278,8 +278,8 @@ export default {
                 strokeWidth: 1,
                 strokeBorderWidth: 1,
                 ylabel:
-                  (context.$i18n && context.$i18n.t("dashboard.connections")) ||
-                  "Connections",
+                  (context.$i18n && context.$i18n.t("dashboard.bytes")) ||
+                  "Bytes",
                 axisLineColor: "white",
                 labelsDiv: document.getElementById(
                   "ovpn-" + type + "-legend-" + chartName
@@ -289,7 +289,7 @@ export default {
                 axes: {
                   y: {
                     axisLabelFormatter: function(y) {
-                      return Math.ceil(y);
+                      return context.$options.filters.byteFormat(y);
                     }
                   }
                 }
@@ -305,7 +305,7 @@ export default {
             if (!context.charts[chartName].pollingId) {
               context.charts[chartName].pollingId = setInterval(function() {
                 context.updateCharts(chartName, type);
-              }, 1000);
+              }, 5000);
             }
             context.$forceUpdate();
           } else {

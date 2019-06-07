@@ -109,17 +109,28 @@
                   :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
                 >{{ props.row.Network}}</td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
-                  <div class="mg-top-view" v-for="(i,ik) in props.row.LocalNetworks" :key="ik">{{i}}</div>
+                  <div
+                    v-show="props.row.LocalNetworks.length > 1"
+                    class="mg-top-view"
+                    v-for="(i,ik) in props.row.LocalNetworks"
+                    :key="ik"
+                  >{{i}}</div>
+                  <span v-if="props.row.LocalNetworks.length == 1">{{props.row.LocalNetworks[0]}}</span>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
+                    v-show="props.row.RemoteNetworks.length > 1"
                     class="mg-top-view"
                     v-for="(i,ik) in props.row.RemoteNetworks"
                     :key="ik"
                   >{{i}}</div>
+                  <span v-if="props.row.RemoteNetworks.length == 1">{{props.row.RemoteNetworks[0]}}</span>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
-                  <span class="right-20"><span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span> {{$t('openvpn_tun.running')}}</span>
+                  <span class="right-20">
+                    <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span>
+                    {{$t('openvpn_tun.running')}}
+                  </span>
                   <span
                     v-if="props.row.statistics"
                     data-toggle="tooltip"
@@ -128,13 +139,13 @@
                     :title="showServerStatistics(props.row.statistics)"
                     class="handle-overflow"
                   >
-                  <span class="fa fa-check green"></span>
+                    <span class="fa fa-check green"></span>
                     {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
                   </span>
                   <span v-else>
                     <span class="fa fa-times grey"></span>
-                   {{$t('openvpn_rw.not_connected')}}
-                 </span>
+                    {{$t('openvpn_rw.not_connected')}}
+                  </span>
                 </td>
                 <td>
                   <button
@@ -287,7 +298,10 @@
                   <div class="mg-top-view" v-for="(i,ik) in props.row.RemoteHost" :key="ik">{{i}}</div>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
-                  <span class="right-20"><span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span> {{$t('openvpn_tun.running')}}</span>
+                  <span class="right-20">
+                    <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span>
+                    {{$t('openvpn_tun.running')}}
+                  </span>
                   <span
                     v-if="props.row.statistics && props.row.statistics.state == 'connected'"
                     data-toggle="tooltip"
@@ -296,13 +310,13 @@
                     :title="showClientStatistics(props.row.statistics)"
                     class="handle-overflow"
                   >
-                  <span class="fa fa-check green"></span>
+                    <span class="fa fa-check green"></span>
                     {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
                   </span>
                   <span v-else>
                     <span class="fa fa-times grey"></span>
-                   {{$t('openvpn_rw.not_connected')}}
-                 </span>
+                    {{$t('openvpn_rw.not_connected')}}
+                  </span>
                 </td>
                 <td>
                   <button
@@ -1343,6 +1357,10 @@
 <script>
 export default {
   name: "OpenVPNTun",
+  beforeRouteLeave(to, from, next) {
+    $(".modal").modal("hide");
+    next();
+  },
   mounted() {
     this.getTunnels();
     this.getInterfaces();
@@ -2430,11 +2448,36 @@ export default {
       var html = "";
 
       html += "<dl>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.since")+"</dt><dd>"+stats.since+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.virtual_address")+"</dt><dd>"+stats.virtual_address+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.real_address")+"</dt><dd>"+stats.real_address+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_sent")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_sent)+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.bytes_received")+"</dt><dd>"+this.$options.filters.byteFormat(stats.bytes_received)+"</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.since") +
+        "</dt><dd>" +
+        stats.since +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.virtual_address") +
+        "</dt><dd>" +
+        stats.virtual_address +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.real_address") +
+        "</dt><dd>" +
+        stats.real_address +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.bytes_sent") +
+        "</dt><dd>" +
+        this.$options.filters.byteFormat(stats.bytes_sent) +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.bytes_received") +
+        "</dt><dd>" +
+        this.$options.filters.byteFormat(stats.bytes_received) +
+        "</dd>";
       html += "</dl>";
 
       return html;
@@ -2443,9 +2486,24 @@ export default {
       var html = "";
 
       html += "<dl>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.since")+"</dt><dd>"+this.$options.filters.dateFormat(stats.since*1000)+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_rw.virtual_address")+"</dt><dd>"+stats.virtual_address+"</dd>";
-      html += "<dt>"+this.$i18n.t("openvpn_tun.remote_server")+"</dt><dd>"+stats.remote_server+"</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.since") +
+        "</dt><dd>" +
+        this.$options.filters.dateFormat(stats.since * 1000) +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_rw.virtual_address") +
+        "</dt><dd>" +
+        stats.virtual_address +
+        "</dd>";
+      html +=
+        "<dt>" +
+        this.$i18n.t("openvpn_tun.remote_server") +
+        "</dt><dd>" +
+        stats.remote_server +
+        "</dd>";
       html += "</dl>";
 
       return html;
