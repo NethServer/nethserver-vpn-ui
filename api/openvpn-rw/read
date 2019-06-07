@@ -28,6 +28,8 @@ use NetAddr::IP;
 use JSON;
 use File::Temp qw/tempfile/;
 use MIME::Base64;
+use MIME::Lite;
+use Net::Domain qw(domainname hostfqdn);
 
 require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
 
@@ -137,6 +139,69 @@ if ($cmd eq 'users') {
         error();
     }
 
+} elsif ($cmd eq 'mail') {
+
+    my $db = esmith::ConfigDB->open_ro();
+    my $sender = $db->get_prop('root','SenderAddress') || 'no-reply@'.domainname();
+    my $remote = $db->get_prop('openvpn@host-to-net', 'Remote') || '';
+    my $name = $input->{'name'};
+    # use first remote entry or the fqdn
+    if ($remote) {
+        $remote =~ s/,(.*)$//;
+    } else {
+        $remote = hostfqdn();
+    }
+
+
+    my $text = "Hello $name,\nthis email contains the configuration file for your OpenVPN connection.
+First, you have to install the OpenVPN desktop client or mobile app. You can find the download links at the end this message.
+Please read the instructions for your specific device.
+
+**Microsoft systems (OpenVPN client)**
+Save the attached file and copy it to the configuration folder.
+You can fin the configuration folder from the menu 'Start' -> 'OpenVPN' -> 'OpenVPN Configuration file directory'.
+Click on the icon with the 2 screens at the bottom right to start the connection.
+
+**macOS systems (Tunnelblick client)**
+Save the attached file, double-click and add it to your Tunnelblick profiles.
+
+**Android and iOS (OpenVPN Connect)**
+Click on the attachment, the system will activate the app automatically and will ask you to import the file.
+
+Downloads
+Windows: https://openvpn.net/community-downloads
+macOS: https://tunnelblick.net/
+Android: https://play.google.com/store/apps/details?id=net.openvpn.openvpn
+iOS: https://itunes.apple.com/it/app/openvpn-connect/id590379981
+";
+
+
+    my $msg = MIME::Lite->new(
+        From    => $sender,
+        To      => $input->{'address'},
+        Subject => "Yuor VPN access file for $remote",
+        Type    => 'multipart/mixed'
+    );
+    $msg->attr('content-type.charset' => 'UTF8');
+
+    $msg->attach(
+        Type     => 'TEXT',
+        Data     => $text
+    );
+
+    # configuration file
+    $msg->attach(
+        Type     => 'application/x-openvpn-profile',
+        Data     => [`/usr/libexec/nethserver/openvpn-local-client '$name'`],
+        Filename => "$name.ovpn",
+        Disposition => 'attachment'
+    );
+
+    if ($msg->send()) {
+        success();
+    } else {
+        error();
+    }
 } else {
     error();
 }
