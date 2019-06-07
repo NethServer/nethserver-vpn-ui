@@ -98,11 +98,11 @@ export default {
   name: "App",
   watch: {
     $route: function(val) {
-      localStorage.setItem("path", val.path);
+      localStorage.setItem("vpn-path", val.path);
     }
   },
   mounted() {
-    var path = localStorage.getItem("path") || "/";
+    var path = localStorage.getItem("vpn-path") || "/";
     this.$router.push(path);
   },
   methods: {
