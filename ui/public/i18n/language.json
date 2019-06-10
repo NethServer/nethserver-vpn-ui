@@ -284,6 +284,6 @@
   },
   "docs": {
     "more_info_about": "More info about {docsLink}.",
-    "right": "right label here"
+    "right": "Specify the statuc public IP adress or %any if the remote has a dynamic public IP."
   }
 }
