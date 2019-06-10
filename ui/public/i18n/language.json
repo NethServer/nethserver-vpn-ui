@@ -270,7 +270,17 @@
     "bug_tracker": "Bug tracker"
   },
   "validation": {
-    "validation_failed": "Validation failed"
+    "validation_failed": "Validation failed",
+    "account_already_exists": "An account with the same name already exists",
+    "account_not_found": "Account not found",
+    "invalid_host_address": "Invalid host address: use a FQDN or an IP address",
+    "invalid_network": "Invalid network address",
+    "netmask_lower_than_29": "Netmask must be 255.255.255.248 (/29) or lower",
+    "used_network": "Network already in use",
+    "valid_ipV4Address": "Invalid IPv4 address: it should be something like '10.0.0.1'",
+    "valid_ipV4Netmask": "Invalid IPv4 network mask: it should be something like '255.255.255.0'",
+    "valid_lessThan_65536": "A valid TCP/UDP port is a number between 1 and 65536",
+    "valid_hostname_fqdn_1_9223372036854775807": "Must contain at least two dots, like 'myhost.example.com'"
   },
   "docs": {
     "more_info_about": "More info about {docsLink}.",
