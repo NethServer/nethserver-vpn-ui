@@ -156,13 +156,6 @@
                 <span class="fa fa-ellipsis-v"></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-right">
-                <li v-if="props.row.statistics">
-                  <a @click="killAccount(props.row.name)">
-                    <span class="fa fa-times-circle span-right-margin"></span>
-                    {{$t('openvpn_rw.kill')}}
-                  </a>
-                </li>
-                <li v-if="props.row.statistics" role="presentation" class="divider"></li>
                 <li>
                   <a @click="openDownloadAccount(props.row)">
                     <span class="fa fa-arrow-down span-right-margin"></span>
@@ -184,6 +177,12 @@
                   </a>
                 </li>
                 <li role="presentation" class="divider"></li>
+                <li v-if="props.row.statistics">
+                  <a @click="openKillAccount(props.row)">
+                    <span class="fa fa-times-circle span-right-margin"></span>
+                    {{$t('openvpn_rw.kill')}}
+                  </a>
+                </li>
                 <li>
                   <a @click="openDeleteAccount(props.row)">
                     <span class="fa fa-times span-right-margin"></span>
@@ -858,6 +857,29 @@
         </div>
       </div>
     </div>
+    <div class="modal" id="killAccountModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('openvpn_rw.kill_account')}} {{toKillAccount.name}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="killAccount(toKillAccount)">
+            <div class="modal-body">
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('are_you_sure')}}?</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-danger" type="submit">{{$t('openvpn_rw.kill')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <div class="modal" id="downloadAccountModal" tabindex="-1" role="dialog" data-backdrop="static">
       <div class="modal-dialog">
@@ -1063,7 +1085,8 @@ export default {
       ],
       tableLangsTexts: this.tableLangs(),
       currentAccount: this.initAccount(),
-      toDeleteAccount: {}
+      toDeleteAccount: {},
+      toKillAccount: {}
     };
   },
   methods: {
@@ -1644,6 +1667,40 @@ export default {
         }
       );
     },
+    openKillAccount(account) {
+      this.toKillAccount = JSON.parse(JSON.stringify(account));
+      $("#killAccountModal").modal("show");
+    },
+    killAccount(account) {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "openvpn_rw.account_killed_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "openvpn_rw.account_killed_error"
+      );
+
+      $("#killAccountModal").modal("hide");
+      nethserver.exec(
+        ["nethserver-vpn/openvpn-rw/update"],
+        {
+          action: "kill",
+          name: account.name
+        },
+        function(stream) {
+          console.info("account-kill", stream);
+        },
+        function(success) {
+          // get all
+          context.getAccounts();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
     toggleStatusAccount(account) {
       var context = this;
       // notification
@@ -1786,28 +1843,6 @@ export default {
       html += "</dl>";
 
       return html;
-    },
-    killAccount(name) {
-      var context = this;
-
-      // kill actions
-      nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/update"],
-        {
-          action: "kill",
-          name: name
-        },
-        function(stream) {
-          console.info("update-kill", stream);
-        },
-        function(success) {
-          // get all
-          context.getAccounts();
-        },
-        function(error, data) {
-          console.error(error, data);
-        }
-      );
     }
   }
 };
