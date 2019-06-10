@@ -154,7 +154,13 @@
                   for="textInput-modal-markup"
                 >{{$t('ipsec.name')}}</label>
                 <div class="col-sm-9">
-                  <input :disabled="currentTunnel.isEdit" required type="text" v-model="currentTunnel.name" class="form-control">
+                  <input
+                    :disabled="currentTunnel.isEdit"
+                    required
+                    type="text"
+                    v-model="currentTunnel.name"
+                    class="form-control"
+                  >
                   <span
                     v-if="currentTunnel.errors.name.hasError"
                     class="help-block"
@@ -186,10 +192,15 @@
                     class="help-block"
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnel.errors.left.message)}}</span>
                 </div>
-                <label
-                  class="col-sm-2 control-label"
-                  for="textInput-modal-markup"
-                >{{$t('ipsec.right')}}</label>
+                <label class="col-sm-2 control-label" for="textInput-modal-markup">
+                  {{$t('ipsec.right')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('ipsec.right')"
+                    :chapter="'right'"
+                    :inline="true"
+                  ></doc-info>
+                </label>
                 <div class="col-sm-4">
                   <input required type="text" v-model="currentTunnel.right" class="form-control">
                   <span

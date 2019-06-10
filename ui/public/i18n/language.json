@@ -270,6 +270,7 @@
     "validation_failed": "Validation failed"
   },
   "docs": {
-    "more_info_about": "More info about {docsLink}."
+    "more_info_about": "More info about {docsLink}.",
+    "right": "right label here"
   }
 }
