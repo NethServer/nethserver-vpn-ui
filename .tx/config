@@ -1,19 +1,7 @@
 [main]
 host = https://www.transifex.com
 
-[nethserver.nethserver-suricatapot]
-source_file = locale/nethserver-suricata.pot
-source_lang = en
-type = PO
-
-
-[nethserver.IPS]
-source_file = root/usr/share/nethesis/NethServer/Language/en/NethServer_Module_IPS.php
-source_lang = en
-type = PHP_ALT_ARRAY
-
-[nethserver.CockpitSuricata]
+[nethserver.CockpitVpn]
 source_file = ui/public/i18n/language.json
 source_lang = en
 type = KEYVALUEJSON
-
