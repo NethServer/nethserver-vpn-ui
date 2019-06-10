@@ -361,7 +361,6 @@
                 >{{$t('openvpn_rw.remote_host_ip_name')}}</label>
                 <div class="col-sm-7">
                   <textarea
-                    required
                     type="text"
                     v-model="newConfiguration.Remote"
                     class="form-control min-textarea-height"
@@ -1466,7 +1465,10 @@ export default {
         Port: this.newConfiguration.Port,
         PushNbdd: this.newConfiguration.PushNbdd,
         RouteToVPN: this.newConfiguration.RouteToVPN,
-        Remote: this.newConfiguration.Remote.split("\n"),
+        Remote:
+          this.newConfiguration.Remote.length > 0
+            ? this.newConfiguration.Remote.split("\n")
+            : [],
         Network: this.newConfiguration.Network,
         BridgeStartIP: this.newConfiguration.BridgeStartIP,
         AuthMode: this.newConfiguration.AuthMode,
@@ -1475,7 +1477,10 @@ export default {
         ClientToClient: this.newConfiguration.ClientToClient,
         BridgeEndIP: this.newConfiguration.BridgeEndIP,
         Protocol: this.newConfiguration.Protocol,
-        CustomRoutes: this.newConfiguration.CustomRoutes.split("\n"),
+        CustomRoutes:
+          this.newConfiguration.Remote.length > 0
+            ? this.newConfiguration.CustomRoutes.split("\n")
+            : [],
         action: "configuration"
       };
 
