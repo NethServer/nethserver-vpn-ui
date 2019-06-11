@@ -185,9 +185,10 @@ sub openvpn_create_host {
     }
 
     my $i = 1;
-    my $key = "ovpn$name";
+    my $prefix = "vpn-rw-";
+    my $key = "$prefix$name";
     while ($ndb->get($key)) {
-        $key = "ovpn$name$key";
+        $key = "$prefix$name$key";
     }
     $ndb->new_record($key, {'type' => 'host', 'IpAddress' => $ip});
 }
