@@ -570,7 +570,6 @@
                 >{{$t('openvpn_rw.custom_routes')}}</label>
                 <div class="col-sm-7">
                   <textarea
-                    required
                     type="text"
                     v-model="newConfiguration.CustomRoutes"
                     class="form-control min-textarea-height"
