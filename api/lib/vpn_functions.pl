@@ -46,9 +46,9 @@ sub ipsec_status {
         $out =~ s/^(.*)=//;
         $ret->{$name} = {
             type => $type,
-            started => $started,
-            received_bytes => $in,
-            sent_bytes => $out
+            started => int($started),
+            received_bytes => int($in),
+            sent_bytes => int($out)
         }
     }
     close(FH);
