@@ -284,6 +284,8 @@
   },
   "docs": {
     "more_info_about": "More info about {docsLink}.",
-    "right": "Specify the statuc public IP adress or %any if the remote has a dynamic public IP."
+    "right": "Specify the statuc public IP adress or %any if the remote has a dynamic public IP.",
+    "vpn_remote_network": "Configure these parameters only if you want to create a Net to Net VPN using this account (compatibile with NethServer 6). Do not compile these fields if you're configuring a host to net VPN.",
+    "vpn_remote_netmask": "Compile this field only if you've already filled the Remote network field"
   }
 }

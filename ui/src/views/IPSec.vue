@@ -96,16 +96,25 @@
                 <div class="list-view-pf-description">
                   <div class="list-group-item-heading">{{r.name}}</div>
                   <div class="list-group-item-text">
-                    <div class="inline-block">
+                    <div class="inline-block middle">
                       <b>{{$t('ipsec.local_subnets')}}</b>
-                      <br>
-                      {{r.leftsubnets && r.leftsubnets.length > 0 && r.leftsubnets.join(',') || '-'}}
+                      <div
+                        v-show="r.leftsubnets.length > 1"
+                        v-for="(i,ik) in r.leftsubnets"
+                        :key="ik"
+                      >{{i}}</div>
+                      <span v-if="r.leftsubnets.length == 1">{{r.leftsubnets[0]}}</span>
                     </div>
-                    <span class="fa fa-arrow-right adjust-span-margin"></span>
-                    <div class="inline-block">
+                    <span class="fa fa-arrow-right adjust-span-margin middle"></span>
+                    <div class="inline-block middle">
                       <b>{{$t('ipsec.remote_subnets')}}</b>
                       <br>
-                      {{r.rightsubnets && r.rightsubnets.length > 0 && r.rightsubnets.join(',') || '-'}}
+                      <div
+                        v-show="r.rightsubnets.length > 1"
+                        v-for="(i,ik) in r.rightsubnets"
+                        :key="ik"
+                      >{{i}}</div>
+                      <span v-if="r.rightsubnets.length == 1">{{r.rightsubnets[0]}}</span>
                     </div>
                   </div>
                 </div>
@@ -587,7 +596,7 @@ export default {
       this.$forceUpdate();
     },
     genPSK() {
-      var a = new Uint8Array(32);
+      var a = new Uint8Array(64);
       window.crypto.getRandomValues(a);
 
       return btoa(String.fromCharCode.apply(null, a));
@@ -1004,5 +1013,9 @@ export default {
 
 .inline-block {
   display: inline-block;
+}
+
+.middle {
+  vertical-align: middle;
 }
 </style>

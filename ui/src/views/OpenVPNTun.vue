@@ -295,7 +295,13 @@
                   <b>{{ props.row.Topology | uppercase}}</b>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
-                  <div class="mg-top-view" v-for="(i,ik) in props.row.RemoteHost" :key="ik">{{i}}</div>
+                  <div
+                    v-show="props.row.RemoteHost.length > 1"
+                    class="mg-top-view"
+                    v-for="(i,ik) in props.row.RemoteHost"
+                    :key="ik"
+                  >{{i}}</div>
+                  <span v-if="props.row.RemoteHost.length == 1">{{props.row.RemoteHost[0]}}</span>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <span class="right-20">
@@ -1526,12 +1532,6 @@ export default {
       this.currentTunnelClient.togglePass = !this.currentTunnelClient
         .togglePass;
       this.$forceUpdate();
-    },
-    genPSK() {
-      var a = new Uint8Array(32);
-      window.crypto.getRandomValues(a);
-
-      return btoa(String.fromCharCode.apply(null, a));
     },
     initTunnelServer() {
       return {

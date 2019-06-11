@@ -334,6 +334,26 @@
                 </div>
               </div>
 
+              <div
+                :class="['form-group', newConfiguration.errors.Remote.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.remote_host_ip_name')}}</label>
+                <div class="col-sm-9">
+                  <textarea
+                    type="text"
+                    v-model="newConfiguration.Remote"
+                    class="form-control min-textarea-height"
+                  ></textarea>
+                  <span
+                    v-if="newConfiguration.errors.Remote.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Remote.message)}}</span>
+                </div>
+              </div>
+
               <legend class="fields-section-header-pf" aria-expanded="true">
                 <span
                   :class="['fa fa-angle-right field-section-toggle-pf', newConfiguration.advanced ? 'fa-angle-down' : '']"
@@ -351,26 +371,6 @@
               >
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.connection_params')}}</span>
               </legend>
-              <div
-                v-show="newConfiguration.advanced"
-                :class="['form-group', newConfiguration.errors.Remote.hasError ? 'has-error' : '']"
-              >
-                <label
-                  class="col-sm-5 control-label"
-                  for="textInput-modal-markup"
-                >{{$t('openvpn_rw.remote_host_ip_name')}}</label>
-                <div class="col-sm-7">
-                  <textarea
-                    type="text"
-                    v-model="newConfiguration.Remote"
-                    class="form-control min-textarea-height"
-                  ></textarea>
-                  <span
-                    v-if="newConfiguration.errors.Remote.hasError"
-                    class="help-block"
-                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Remote.message)}}</span>
-                </div>
-              </div>
 
               <div
                 v-show="newConfiguration.advanced"
@@ -791,10 +791,15 @@
                 :class="['form-group', currentAccount.errors.VPNRemoteNetwork.hasError ? 'has-error' : '']"
                 v-if="currentAccount.advanced"
               >
-                <label
-                  class="col-sm-3 control-label"
-                  for="textInput-modal-markup"
-                >{{$t('openvpn_rw.vpn_remote_network')}}</label>
+                <label class="col-sm-3 control-label" for="textInput-modal-markup">
+                  {{$t('openvpn_rw.vpn_remote_network')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('openvpn_rw.vpn_remote_network')"
+                    :chapter="'vpn_remote_network'"
+                    :inline="true"
+                  ></doc-info>
+                </label>
                 <div class="col-sm-9">
                   <input type="text" v-model="currentAccount.VPNRemoteNetwork" class="form-control">
                   <span
@@ -807,10 +812,15 @@
                 :class="['form-group', currentAccount.errors.VPNRemoteNetmask.hasError ? 'has-error' : '']"
                 v-if="currentAccount.advanced"
               >
-                <label
-                  class="col-sm-3 control-label"
-                  for="textInput-modal-markup"
-                >{{$t('openvpn_rw.vpn_remote_netmask')}}</label>
+                <label class="col-sm-3 control-label" for="textInput-modal-markup">
+                  {{$t('openvpn_rw.vpn_remote_netmask')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('openvpn_rw.vpn_remote_netmask')"
+                    :chapter="'vpn_remote_netmask'"
+                    :inline="true"
+                  ></doc-info>
+                </label>
                 <div class="col-sm-9">
                   <input type="text" v-model="currentAccount.VPNRemoteNetmask" class="form-control">
                   <span
@@ -1072,7 +1082,7 @@ export default {
           label: this.$i18n.t("openvpn_rw.state"),
           field: "",
           filterable: true,
-          sortable: false
+          sortable: true
         },
         {
           label: this.$i18n.t("action"),
@@ -1477,7 +1487,7 @@ export default {
         BridgeEndIP: this.newConfiguration.BridgeEndIP,
         Protocol: this.newConfiguration.Protocol,
         CustomRoutes:
-          this.newConfiguration.Remote.length > 0
+          this.newConfiguration.CustomRoutes.length > 0
             ? this.newConfiguration.CustomRoutes.split("\n")
             : [],
         action: "configuration"
