@@ -99,6 +99,11 @@ if ($cmd eq 'users') {
     foreach (qw(Remote CustomRoutes)) {
        $props{$_} = [split(",",$props{$_})];
     }
+
+    # generate default values for Remote
+    if(scalar @{$props{'Remote'}} == 0) {
+        $props{'Remote'} = get_public_addresses();
+    }
     $props{'AccountProvider'} = ($db->get_prop('sssd', 'Provider') ne '') ? JSON::true : JSON::false;
     $ret->{'configuration'} = \%props;
 
