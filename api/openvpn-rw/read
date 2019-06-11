@@ -65,7 +65,7 @@ if ($cmd eq 'users') {
 
     my @interfaces;
     my $ndb = esmith::NetworksDB->open_ro();
-    foreach ($ndb->red()) {
+    foreach ($ndb->interfaces()) {
         next if (!$_->prop('role'));
         next if ($_->prop('type') ne 'bridge'); 
         my $bootproto = $_->prop('bootproto') || 'none';
