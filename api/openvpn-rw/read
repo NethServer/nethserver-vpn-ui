@@ -180,7 +180,7 @@ iOS: https://itunes.apple.com/it/app/openvpn-connect/id590379981
     my $msg = MIME::Lite->new(
         From    => $sender,
         To      => $input->{'address'},
-        Subject => "Yuor VPN access file for $remote",
+        Subject => "Your VPN access file for $remote",
         Type    => 'multipart/mixed'
     );
     $msg->attr('content-type.charset' => 'UTF8');
