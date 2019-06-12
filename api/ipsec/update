@@ -55,4 +55,4 @@ if ($cmd eq 'update') {
     error();
 }
 
-system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-modify", "modify", $input->{'name'}));
+system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-save"));

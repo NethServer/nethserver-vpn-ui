@@ -63,4 +63,4 @@ if (!$obj->{'rightid'}) {
 
 $db->new_record($input->{'name'}, $obj);
 
-system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-modify", "create", $input->{'name'}));
+system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-save"));
