@@ -128,12 +128,15 @@
                     <span class="fa fa-arrow-down"></span>
                     {{r.statistics.received_bytes | byteFormat}}
                     <span
-                      class="gray"
-                    > {{$t('ipsec.received')}}</span>
+                      class="gray span-left-space"
+                    >{{$t('ipsec.received')}}</span>
                   </div>
                   <div v-if="r.statistics" class="list-view-pf-additional-info-item">
                     <span class="fa fa-arrow-up"></span>
-                    {{r.statistics.sent_bytes | byteFormat}} {{$t('ipsec.sent')}}
+                    {{r.statistics.sent_bytes | byteFormat}}
+                    <span
+                      class="gray span-left-space"
+                    >{{$t('ipsec.sent')}}</span>
                   </div>
                   <div v-if="r.statistics" class="list-view-pf-additional-info-item">
                     <span class="fa fa-clock-o"></span>
@@ -1010,6 +1013,9 @@ export default {
 }
 .gray {
   color: #72767b;
+}
+.span-left-space {
+  margin-left: 3px !important;
 }
 
 .inline-block {

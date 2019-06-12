@@ -28,20 +28,20 @@
     <div v-show="view.isLoaded">
       <ul class="nav nav-tabs nav-tabs-pf">
         <li>
-          <a
-            class="nav-link"
-            data-toggle="tab"
-            href="#servers-tab"
-            id="servers-tab-parent"
-          >{{$t('openvpn_tun.tun_servers')}}</a>
+          <a class="nav-link" data-toggle="tab" href="#servers-tab" id="servers-tab-parent">
+            {{$t('openvpn_tun.tun_servers')}}
+            <span
+              class="span-left-space"
+            >({{serverTunnels.length}})</span>
+          </a>
         </li>
         <li>
-          <a
-            class="nav-link"
-            data-toggle="tab"
-            href="#clients-tab"
-            id="clients-tab-parent"
-          >{{$t('openvpn_tun.tun_clients')}}</a>
+          <a class="nav-link" data-toggle="tab" href="#clients-tab" id="clients-tab-parent">
+            {{$t('openvpn_tun.tun_clients')}}
+            <span
+              class="span-left-space"
+            >({{clientTunnels.length}})</span>
+          </a>
         </li>
       </ul>
 

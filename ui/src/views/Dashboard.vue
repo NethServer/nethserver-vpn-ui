@@ -102,68 +102,71 @@
 
       <div class="row">
         <h3>{{ $t('dashboard.openvpn_rw_stats') }}</h3>
-        <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
-          <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.openvpn.roadwarrior.connected}}</span>
-          <span class="card-pf-utilization-card-details-description stats-description">
+        <div class="row">
+          <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <span class="card-pf-utilization-card-details-count stats-count">
+              <span
+                :class="status.openvpn.roadwarrior.status == 'enabled' ? 'fa fa-check green' : 'fa fa-times red'"
+              ></span>
+            </span>
+            <span class="card-pf-utilization-card-details-description stats-description">
+              <span
+                class="card-pf-utilization-card-details-line-2 stats-text"
+              >{{ $t('dashboard.openvpn_rw_status') }}</span>
+            </span>
+          </div>
+          <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
             <span
-              class="card-pf-utilization-card-details-line-2 stats-text"
-            >{{ $t('dashboard.openvpn_rw_connected') }}</span>
-          </span>
+              class="card-pf-utilization-card-details-count stats-count"
+            >{{status.openvpn.roadwarrior.connected}}</span>
+            <span class="card-pf-utilization-card-details-description stats-description">
+              <span
+                class="card-pf-utilization-card-details-line-2 stats-text"
+              >{{ $t('dashboard.openvpn_rw_connected') }}</span>
+            </span>
+          </div>
+          <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <span
+              class="card-pf-utilization-card-details-count stats-count"
+            >{{status.openvpn.roadwarrior.total}}</span>
+            <span class="card-pf-utilization-card-details-description stats-description">
+              <span
+                class="card-pf-utilization-card-details-line-2 stats-text"
+              >{{ $t('dashboard.openvpn_rw_total') }}</span>
+            </span>
+          </div>
         </div>
-        <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
-          <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.openvpn.roadwarrior.total}}</span>
-          <span class="card-pf-utilization-card-details-description stats-description">
+        <div class="row">
+          <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
             <span
-              class="card-pf-utilization-card-details-line-2 stats-text"
-            >{{ $t('dashboard.openvpn_rw_total') }}</span>
-          </span>
-        </div>
-
-        <div class="stats-container col-xs-3 col-sm-3 col-md-3 col-lg-3">
-          <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.openvpn.roadwarrior.auth | capitalize}}</span>
-          <span class="card-pf-utilization-card-details-description stats-description">
+              class="card-pf-utilization-card-details-count stats-count"
+            >{{status.openvpn.roadwarrior.auth | capitalize}}</span>
+            <span class="card-pf-utilization-card-details-description stats-description">
+              <span
+                class="card-pf-utilization-card-details-line-2 stats-text"
+              >{{ $t('dashboard.openvpn_rw_auth') }}</span>
+            </span>
+          </div>
+          <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
             <span
-              class="card-pf-utilization-card-details-line-2 stats-text"
-            >{{ $t('dashboard.openvpn_rw_auth') }}</span>
-          </span>
-        </div>
-        <div class="stats-container col-xs-3 col-sm-3 col-md-3 col-lg-3">
-          <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.openvpn.roadwarrior.mode | capitalize}}</span>
-          <span class="card-pf-utilization-card-details-description stats-description">
+              class="card-pf-utilization-card-details-count stats-count"
+            >{{status.openvpn.roadwarrior.mode | capitalize}}</span>
+            <span class="card-pf-utilization-card-details-description stats-description">
+              <span
+                class="card-pf-utilization-card-details-line-2 stats-text"
+              >{{ $t('dashboard.openvpn_rw_mode') }}</span>
+            </span>
+          </div>
+          <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
             <span
-              class="card-pf-utilization-card-details-line-2 stats-text"
-            >{{ $t('dashboard.openvpn_rw_mode') }}</span>
-          </span>
-        </div>
-        <div class="stats-container col-xs-3 col-sm-3 col-md-3 col-lg-3">
-          <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.openvpn.roadwarrior.port}}</span>
-          <span class="card-pf-utilization-card-details-description stats-description">
-            <span
-              class="card-pf-utilization-card-details-line-2 stats-text"
-            >{{ $t('dashboard.openvpn_rw_port') }}</span>
-          </span>
-        </div>
-        <div class="stats-container col-xs-3 col-sm-3 col-md-3 col-lg-3">
-          <span class="card-pf-utilization-card-details-count stats-count">
-            <span
-              :class="status.openvpn.roadwarrior.status == 'enabled' ? 'fa fa-check green' : 'fa fa-times red'"
-            ></span>
-          </span>
-          <span class="card-pf-utilization-card-details-description stats-description">
-            <span
-              class="card-pf-utilization-card-details-line-2 stats-text"
-            >{{ $t('dashboard.openvpn_rw_status') }}</span>
-          </span>
+              class="card-pf-utilization-card-details-count stats-count"
+            >{{status.openvpn.roadwarrior.port}}</span>
+            <span class="card-pf-utilization-card-details-description stats-description">
+              <span
+                class="card-pf-utilization-card-details-line-2 stats-text"
+              >{{ $t('dashboard.openvpn_rw_port') }}</span>
+            </span>
+          </div>
         </div>
         <!-- charts -->
         <h4>{{ $t('dashboard.openvpn_rw_interfaces') }}</h4>
