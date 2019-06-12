@@ -98,6 +98,7 @@
                   <div class="list-group-item-text">
                     <div class="inline-block middle">
                       <b>{{$t('ipsec.local_subnets')}}</b>
+                      <br>
                       <div
                         v-show="r.leftsubnets.length > 1"
                         v-for="(i,ik) in r.leftsubnets"
