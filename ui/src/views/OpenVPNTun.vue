@@ -107,7 +107,7 @@
                 </td>
                 <td
                   :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
-                >{{ props.row.Network}}</td>
+                >{{ props.row.Network ? props.row.Network : props.row.LocalPeer+" - "+ props.row.RemotePeer}}</td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
                     v-show="props.row.LocalNetworks.length > 1"
@@ -140,7 +140,7 @@
                     class="handle-overflow"
                   >
                     <span class="fa fa-check green"></span>
-                    {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
+                    {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address ? props.row.statistics.virtual_address : props.row.RemotePeer}})
                   </span>
                   <span v-else>
                     <span class="fa fa-times grey"></span>
@@ -2454,18 +2454,25 @@ export default {
         "</dt><dd>" +
         stats.since +
         "</dd>";
-      html +=
-        "<dt>" +
-        this.$i18n.t("openvpn_rw.virtual_address") +
-        "</dt><dd>" +
-        stats.virtual_address +
-        "</dd>";
-      html +=
-        "<dt>" +
-        this.$i18n.t("openvpn_rw.real_address") +
-        "</dt><dd>" +
-        stats.real_address +
-        "</dd>";
+
+      if (stats.virtual_address) {
+        html +=
+          "<dt>" +
+          this.$i18n.t("openvpn_rw.virtual_address") +
+          "</dt><dd>" +
+          stats.virtual_address +
+          "</dd>";
+      }
+
+      if (stats.real_address) {
+        html +=
+          "<dt>" +
+          this.$i18n.t("openvpn_rw.real_address") +
+          "</dt><dd>" +
+          stats.real_address +
+          "</dd>";
+      }
+      
       html +=
         "<dt>" +
         this.$i18n.t("openvpn_rw.bytes_sent") +

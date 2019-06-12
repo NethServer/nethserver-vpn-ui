@@ -67,10 +67,11 @@ if ($cmd eq 'status') {
     foreach ($vdb->get_all()) {
         my $statistics;
         my $name = $_->key;
+        my $topology = $_->prop('Topology') || 'subnet';
         if ($_->prop('type') eq 'openvpn-tunnel-server') {
-            $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/n2n-$name`);
+            $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/n2n-$name $topology`);
         } elsif ($_->prop('type') eq 'tunnel') {
-            $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-state /var/spool/openvpn/n2n-$name`);
+            $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-state /var/spool/openvpn/n2n-$name $topology`);
         } else {
             next;
         }

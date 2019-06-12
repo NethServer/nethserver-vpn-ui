@@ -73,8 +73,9 @@ if ($cmd eq 'tunnels') {
             my $statistics;
             $props{'running'} = JSON::true;
             if ($_->prop('type') eq 'openvpn-tunnel-server') {
-                $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/n2n-$name`);
-                my $k = (keys %$statistics)[0]; # find first key, assume tat one tunnel has only one connected client
+                my $topology = $props{'Topology'};
+                $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/n2n-$name $topology`);
+                my $k = (keys %$statistics)[0]; # find first key, assume one tunnel has only one connected client
                 $statistics = $statistics->{$k};
             } else {
                 $statistics = safe_decode_json(`/usr/libexec/nethserver/openvpn-state /var/spool/openvpn/n2n-$name`);
