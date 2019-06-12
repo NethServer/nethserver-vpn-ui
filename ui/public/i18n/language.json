@@ -280,7 +280,8 @@
     "valid_ipV4Address": "Invalid IPv4 address: it should be something like '10.0.0.1'",
     "valid_ipV4Netmask": "Invalid IPv4 network mask: it should be something like '255.255.255.0'",
     "valid_lessThan_65536": "A valid TCP/UDP port is a number between 1 and 65536",
-    "valid_hostname_fqdn_1_9223372036854775807": "Must contain at least two dots, like 'myhost.example.com'"
+    "valid_hostname_fqdn_1_9223372036854775807": "Must contain at least two dots, like 'myhost.example.com'",
+    "port_in_use": "Port already in use"
   },
   "docs": {
     "more_info_about": "More info about {docsLink}.",
