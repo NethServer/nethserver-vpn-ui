@@ -129,7 +129,7 @@
                     {{r.statistics.received_bytes | byteFormat}}
                     <span
                       class="gray"
-                    >{{$t('ipsec.received')}}</span>
+                    > {{$t('ipsec.received')}}</span>
                   </div>
                   <div v-if="r.statistics" class="list-view-pf-additional-info-item">
                     <span class="fa fa-arrow-up"></span>
