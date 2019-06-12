@@ -54,7 +54,7 @@ if ($cmd eq 'update-client') {
         $db->set_prop($input->{'name'}, $_, join(',',@{$input->{$_}})) if (exists($input->{$_}));
     }
 
-    foreach (qw(Topology Digest Compression Cipher TlsVersionMin Protocol Port Network)) {
+    foreach (qw(Topology Digest Compression Cipher TlsVersionMin Protocol Port Network LocalPeer RemotePeer)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_}) if (exists($input->{$_}));
     }
 
