@@ -47,5 +47,5 @@ rm -rf $RPM_BUILD_ROOT
 /usr/libexec/nethserver/api/nethserver-vpn/*
 
 %changelog
-* Thu May 16 2019 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 1.0.0-0
+* Thu May 16 2019 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 0.0.0-0
 - First implementation
