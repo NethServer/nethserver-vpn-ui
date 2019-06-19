@@ -66,7 +66,7 @@
 
             <span class="handle-overflow span-left-margin semi-bold color-link-hover">
               <span class="semi-bold">{{$t('openvpn_rw.auth_mode')}}:</span>
-              <b class="span-left-margin">Username, password and certificate</b>
+              <b class="span-left-margin">{{$t('openvpn_rw.'+mapAuthMode(configuration.AuthMode))}}</b>
             </span>
           </span>
         </div>
@@ -1098,6 +1098,18 @@ export default {
     };
   },
   methods: {
+    mapAuthMode(authMode) {
+      switch (authMode) {
+        case "password":
+          return "username_password";
+
+        case "certificate":
+          return "certificate";
+
+        case "password-certificate":
+          return "username_password_certificate";
+      }
+    },
     initAccount() {
       return {
         name: "",
