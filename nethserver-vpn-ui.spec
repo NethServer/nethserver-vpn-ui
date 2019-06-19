@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 0.0.1
+Version: 1.0.0
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -47,5 +47,8 @@ rm -rf $RPM_BUILD_ROOT
 /usr/libexec/nethserver/api/nethserver-vpn/*
 
 %changelog
+* Wed Jun 19 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.0.0-1
+- VPN Cockpit UI - NethServer/dev#5760
+
 * Thu May 16 2019 Edoardo Spadoni <edoardo.spadoni@nethesis.it> - 0.0.0-0
 - First implementation
