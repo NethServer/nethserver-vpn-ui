@@ -32,6 +32,7 @@ require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 
 sub ipsec_status {
     my $ret;
+    return $ret if (! -x "/usr/sbin/ipsec");
     open(FH, "ipsec whack --trafficstatus|");
     while (<FH>) {
         # remove connection number
