@@ -25,6 +25,12 @@
   "with": "with",
   "rows_per_page": "Rows per page",
   "all": "All",
+  "package_required": "Missing packages",
+  "package_required_desc": "To access this page you have to install the required packages listed below",
+  "install_package": "Install package",
+  "install_packages": "Install packages",
+  "packages_installed_ok": "Packages installed successfully!",
+  "packages_installed_error": "Packages not installed.",
   "dashboard": {
     "menu_title": "VPN",
     "title": "VPN dashboard",

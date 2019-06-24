@@ -25,7 +25,27 @@
     <h2>{{ $t('openvpn_rw.title') }}</h2>
 
     <div v-if="!view.isLoaded" class="spinner spinner-lg view-spinner"></div>
-    <div v-show="view.isLoaded">
+
+    <div v-show="!view.menu.installed && view.isLoaded">
+      <div class="blank-slate-pf" id>
+        <div class="blank-slate-pf-icon">
+          <span class="pficon pficon pficon-add-circle-o"></span>
+        </div>
+        <h1>{{$t('package_required')}}</h1>
+        <p>{{$t('package_required_desc')}}.</p>
+        <pre>{{view.menu.packages.join(' ')}}</pre>
+        <div class="blank-slate-pf-main-action">
+          <button
+            :disabled="view.isInstalling"
+            @click="installPackages()"
+            class="btn btn-primary btn-lg"
+          >{{view.menu.packages.length == 1 ? $t('install_package') : $t('install_packages')}}</button>
+          <div v-if="view.isInstalling" class="spinner spinner-sm"></div>
+        </div>
+      </div>
+    </div>
+
+    <div v-show="view.menu.installed && view.isLoaded">
       <h3>{{ $t('openvpn_rw.rw_server') }}</h3>
 
       <div v-if="configuration.status == 'disabled'" class="blank-slate-pf">
@@ -998,6 +1018,31 @@
 <script>
 export default {
   name: "OpenVPNRW",
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.view.isLoaded = false;
+      nethserver.exec(
+        ["nethserver-vpn/feature/read"],
+        {
+          name: "openvpn"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+
+          vm.view.menu = success;
+        },
+        function(error) {
+          console.error(error);
+        },
+        false
+      );
+    });
+  },
   beforeRouteLeave(to, from, next) {
     $(".modal").modal("hide");
     next();
@@ -1011,7 +1056,11 @@ export default {
   data() {
     return {
       view: {
-        isLoaded: false
+        isLoaded: false,
+        menu: {
+          installed: false,
+          packages: []
+        }
       },
       configuration: {
         status: "disabled"
@@ -1098,6 +1147,29 @@ export default {
     };
   },
   methods: {
+    installPackages() {
+      this.view.isInstalling = true;
+      // notification
+      nethserver.notifications.success = this.$i18n.t("packages_installed_ok");
+      nethserver.notifications.error = this.$i18n.t("packages_installed_error");
+
+      nethserver.exec(
+        ["nethserver-vpn/feature/update"],
+        {
+          name: 'openvpn'
+        },
+        function(stream) {
+          console.info("install-package", stream);
+        },
+        function(success) {
+          // reload page
+          window.parent.location.reload();
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
     mapAuthMode(authMode) {
       switch (authMode) {
         case "password":
