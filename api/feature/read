@@ -27,7 +27,7 @@ require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 
 my $input = readInput();
 my $features = {
-    openvpn => { installed => (-f '/etc/e-smith/db/configuration/defaults/openvpn\@host-to-net/type') ? JSON::true : JSON::false, packages => ['nethserver-openvpn'] },
+    openvpn => { installed => (-f '/etc/e-smith/db/configuration/defaults/openvpn@host-to-net/type') ? JSON::true : JSON::false, packages => ['nethserver-openvpn'] },
     ipsec => { installed => (-f '/etc/e-smith/db/configuration/defaults/ipsec/type') ? JSON::true : JSON::false, packages => ['nethserver-ipsec-tunnels'] }
 };
 
