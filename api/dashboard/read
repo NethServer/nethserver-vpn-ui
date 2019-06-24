@@ -52,7 +52,7 @@ if ($cmd eq 'status') {
     $ret->{'ipsec'}{'connected'} = scalar(keys %$ipsec_status);
 
     $rw->{'total'} = scalar($vdb->get_all_by_prop(type => 'vpn')) + scalar($vdb->get_all_by_prop(type => 'vpn-user'));
-    my $rw_status = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net`);
+    my $rw_status = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net 2>/dev/null`);
     $rw->{'connected'} = scalar(keys %$rw_status);
     $rw->{'status'} = $db->get_prop('openvpn@host-to-net', 'status');
     $rw->{'mode'} = $db->get_prop('openvpn@host-to-net', 'Mode');

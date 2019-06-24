@@ -82,30 +82,35 @@ if ($cmd eq 'users') {
 
     my $db = esmith::ConfigDB->open_ro();
     my $record = $db->get('openvpn@host-to-net');
-    my %props = $record->props;
-    foreach (qw(type access TapInterface)) {
-        delete($props{$_});
-    }
-    if ($props{'UDPPort'} ne '') {
-        $props{'Protocol'} = 'udp';
-        $props{'Port'} = $props{'UDPPort'};
-        delete($props{'UDPPort'});
-    }
-    if ($props{'TCPPort'} ne '') {
-        $props{'Protocol'} = 'tcp';
-        $props{'Port'} = $props{'TCPPort'};
-        delete($props{'TCPPort'});
-    }
-    foreach (qw(Remote CustomRoutes)) {
-       $props{$_} = [split(",",$props{$_})];
-    }
+    my $accountProvider = ($db->get_prop('sssd', 'Provider') ne '') ? JSON::true : JSON::false;
+    if ($record) {
+        my %props = $record->props;
+        foreach (qw(type access TapInterface)) {
+            delete($props{$_});
+        }
+        if ($props{'UDPPort'} ne '') {
+            $props{'Protocol'} = 'udp';
+            $props{'Port'} = $props{'UDPPort'};
+            delete($props{'UDPPort'});
+        }
+        if ($props{'TCPPort'} ne '') {
+            $props{'Protocol'} = 'tcp';
+            $props{'Port'} = $props{'TCPPort'};
+            delete($props{'TCPPort'});
+        }
+        foreach (qw(Remote CustomRoutes)) {
+            $props{$_} = [split(",",$props{$_})];
+        }
 
-    # generate default values for Remote
-    if(scalar @{$props{'Remote'}} == 0) {
-        $props{'Remote'} = get_public_addresses();
+        # generate default values for Remote
+        if(scalar @{$props{'Remote'}} == 0) {
+            $props{'Remote'} = get_public_addresses();
+        }
+        $props{'AccountProvider'} = $accountProvider;
+        $ret->{'configuration'} = \%props;
+    } else {
+        $ret->{'configuration'} = {Port => "-", Remote => [], CustomRoutes => [], AccountProvider => $accountProvider, Protocol => 'udp', 'status' => 'disabled'};
     }
-    $props{'AccountProvider'} = ($db->get_prop('sssd', 'Provider') ne '') ? JSON::true : JSON::false;
-    $ret->{'configuration'} = \%props;
 
 } elsif ($cmd eq 'algorithms') {
 
@@ -114,8 +119,8 @@ if ($cmd eq 'users') {
 } elsif ($cmd eq 'accounts') {
 
     my $db = esmith::HostsDB->open_ro();
-    my $accounts_status = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net`);
-    my $accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/list-accounts`);
+    my $accounts_status = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net 2>/dev/null`);
+    my $accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/list-accounts 2>/dev/null`);
     foreach (@{$accounts}) {
         my $host = find_host($db, $_->{'OpenVpnIp'}) || '';
         $_->{'Host'} = $host;
