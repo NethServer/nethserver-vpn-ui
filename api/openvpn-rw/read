@@ -88,12 +88,12 @@ if ($cmd eq 'users') {
         foreach (qw(type access TapInterface)) {
             delete($props{$_});
         }
-        if ($props{'UDPPort'} ne '') {
+        if (defined($props{'UDPPort'}) && $props{'UDPPort'} ne '') {
             $props{'Protocol'} = 'udp';
             $props{'Port'} = $props{'UDPPort'};
             delete($props{'UDPPort'});
         }
-        if ($props{'TCPPort'} ne '') {
+        if (defined($props{'TCPPort'}) && $props{'TCPPort'} ne '') {
             $props{'Protocol'} = 'tcp';
             $props{'Port'} = $props{'TCPPort'};
             delete($props{'TCPPort'});
