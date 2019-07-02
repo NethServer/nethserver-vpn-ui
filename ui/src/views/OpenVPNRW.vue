@@ -1156,7 +1156,7 @@ export default {
       nethserver.exec(
         ["nethserver-vpn/feature/update"],
         {
-          name: 'openvpn'
+          name: "openvpn"
         },
         function(stream) {
           console.info("install-package", stream);
@@ -1498,7 +1498,6 @@ export default {
       context.configuration.isEdit = isEdit;
 
       if (context.configuration.status == "enabled") {
-        $("#configureRWModal").modal("show");
         context.newConfiguration = JSON.parse(
           JSON.stringify(context.configuration)
         );
@@ -1506,6 +1505,15 @@ export default {
         context.newConfiguration.isLoading = false;
         context.newConfiguration.isEdit = false;
         context.newConfiguration.advanced = false;
+        context.newConfiguration.Digest =
+          context.newConfiguration.Digest == ""
+            ? "auto"
+            : context.newConfiguration.Digest;
+        context.newConfiguration.Cipher =
+          context.newConfiguration.Cipher == ""
+            ? "auto"
+            : context.newConfiguration.Cipher;
+        $("#configureRWModal").modal("show");
       } else {
         // notification
         nethserver.notifications.success = context.$i18n.t(
@@ -1551,7 +1559,10 @@ export default {
         PushDns: this.newConfiguration.PushDns,
         PushWins: this.newConfiguration.PushWins,
         Digest: this.newConfiguration.Digest,
-        Netmask: this.newConfiguration.Netmask,
+        Netmask:
+          this.newConfiguration.Mode == "routed"
+            ? this.newConfiguration.Netmask
+            : null,
         Compression: this.newConfiguration.Compression,
         Mode: this.newConfiguration.Mode,
         Cipher: this.newConfiguration.Cipher,
@@ -1562,13 +1573,22 @@ export default {
           this.newConfiguration.Remote.length > 0
             ? this.newConfiguration.Remote.split("\n")
             : [],
-        Network: this.newConfiguration.Network,
-        BridgeStartIP: this.newConfiguration.BridgeStartIP,
+        Network:
+          this.newConfiguration.Mode == "routed"
+            ? this.newConfiguration.Network
+            : null,
+        BridgeStartIP:
+          this.newConfiguration.Mode == "bridged"
+            ? this.newConfiguration.BridgeStartIP
+            : null,
         AuthMode: this.newConfiguration.AuthMode,
         BridgeName: this.newConfiguration.BridgeName,
         TlsVersionMin: this.newConfiguration.TlsVersionMin,
         ClientToClient: this.newConfiguration.ClientToClient,
-        BridgeEndIP: this.newConfiguration.BridgeEndIP,
+        BridgeEndIP:
+          this.newConfiguration.Mode == "bridged"
+            ? this.newConfiguration.BridgeEndIP
+            : null,
         Protocol: this.newConfiguration.Protocol,
         CustomRoutes:
           this.newConfiguration.CustomRoutes.length > 0
