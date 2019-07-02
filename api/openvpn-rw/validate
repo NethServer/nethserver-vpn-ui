@@ -106,8 +106,34 @@ if ($data['action'] == 'create-account') {
     $v->declareParameter('PushDns', Validate::IPv4_OR_EMPTY);
     $v->declareParameter('PushWins', Validate::IPv4_OR_EMPTY);
     $v->declareParameter('PushNbdd', Validate::IPv4_OR_EMPTY);
-    $v->declareParameter('Netmask', Validate::NETMASK);
-    $v->declareParameter('Network', Validate::IPv4);
+
+    if ($data['Mode'] == 'routed') {
+        $v->declareParameter('Netmask', Validate::NETMASK);
+        $v->declareParameter('Network', Validate::IPv4);
+
+        // check the "network" parameter is consistent with its "Mask" (only 0-bits in tail)
+        $net = long2ip(ip2long($data['Network']) & ip2long($data['Netmask']));
+        if ($net != $data['Network']) {
+            $v->addValidationError('Network', 'invalid_network');
+        }
+        // For OpenVPN network must be 255.255.255.248 (/29) or lower
+        $cidr_net = maskToCidr($data['Netmask']);
+        if ($cidr_net > 29) {
+            $v->addValidationError('Netmask', 'netmask_lower_than_29');
+        }
+        // check the network is not already used
+        $ndb = new EsmithDatabase('networks');
+        $interfaces = $ndb->getAll();
+        foreach ($interfaces as $interface => $props) {
+            if(isset($props['role']) && isset($props['ipaddr']) ) {
+                $cidr = $data['Network']."/".maskToCidr($data['Netmask']);
+                if (ipInRange($props['ipaddr'], $cidr)) {
+                    $v->addValidationError('Network', 'used_network');
+                }
+            }
+        }
+    }
+
     $v->declareParameter('Port', Validate::PORTNUMBER);
     $v->declareParameter('Remote', Validate::ANYTHING);
     $v->declareParameter('Compression', $v->createValidator()->memberOf(array('disabled','lzo','lz4')));
@@ -129,28 +155,6 @@ if ($data['action'] == 'create-account') {
             }
         }
 
-    }
-
-    // check the "network" parameter is consistent with its "Mask" (only 0-bits in tail)
-    $net = long2ip(ip2long($data['Network']) & ip2long($data['Netmask']));
-    if ($net != $data['Network']) {
-        $v->addValidationError('Network', 'invalid_network');
-    }
-    // For OpenVPN network must be 255.255.255.248 (/29) or lower
-    $cidr_net = maskToCidr($data['Netmask']);
-    if ($cidr_net > 29) {
-        $v->addValidationError('Netmask', 'netmask_lower_than_29');
-    }
-    // check the network is not already used
-    $ndb = new EsmithDatabase('networks');
-    $interfaces = $ndb->getAll();
-    foreach ($interfaces as $interface => $props) {
-        if(isset($props['role']) && isset($props['ipaddr']) ) {
-            $cidr = $data['Network']."/".maskToCidr($data['Netmask']);
-            if (ipInRange($props['ipaddr'], $cidr)) {
-                $v->addValidationError('Network', 'used_network');
-            }
-        }
     }
 }
 
