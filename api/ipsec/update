@@ -34,7 +34,8 @@ if ($cmd eq 'update') {
 
     foreach (qw(leftsubnets rightsubnets)) {
         if ($input->{$_}) {
-            $db->set_prop($input->{'name'}, $_,  join(",", @{$input->{$_}}));
+            # replace all white spaces
+            $db->set_prop($input->{'name'}, $_,  join(",", (map {s/\s+//gr } @{$input->{$_}})));
         }
     }
 

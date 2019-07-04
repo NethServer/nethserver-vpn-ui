@@ -36,7 +36,8 @@ my $obj = {type => 'ipsec-tunnel', 'status' => 'enabled'};
 
 foreach (qw(leftsubnets rightsubnets)) {
     if ($input->{$_}) {
-        $obj->{$_} = join(",", @{$input->{$_}});
+        # replace all white spaces
+        $obj->{$_} = join(",", (map {s/\s+//gr } @{$input->{$_}}));
     } else {
         $obj->{$_} = '';
     }
