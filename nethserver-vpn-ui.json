@@ -7,7 +7,7 @@
   "url": "",
   "provides": ["nethserver-vpn-ui"],
   "release": {
-    "version": "1.0.0"
+    "version": "_RELEASE_"
   },
   "tags": ["ipsec", "openvpn", "vpn"],
   "license": "GPL-3.0",
