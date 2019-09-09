@@ -262,7 +262,17 @@
     "email_sent_ok": "Email sent successfully!",
     "email_sent_error": "Email not sent.",
     "send": "Send",
-    "send_with_email": "Send with email"
+    "send_with_email": "Send with email",
+    "last_connected": "Last connected",
+    "connection_history": "Connection history",
+    "connection_history_of": "Connection history of",
+    "ip_address": "IP address",
+    "started": "Started",
+    "duration": "Duration",
+    "ended": "Ended",
+    "today": "Today",
+    "last_week": "Last week",
+    "last_month": "Last month"
   },
   "logs": {
     "title": "Logs",

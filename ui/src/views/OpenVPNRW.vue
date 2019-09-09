@@ -155,6 +155,18 @@
             </div>
           </td>
 
+          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+            <a href="#"
+              v-if="props.row.lastConnected"
+              :class="props.row.status == 'disabled' ? 'gray': ''"
+              :title="$t('openvpn_rw.connection_history')"
+              @click="showConnectionHistory(props.row.name, 'today')"
+            >
+              {{ props.row.lastConnected | dateFormat }}
+            </a>
+            <span v-else>-</span>
+          </td>
+
           <td>
             <button
               @click="props.row.status == 'disabled' ? toggleStatusAccount(props.row) : openEditAccount(props.row)"
@@ -1011,6 +1023,86 @@
         </div>
       </div>
     </div>
+
+    <div
+      class="modal"
+      id="connectionHistoryModal"
+      tabindex="-1"
+      role="dialog"
+      data-backdrop="static"
+    >
+      <div class="modal-dialog width-800">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('openvpn_rw.connection_history_of')}} {{ connectionHistoryAccount }}</h4>
+          </div>
+          <form class="form-horizontal">
+            <div class="modal-body text-center">
+              <div v-if="!connectionHistory[connectionHistoryInterval][connectionHistoryAccount]" class="spinner spinner-sm form-spinner-loader"></div>
+              <div v-else>
+                <ul class="nav nav-tabs">
+                  <li :class="{ 'active': connectionHistoryInterval === 'today' }">
+                    <a @click="showConnectionHistory(connectionHistoryAccount, 'today')">
+                      {{ $t('openvpn_rw.today') }}
+                    </a>
+                  </li>
+                  <li :class="{ 'active': connectionHistoryInterval === 'last_week' }">
+                    <a @click="showConnectionHistory(connectionHistoryAccount, 'last_week')">
+                      {{ $t('openvpn_rw.last_week') }}
+                    </a>
+                  </li>
+                  <li :class="{ 'active': connectionHistoryInterval === 'last_month' }">
+                    <a @click="showConnectionHistory(connectionHistoryAccount, 'last_month')">
+                      {{ $t('openvpn_rw.last_month') }}
+                    </a>
+                  </li>
+                </ul>
+                <vue-good-table
+                  :customRowsPerPageDropdown="[5,10,20]"
+                  :perPage="5"
+                  :columns="connectionHistoryColumns"
+                  :rows="connectionHistory[connectionHistoryInterval][connectionHistoryAccount]"
+                  :lineNumbers="true"
+                  :defaultSortBy="{field: 'startTime', type: 'desc'}"
+                  :globalSearch="true"
+                  :paginate="true"
+                  styleClass="table"
+                  :nextText="tableLangsTexts.nextText"
+                  :prevText="tableLangsTexts.prevText"
+                  :rowsPerPageText="tableLangsTexts.rowsPerPageText"
+                  :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
+                  :ofText="tableLangsTexts.ofText"
+                >
+                  <template slot="table-row" slot-scope="props">
+                    <td class="fancy">
+                      {{ props.row.startTime | dateFormat }}
+                    </td>
+                    <td class="fancy">
+                      {{ props.row.endTime | dateFormat }}
+                    </td>
+                    <td class="fancy">
+                      {{ props.row.duration | secondsInHour }}
+                    </td>
+                    <td class="fancy">
+                      {{ props.row.ipAddress }}
+                    </td>
+                    <td class="fancy">
+                      {{ props.row.bytesReceived | byteFormat }}
+                    </td>
+                    <td class="fancy">
+                      {{ props.row.bytesSent | byteFormat }}
+                    </td>
+                  </template>
+                </vue-good-table>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('close')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
     <!-- END MODALS -->
   </div>
 </template>
@@ -1134,6 +1226,14 @@ export default {
           sortable: true
         },
         {
+          label: this.$i18n.t("openvpn_rw.last_connected"),
+          field: "lastConnected",
+          filterable: false,
+          sortFn: function(a, b, col, rowX, rowY) {
+            return (a < b ? -1 : (a > b ? 1 : 0));
+          }
+        },
+        {
           label: this.$i18n.t("action"),
           field: "",
           filterable: true,
@@ -1143,7 +1243,61 @@ export default {
       tableLangsTexts: this.tableLangs(),
       currentAccount: this.initAccount(),
       toDeleteAccount: {},
-      toKillAccount: {}
+      toKillAccount: {},
+      connectionHistoryAccount: '',
+      connectionHistory: {
+        today: [],
+        last_week: [],
+        last_month: []
+      },
+      connectionHistoryColumns: [
+        {
+          label: this.$i18n.t("openvpn_rw.started"),
+          field: "startTime",
+          filterable: false,
+          sortFn: function(a, b, col, rowX, rowY) {
+            return (a < b ? -1 : (a > b ? 1 : 0));
+          }
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.ended"),
+          field: "endTime",
+          filterable: false,
+          sortFn: function(a, b, col, rowX, rowY) {
+            return (a < b ? -1 : (a > b ? 1 : 0));
+          }
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.duration"),
+          field: "duration",
+          filterable: false,
+          sortFn: function(a, b, col, rowX, rowY) {
+            return (a < b ? -1 : (a > b ? 1 : 0));
+          }
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.ip_address"),
+          field: "ipAddress",
+          filterable: true
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.bytes_received"),
+          field: "bytesReceived",
+          filterable: true,
+          sortFn: function(a, b, col, rowX, rowY) {
+            return (a < b ? -1 : (a > b ? 1 : 0));
+          }
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.bytes_sent"),
+          field: "bytesSent",
+          filterable: true,
+          sortFn: function(a, b, col, rowX, rowY) {
+            return (a < b ? -1 : (a > b ? 1 : 0));
+          }
+        }
+      ],
+      connectionHistoryInterval: 'today'
     };
   },
   methods: {
@@ -1961,6 +2115,37 @@ export default {
       html += "</dl>";
 
       return html;
+    },
+    showConnectionHistory(accountName, timeInterval) {
+      this.connectionHistoryAccount = accountName;
+      this.connectionHistoryInterval = timeInterval;
+      $("#connectionHistoryModal").modal("show");
+
+      // retrieve connection history only once
+      if (!this.connectionHistory[timeInterval][accountName]) {
+        var context = this;
+        nethserver.exec(
+          ["nethserver-vpn/openvpn-rw/read"],
+          {
+            action: "connectionHistory",
+            account: accountName,
+            timeInterval: timeInterval
+          },
+          null,
+          function(success) {
+            try {
+              success = JSON.parse(success);
+              context.connectionHistory[timeInterval][accountName] = success.connectionHistory;
+              context.$forceUpdate();
+            } catch (e) {
+              console.error(e);
+            }
+          },
+          function(error) {
+            console.error(error);
+          }
+        );
+      }
     }
   }
 };
@@ -1981,5 +2166,11 @@ export default {
 }
 .gray {
   color: #72767b;
+}
+.text-center {
+  text-align: center;
+}
+.width-800 {
+  width: 800px;
 }
 </style>
