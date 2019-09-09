@@ -48,7 +48,7 @@ elif time_interval == "last_week":
 elif time_interval == "last_month":
     start_time_since = today_epoch - (31 * 24 * 60 * 60) # 2678400 seconds in a month
 
-conn = sqlite3.connect('/etc/openvpn/openvpn-connections.db')
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
 c = conn.cursor()
 connections = []
 

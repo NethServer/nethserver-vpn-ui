@@ -24,7 +24,7 @@ import os
 import sqlite3
 import simplejson
 
-conn = sqlite3.connect('/etc/openvpn/openvpn-connections.db')
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
 c = conn.cursor()
 
 accounts = []

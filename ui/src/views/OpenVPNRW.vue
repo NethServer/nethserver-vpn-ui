@@ -1040,7 +1040,7 @@
             <div class="modal-body text-center">
               <div v-if="!connectionHistory[connectionHistoryInterval][connectionHistoryAccount]" class="spinner spinner-sm form-spinner-loader"></div>
               <div v-else>
-                <ul class="nav nav-tabs">
+                <ul class="nav nav-tabs nav-tabs-pf margin-bottom-15">
                   <li :class="{ 'active': connectionHistoryInterval === 'today' }">
                     <a @click="showConnectionHistory(connectionHistoryAccount, 'today')">
                       {{ $t('openvpn_rw.today') }}
@@ -1062,9 +1062,9 @@
                   :perPage="5"
                   :columns="connectionHistoryColumns"
                   :rows="connectionHistory[connectionHistoryInterval][connectionHistoryAccount]"
-                  :lineNumbers="true"
+                  :lineNumbers="false"
                   :defaultSortBy="{field: 'startTime', type: 'desc'}"
-                  :globalSearch="true"
+                  :globalSearch="false"
                   :paginate="true"
                   styleClass="table"
                   :nextText="tableLangsTexts.nextText"
@@ -1278,12 +1278,12 @@ export default {
         {
           label: this.$i18n.t("openvpn_rw.ip_address"),
           field: "ipAddress",
-          filterable: true
+          filterable: false
         },
         {
           label: this.$i18n.t("openvpn_rw.bytes_received"),
           field: "bytesReceived",
-          filterable: true,
+          filterable: false,
           sortFn: function(a, b, col, rowX, rowY) {
             return (a < b ? -1 : (a > b ? 1 : 0));
           }
@@ -1291,7 +1291,7 @@ export default {
         {
           label: this.$i18n.t("openvpn_rw.bytes_sent"),
           field: "bytesSent",
-          filterable: true,
+          filterable: false,
           sortFn: function(a, b, col, rowX, rowY) {
             return (a < b ? -1 : (a > b ? 1 : 0));
           }
@@ -2172,5 +2172,8 @@ export default {
 }
 .width-800 {
   width: 800px;
+}
+.margin-bottom-15 {
+  margin-bottom: 15px;
 }
 </style>
