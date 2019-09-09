@@ -1075,16 +1075,19 @@
                 >
                   <template slot="table-row" slot-scope="props">
                     <td class="fancy">
-                      {{ props.row.startTime | dateFormat }}
+                      {{ props.row.startTime | shortDateFormat }}
                     </td>
                     <td class="fancy">
-                      {{ props.row.endTime | dateFormat }}
+                      {{ props.row.endTime | shortDateFormat }}
                     </td>
                     <td class="fancy">
                       {{ props.row.duration | secondsInHour }}
                     </td>
                     <td class="fancy">
-                      {{ props.row.ipAddress }}
+                      {{ props.row.virtualIpAddress }}
+                    </td>
+                    <td class="fancy">
+                      {{ props.row.remoteIpAddress }}
                     </td>
                     <td class="fancy">
                       {{ props.row.bytesReceived | byteFormat }}
@@ -1276,8 +1279,13 @@ export default {
           }
         },
         {
-          label: this.$i18n.t("openvpn_rw.ip_address"),
-          field: "ipAddress",
+          label: this.$i18n.t("openvpn_rw.virtual_ip_address"),
+          field: "virtualIpAddress",
+          filterable: false
+        },
+        {
+          label: this.$i18n.t("openvpn_rw.remote_ip_address"),
+          field: "remoteIpAddress",
           filterable: false
         },
         {

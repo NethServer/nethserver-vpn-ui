@@ -52,19 +52,20 @@ conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
 c = conn.cursor()
 connections = []
 
-rows = c.execute('''SELECT ip_address, start_time, duration, bytes_received, bytes_sent 
+rows = c.execute('''SELECT virtual_ip_addr, remote_ip_addr, start_time, duration, bytes_received, bytes_sent 
                     FROM connections
                     WHERE common_name = ?
                     AND start_time > ?''', (account, start_time_since))
 
 for row in rows:
-    ip_address = row[0]
-    start_time = row[1]
-    duration = row[2]
-    bytes_received = row[3]
-    bytes_sent = row[4]
+    virtual_ip_addr = row[0]
+    remote_ip_addr = row[1]
+    start_time = row[2]
+    duration = row[3]
+    bytes_received = row[4]
+    bytes_sent = row[5]
     end_time = start_time + duration if duration else None
-    connections.append({'ipAddress': ip_address, 'startTime': start_time, 'endTime': end_time, 'duration': duration, 'bytesReceived': bytes_received, 'bytesSent': bytes_sent})
+    connections.append({'virtualIpAddress': virtual_ip_addr, 'remoteIpAddress': remote_ip_addr, 'startTime': start_time, 'endTime': end_time, 'duration': duration, 'bytesReceived': bytes_received, 'bytesSent': bytes_sent})
 
 conn.close()
 print(simplejson.dumps(connections))
