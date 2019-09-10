@@ -169,6 +169,29 @@
           </div>
         </div>
 
+        <div class="row margin-top-15">
+        <!-- top traffic accounts -->
+          <div class="width-33">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
+              </div>
+              <div class="panel-body" v-for="item in status.openvpn.roadwarrior.topTrafficAccounts" :key="item.account">
+                <span
+                  class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+                >{{ item.traffic | byteFormat}}</span>
+                <span
+                  class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+                >
+                  <span
+                    class="card-pf-utilization-card-details-line-2 stats-text-small"
+                  >{{ item.account }}</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="divider"></div>
 
         <div class="row">
@@ -196,29 +219,6 @@
             </div>
           </div>
           <!-- end charts -->
-        </div>
-
-        <div class="row margin-top-40">
-        <!-- top traffic accounts -->
-          <div class="width-33">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
-              </div>
-              <div class="panel-body" v-for="item in status.openvpn.roadwarrior.topTrafficAccounts" :key="item.account">
-                <span
-                  class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
-                >{{ item.traffic | byteFormat}}</span>
-                <span
-                  class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
-                >
-                  <span
-                    class="card-pf-utilization-card-details-line-2 stats-text-small"
-                  >{{ item.account }}</span>
-                </span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -491,8 +491,8 @@ export default {
   margin-top: 20px;
 }
 
-.margin-top-40 {
-  margin-top: 40px;
+.margin-top-15 {
+  margin-top: 15px;
 }
 
 .width-33 {
