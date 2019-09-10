@@ -168,30 +168,58 @@
             </span>
           </div>
         </div>
-        <!-- charts -->
-        <h4>{{ $t('dashboard.openvpn_rw_interfaces') }}</h4>
-        <div
-          v-for="(i,ik) in status.openvpn.roadwarrior.interfaces"
-          :key="ik"
-          class="col-xs-6 col-sm-6 col-md-6 col-lg-6"
-        >
-          <h5>{{i}}</h5>
-          <div v-if="!charts[i]" class="spinner spinner-lg view-spinner"></div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <!-- charts -->
+          <h4>{{ $t('dashboard.openvpn_rw_interfaces') }}</h4>
           <div
-            v-if="charts[i] && charts[i].data && charts[i].data.length == 0"
-            class="empty-piechart"
+            v-for="(i,ik) in status.openvpn.roadwarrior.interfaces"
+            :key="ik"
+            class="col-xs-6 col-sm-6 col-md-6 col-lg-6"
           >
-            <span class="fa fa-line-chart"></span>
-            <div>{{ $t('dashboard.empty_piechart_label') }}</div>
+            <h5>{{i}}</h5>
+            <div v-if="!charts[i]" class="spinner spinner-lg view-spinner"></div>
+            <div
+              v-if="charts[i] && charts[i].data && charts[i].data.length == 0"
+              class="empty-piechart"
+            >
+              <span class="fa fa-line-chart"></span>
+              <div>{{ $t('dashboard.empty_piechart_label') }}</div>
+            </div>
+            <div v-show="charts[i] && charts[i].data && charts[i].data.length > 0">
+              <h4 class="col-sm-12">
+                <div :id="'ovpn-rw-legend-'+i" class="legend"></div>
+              </h4>
+              <div :id="'ovpn-rw-chart-'+i" class="col-sm-12"></div>
+            </div>
           </div>
-          <div v-show="charts[i] && charts[i].data && charts[i].data.length > 0">
-            <h4 class="col-sm-12">
-              <div :id="'ovpn-rw-legend-'+i" class="legend"></div>
-            </h4>
-            <div :id="'ovpn-rw-chart-'+i" class="col-sm-12"></div>
+          <!-- end charts -->
+        </div>
+
+        <div class="row margin-top-40">
+        <!-- top traffic accounts -->
+          <div class="width-33">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3 class="panel-title">{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
+              </div>
+              <div class="panel-body" v-for="item in status.openvpn.roadwarrior.topTrafficAccounts" :key="item.account">
+                <span
+                  class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
+                >{{ item.traffic | byteFormat}}</span>
+                <span
+                  class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
+                >
+                  <span
+                    class="card-pf-utilization-card-details-line-2 stats-text-small"
+                  >{{ item.account }}</span>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- end charts -->
       </div>
     </div>
   </div>
@@ -235,7 +263,8 @@ export default {
             status: "enabled",
             connected: 0,
             port: 0,
-            total: 0
+            total: 0,
+            topTrafficAccounts: []
           }
         },
         ipsec: {
@@ -243,7 +272,8 @@ export default {
           total: 0
         }
       },
-      charts: {}
+      charts: {},
+      tableLangsTexts: this.tableLangs()
     };
   },
   methods: {
@@ -388,6 +418,7 @@ export default {
           }
 
           context.view.isLoaded = true;
+          context.$forceUpdate();
         },
         function(error) {
           console.error(error);
@@ -459,4 +490,13 @@ export default {
 .divider {
   margin-top: 20px;
 }
+
+.margin-top-40 {
+  margin-top: 40px;
+}
+
+.width-33 {
+  width: 33%;
+}
+
 </style>

@@ -50,7 +50,10 @@
     "openvpn_rw_status": "Status",
     "openvpn_tun_interfaces": "OpenVPN tunnels interfaces",
     "openvpn_rw_interfaces": "OpenVPN roadwarrior interfaces",
-    "bytes": "Bytes"
+    "openvpn_rw_top_traffic_accounts": "Today OpenVPN roadwarrior top traffic accounts",
+    "bytes": "Bytes",
+    "account": "Account",
+    "traffic": "Traffic"
   },
   "ipsec": {
     "title": "IPSec",
