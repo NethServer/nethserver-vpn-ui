@@ -169,26 +169,17 @@
           </div>
         </div>
 
-        <div class="row margin-top-15">
-        <!-- top traffic accounts -->
+        <div class="top-traffic-accounts">
+          <!-- top traffic accounts -->
+          <h3>{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
           <div class="width-33">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <h3 class="panel-title">{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
-              </div>
-              <div class="panel-body" v-for="item in status.openvpn.roadwarrior.topTrafficAccounts" :key="item.account">
-                <span
-                  class="card-pf-utilization-card-details-count stats-count-small col-xs-5"
-                >{{ item.traffic | byteFormat}}</span>
-                <span
-                  class="card-pf-utilization-card-details-description stats-description-small col-xs-6"
-                >
-                  <span
-                    class="card-pf-utilization-card-details-line-2 stats-text-small"
-                  >{{ item.account }}</span>
-                </span>
-              </div>
-            </div>
+            <ul class="list-group">
+              <li v-for="(item, k) in status.openvpn.roadwarrior.topTrafficAccounts" v-bind:key="k" class="list-group-item">
+                <strong>{{k+1}}.</strong>
+                {{item.account}}
+                <span class="gray mg-left-10">({{item.traffic | byteFormat}})</span>
+              </li>
+            </ul>
           </div>
         </div>
 
@@ -491,12 +482,28 @@ export default {
   margin-top: 20px;
 }
 
-.margin-top-15 {
+.top-traffic-accounts {
   margin-top: 15px;
+  margin-left: 20px;
 }
 
 .width-33 {
   width: 33%;
 }
 
+.list-view-pf .list-group-item:first-child {
+  border-top: 1px solid transparent;
+}
+
+.list-group.list-view-pf {
+  border-top: 0px;
+}
+
+.list-view-pf .list-group-item {
+  border-top: 1px solid #ededec;
+}
+
+.mg-left-10 {
+  margin-left: 10px;
+}
 </style>
