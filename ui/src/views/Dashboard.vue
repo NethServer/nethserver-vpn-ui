@@ -169,8 +169,11 @@
           </div>
         </div>
 
-        <div class="top-traffic-accounts">
-          <!-- top traffic accounts -->
+        <!-- top traffic accounts -->
+        <div
+          v-if="status.openvpn.roadwarrior.topTrafficAccounts.length"
+          class="top-traffic-accounts"
+        >
           <h3>{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
           <div class="width-33">
             <ul class="list-group">
