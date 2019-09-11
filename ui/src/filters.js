@@ -68,6 +68,19 @@ var Filters = {
       return ns._i18n.t("never_expires");
     } else return "-";
   },
+  shortDateFormat: function(value) {
+    var moment = require("moment");
+    if (+new Date(value) > 0) {
+      var converted = isNaN(value)
+        ? String(value)
+        : String(value).length == 10
+        ? value * 1000
+        : value;
+      return moment(converted).format("DD MMM YYYY, HH:mm");
+    } else if (value == -1) {
+      return ns._i18n.t("never_expires");
+    } else return "-";
+  },
   capitalize: function(value) {
     return (
       value &&

@@ -121,16 +121,30 @@ if ($cmd eq 'users') {
     my $db = esmith::HostsDB->open_ro();
     my $accounts_status = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net 2>/dev/null`);
     my $accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/list-accounts 2>/dev/null`);
+    my $last_connected = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/accounts-last-connected 2>/dev/null`);
+
     foreach (@{$accounts}) {
         my $host = find_host($db, $_->{'OpenVpnIp'}) || '';
+        my $account_name = $_->{'name'};
         $_->{'Host'} = $host;
-        if ($accounts_status->{$_->{'name'}}) {
-            $_->{'statistics'} = $accounts_status->{$_->{'name'}};
+        if ($accounts_status->{$account_name}) {
+            $_->{'statistics'} = $accounts_status->{$account_name};
         } else {
             $_->{'statistics'} = undef;
         }
+        my ($item) = grep {
+            $_->{'account'} eq $account_name
+        } @{$last_connected};
+        $_->{'lastConnected'} = $item->{'lastConnected'} || '';
     }
     $ret->{'accounts'} = $accounts;
+
+} elsif ($cmd eq 'connectionHistory') {
+
+    my $account = $input->{'account'};
+    my $time_interval = $input->{'timeInterval'};
+    my $connection_history = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/connection-history '$account' '$time_interval' 2>/dev/null`);
+    $ret->{'connectionHistory'} = $connection_history;
 
 } elsif ($cmd eq 'download') {
 

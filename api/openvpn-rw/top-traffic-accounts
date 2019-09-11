@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+import os
+import sqlite3
+import simplejson
+import time
+import subprocess
+import operator
+
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+c = conn.cursor()
+
+# today at 00:00 (epoch time)
+start_str = time.strftime( "%m/%d/%Y" ) + " 00:00:00"
+today_epoch = int( time.mktime( time.strptime( start_str, "%m/%d/%Y %H:%M:%S" ) ) )
+
+limit = 5
+traffic_accounts = {}
+
+# closed connections traffic
+
+rows = c.execute('''SELECT common_name, SUM(bytes_received + bytes_sent)
+						FROM connections
+						WHERE start_time > ?
+						GROUP BY common_name
+						LIMIT ?''', (today_epoch, limit))
+
+for row in rows:
+	account_name = row[0]
+	bytes_total = row[1]
+
+	if bytes_total is not None:
+		traffic_accounts[account_name] = bytes_total
+
+conn.close()
+
+# live connections traffic
+
+bash_command = "/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net"
+process = subprocess.Popen(bash_command.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
+if output:
+	live_connections = simplejson.loads(output)
+
+	for account_name, data in live_connections.items():
+		if account_name in traffic_accounts:
+			# sum live traffic to closed connections traffic
+			traffic_accounts[account_name] += int(data['bytes_received']) + int(data['bytes_sent'])
+		else:
+			# closed connections traffic not present
+			traffic_accounts[account_name] = int(data['bytes_received']) + int(data['bytes_sent'])
+
+sorted_traffic_accounts = sorted(traffic_accounts.items(), key=operator.itemgetter(1), reverse=True)
+output_accounts = []
+
+for traffic_account in sorted_traffic_accounts:
+	output_accounts.append({ 'account': traffic_account[0], 'traffic': traffic_account[1] })
+
+print(simplejson.dumps(output_accounts))

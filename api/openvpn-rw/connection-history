@@ -1,0 +1,71 @@
+#!/usr/bin/env python
+
+#
+# Copyright (C) 2019 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+import os
+import sqlite3
+import simplejson
+import sys
+import time
+
+if len(sys.argv) < 3:
+    sys.stderr.write('Usage: {} account_name <today | last_week | last_month>\n'.format(sys.argv[0]))
+    exit(1)
+
+account = sys.argv[1]
+time_interval = sys.argv[2]
+
+if time_interval != "today" and time_interval != "last_week" and time_interval != "last_month":
+    sys.stderr.write('Time interval must be one of "today", "last_week" or "last_month"\n')
+    exit(1)
+
+# today at 00:00 (epoch time)
+start_str = time.strftime( "%m/%d/%Y" ) + " 00:00:00"
+today_epoch = int( time.mktime( time.strptime( start_str, "%m/%d/%Y %H:%M:%S" ) ) )
+
+if time_interval == "today":
+    start_time_since = today_epoch
+elif time_interval == "last_week":
+    start_time_since = today_epoch - (7 * 24 * 60 * 60) # 604800 seconds in a week
+elif time_interval == "last_month":
+    start_time_since = today_epoch - (31 * 24 * 60 * 60) # 2678400 seconds in a month
+
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+c = conn.cursor()
+connections = []
+
+rows = c.execute('''SELECT virtual_ip_addr, remote_ip_addr, start_time, duration, bytes_received, bytes_sent 
+                    FROM connections
+                    WHERE common_name = ?
+                    AND start_time > ?''', (account, start_time_since))
+
+for row in rows:
+    virtual_ip_addr = row[0]
+    remote_ip_addr = row[1]
+    start_time = row[2]
+    duration = row[3]
+    bytes_received = row[4]
+    bytes_sent = row[5]
+    end_time = start_time + duration if duration else None
+    connections.append({'virtualIpAddress': virtual_ip_addr, 'remoteIpAddress': remote_ip_addr, 'startTime': start_time, 'endTime': end_time, 'duration': duration, 'bytesReceived': bytes_received, 'bytesSent': bytes_sent})
+
+conn.close()
+print(simplejson.dumps(connections))

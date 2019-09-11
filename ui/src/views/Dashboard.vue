@@ -168,30 +168,49 @@
             </span>
           </div>
         </div>
-        <!-- charts -->
-        <h4>{{ $t('dashboard.openvpn_rw_interfaces') }}</h4>
-        <div
-          v-for="(i,ik) in status.openvpn.roadwarrior.interfaces"
-          :key="ik"
-          class="col-xs-6 col-sm-6 col-md-6 col-lg-6"
-        >
-          <h5>{{i}}</h5>
-          <div v-if="!charts[i]" class="spinner spinner-lg view-spinner"></div>
-          <div
-            v-if="charts[i] && charts[i].data && charts[i].data.length == 0"
-            class="empty-piechart"
-          >
-            <span class="fa fa-line-chart"></span>
-            <div>{{ $t('dashboard.empty_piechart_label') }}</div>
-          </div>
-          <div v-show="charts[i] && charts[i].data && charts[i].data.length > 0">
-            <h4 class="col-sm-12">
-              <div :id="'ovpn-rw-legend-'+i" class="legend"></div>
-            </h4>
-            <div :id="'ovpn-rw-chart-'+i" class="col-sm-12"></div>
+
+        <div class="top-traffic-accounts">
+          <!-- top traffic accounts -->
+          <h3>{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
+          <div class="width-33">
+            <ul class="list-group">
+              <li v-for="(item, k) in status.openvpn.roadwarrior.topTrafficAccounts" v-bind:key="k" class="list-group-item">
+                <strong>{{k+1}}.</strong>
+                {{item.account}}
+                <span class="gray mg-left-10">({{item.traffic | byteFormat}})</span>
+              </li>
+            </ul>
           </div>
         </div>
-        <!-- end charts -->
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <!-- charts -->
+          <h4>{{ $t('dashboard.openvpn_rw_interfaces') }}</h4>
+          <div
+            v-for="(i,ik) in status.openvpn.roadwarrior.interfaces"
+            :key="ik"
+            class="col-xs-6 col-sm-6 col-md-6 col-lg-6"
+          >
+            <h5>{{i}}</h5>
+            <div v-if="!charts[i]" class="spinner spinner-lg view-spinner"></div>
+            <div
+              v-if="charts[i] && charts[i].data && charts[i].data.length == 0"
+              class="empty-piechart"
+            >
+              <span class="fa fa-line-chart"></span>
+              <div>{{ $t('dashboard.empty_piechart_label') }}</div>
+            </div>
+            <div v-show="charts[i] && charts[i].data && charts[i].data.length > 0">
+              <h4 class="col-sm-12">
+                <div :id="'ovpn-rw-legend-'+i" class="legend"></div>
+              </h4>
+              <div :id="'ovpn-rw-chart-'+i" class="col-sm-12"></div>
+            </div>
+          </div>
+          <!-- end charts -->
+        </div>
       </div>
     </div>
   </div>
@@ -235,7 +254,8 @@ export default {
             status: "enabled",
             connected: 0,
             port: 0,
-            total: 0
+            total: 0,
+            topTrafficAccounts: []
           }
         },
         ipsec: {
@@ -243,7 +263,8 @@ export default {
           total: 0
         }
       },
-      charts: {}
+      charts: {},
+      tableLangsTexts: this.tableLangs()
     };
   },
   methods: {
@@ -388,6 +409,7 @@ export default {
           }
 
           context.view.isLoaded = true;
+          context.$forceUpdate();
         },
         function(error) {
           console.error(error);
@@ -458,5 +480,30 @@ export default {
 
 .divider {
   margin-top: 20px;
+}
+
+.top-traffic-accounts {
+  margin-top: 15px;
+  margin-left: 20px;
+}
+
+.width-33 {
+  width: 33%;
+}
+
+.list-view-pf .list-group-item:first-child {
+  border-top: 1px solid transparent;
+}
+
+.list-group.list-view-pf {
+  border-top: 0px;
+}
+
+.list-view-pf .list-group-item {
+  border-top: 1px solid #ededec;
+}
+
+.mg-left-10 {
+  margin-left: 10px;
 }
 </style>
