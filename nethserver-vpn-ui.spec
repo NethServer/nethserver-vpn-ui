@@ -46,6 +46,7 @@ rm -rf $RPM_BUILD_ROOT
 /usr/share/cockpit/%{name}/*
 /usr/share/cockpit/nethserver/applications/*
 /usr/libexec/nethserver/api/nethserver-vpn/*
+%attr(0440,root,root) /etc/sudoers.d/50_nsapi_nethserver_vpn_ui
 
 %changelog
 * Wed Sep 18 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.0-1
