@@ -26,6 +26,7 @@ sed -i 's/_RELEASE_/%{version}/' %{name}.json
 
 %install
 rm -rf %{buildroot}
+(cd root; find . -depth -print | cpio -dump %{buildroot})
 
 mkdir -p %{buildroot}/usr/share/cockpit/%{name}/
 mkdir -p %{buildroot}/usr/share/cockpit/nethserver/applications/
@@ -34,18 +35,15 @@ tar xf %{SOURCE1} -C %{buildroot}/usr/share/cockpit/%{name}/
 cp -a %{name}.json %{buildroot}/usr/share/cockpit/nethserver/applications/
 cp -a api/* %{buildroot}/usr/libexec/nethserver/api/nethserver-vpn/
 
-%post
+%{genfilelist} %{buildroot} --file /etc/sudoers.d/50_nsapi_nethserver_vpn_ui 'attr(0440,root,root)' > %{name}-%{version}-filelist
+echo "%doc COPYING" >> %{name}-%{version}-filelist
 
-%preun
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%files
+%files -f %{name}-%{version}-filelist
 %defattr(-,root,root)
-/usr/share/cockpit/%{name}/*
-/usr/share/cockpit/nethserver/applications/*
-/usr/libexec/nethserver/api/nethserver-vpn/*
 
 %changelog
 * Wed Sep 18 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.0-1
