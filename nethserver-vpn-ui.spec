@@ -9,7 +9,7 @@ Source1: %{name}-cockpit.tar.gz
 
 BuildArch: noarch
 
-Requires: nethserver-firewall-base
+Requires: nethserver-firewall-base, nethserver-openvpn >= 1.9.0
 
 BuildRequires: nethserver-devtools
 

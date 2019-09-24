@@ -1,2 +1,5 @@
 node_modules/
 dist/
+*.rpm
+*.tar.gz
+
