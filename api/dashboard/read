@@ -25,7 +25,7 @@ use warnings;
 use esmith::ConfigDB;
 use JSON;
 
-require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-vpn-ui/lib/vpn_functions.pl';
 
 sub read_netdata
 {
@@ -59,7 +59,7 @@ if ($cmd eq 'status') {
     $rw->{'auth'} = $db->get_prop('openvpn@host-to-net', 'AuthMode');
     $rw->{'port'} = $db->get_prop('openvpn@host-to-net', 'TCPPort') || $db->get_prop('openvpn@host-to-net', 'UDPPort');
     $rw->{'interfaces'} = ['tunrw'];
-    my $top_traffic_accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/top-traffic-accounts 2>/dev/null`);
+    my $top_traffic_accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/top-traffic-accounts 2>/dev/null`);
     $rw->{'topTrafficAccounts'} = $top_traffic_accounts;
 
     $tunnels->{'total'} = 0;

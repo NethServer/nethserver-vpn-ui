@@ -29,7 +29,7 @@ use JSON;
 use File::Temp qw/tempfile/;
 use MIME::Base64;
 
-require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-vpn-ui/lib/vpn_functions.pl';
 
 my $input = readInput();
 my $cmd = $input->{'action'};
@@ -139,7 +139,7 @@ if ($cmd eq 'tunnels') {
         $ret->{'data'} = encode_base64(read_file("/var/lib/nethserver/openvpn-tunnels/".$input->{'name'}.".key"));
         $ret->{'filename'} = $input->{'name'}.".key";
     } elsif ($input->{'type'} eq 'configuration') {
-        system(("/usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/download-json", $input->{'name'}));
+        system(("/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/download-json", $input->{'name'}));
         exit $?;
     } elsif ($input->{'type'} eq 'certificate') {
         my ($fh, $filename) = tempfile();

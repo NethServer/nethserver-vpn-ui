@@ -276,7 +276,7 @@ export default {
 
       context.view.isChartLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/dashboard/read"],
+        ["nethserver-vpn-ui/dashboard/read"],
         {
           action: "chart",
           name: chartName
@@ -351,7 +351,7 @@ export default {
     updateCharts(chartName) {
       var context = this;
       nethserver.exec(
-        ["nethserver-vpn/dashboard/read"],
+        ["nethserver-vpn-ui/dashboard/read"],
         {
           action: "chart",
           name: chartName
@@ -388,7 +388,7 @@ export default {
 
       context.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/dashboard/read"],
+        ["nethserver-vpn-ui/dashboard/read"],
         {
           action: "status"
         },

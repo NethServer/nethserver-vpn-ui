@@ -24,7 +24,7 @@ use strict;
 use warnings;
 use esmith::ConfigDB;
 
-require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-vpn-ui/lib/vpn_functions.pl';
 
 my $input = readInput();
 my $cmd = $input->{'action'};

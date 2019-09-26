@@ -591,7 +591,7 @@ export default {
     next(vm => {
       vm.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/feature/read"],
+        ["nethserver-vpn-ui/feature/read"],
         {
           name: vm.$route.path.substr(1)
         },
@@ -651,7 +651,7 @@ export default {
       nethserver.notifications.error = this.$i18n.t("packages_installed_error");
 
       nethserver.exec(
-        ["nethserver-vpn/feature/update"],
+        ["nethserver-vpn-ui/feature/update"],
         {
           name: this.$route.path.substr(1)
         },
@@ -769,7 +769,7 @@ export default {
 
       context.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/ipsec/read"],
+        ["nethserver-vpn-ui/ipsec/read"],
         {
           action: "tunnels"
         },
@@ -792,7 +792,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/ipsec/read"],
+        ["nethserver-vpn-ui/ipsec/read"],
         {
           action: "interfaces"
         },
@@ -814,7 +814,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/ipsec/read"],
+        ["nethserver-vpn-ui/ipsec/read"],
         {
           action: "subnets"
         },
@@ -836,7 +836,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/ipsec/read"],
+        ["nethserver-vpn-ui/ipsec/read"],
         {
           action: "algorithms"
         },
@@ -868,7 +868,7 @@ export default {
 
       // update values
       nethserver.exec(
-        ["nethserver-vpn/ipsec/update"],
+        ["nethserver-vpn-ui/ipsec/update"],
         {
           action: tunnel.status == "enabled" ? "disable" : "enable",
           name: tunnel.name
@@ -949,7 +949,7 @@ export default {
       context.currentTunnel.isLoading = true;
       context.$forceUpdate();
       nethserver.exec(
-        ["nethserver-vpn/ipsec/validate"],
+        ["nethserver-vpn-ui/ipsec/validate"],
         tunnelObj,
         null,
         function(success) {
@@ -971,7 +971,7 @@ export default {
           // update values
           if (tunnel.isEdit) {
             nethserver.exec(
-              ["nethserver-vpn/ipsec/update"],
+              ["nethserver-vpn-ui/ipsec/update"],
               tunnelObj,
               function(stream) {
                 console.info("tunnel-edit", stream);
@@ -986,7 +986,7 @@ export default {
             );
           } else {
             nethserver.exec(
-              ["nethserver-vpn/ipsec/create"],
+              ["nethserver-vpn-ui/ipsec/create"],
               tunnelObj,
               function(stream) {
                 console.info("tunnel-create", stream);
@@ -1037,7 +1037,7 @@ export default {
 
       $("#deleteTunnelModal").modal("hide");
       nethserver.exec(
-        ["nethserver-vpn/ipsec/delete"],
+        ["nethserver-vpn-ui/ipsec/delete"],
         {
           name: tunnel.name
         },

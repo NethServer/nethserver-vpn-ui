@@ -32,9 +32,9 @@ function validate_wrapper($data, $key, $current = '') {
     }
     $action = strtolower($key);
     if ($current) {
-        exec("/usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/is-free $action {$data[$key]} $current", $output, $ret);
+        exec("/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/is-free $action {$data[$key]} $current", $output, $ret);
     } else {
-        exec("/usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/is-free $action {$data[$key]}", $output, $ret);
+        exec("/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/is-free $action {$data[$key]}", $output, $ret);
     }
 
     if ($ret) {
