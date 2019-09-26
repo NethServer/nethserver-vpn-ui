@@ -1117,7 +1117,7 @@ export default {
     next(vm => {
       vm.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/feature/read"],
+        ["nethserver-vpn-ui/feature/read"],
         {
           name: "openvpn"
         },
@@ -1316,7 +1316,7 @@ export default {
       nethserver.notifications.error = this.$i18n.t("packages_installed_error");
 
       nethserver.exec(
-        ["nethserver-vpn/feature/update"],
+        ["nethserver-vpn-ui/feature/update"],
         {
           name: "openvpn"
         },
@@ -1492,7 +1492,7 @@ export default {
 
       context.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/read"],
+        ["nethserver-vpn-ui/openvpn-rw/read"],
         {
           action: "configuration"
         },
@@ -1523,7 +1523,7 @@ export default {
 
       context.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/read"],
+        ["nethserver-vpn-ui/openvpn-rw/read"],
         {
           action: "accounts"
         },
@@ -1552,7 +1552,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/read"],
+        ["nethserver-vpn-ui/openvpn-rw/read"],
         {
           action: "interfaces"
         },
@@ -1574,7 +1574,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/read"],
+        ["nethserver-vpn-ui/openvpn-rw/read"],
         {
           action: "users"
         },
@@ -1596,7 +1596,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/read"],
+        ["nethserver-vpn-ui/openvpn-tunnel/read"],
         {
           action: "algorithms"
         },
@@ -1687,7 +1687,7 @@ export default {
 
         // update values
         nethserver.exec(
-          ["nethserver-vpn/openvpn-rw/update"],
+          ["nethserver-vpn-ui/openvpn-rw/update"],
           {
             status: "disabled",
             action: "configuration"
@@ -1761,7 +1761,7 @@ export default {
 
       context.newConfiguration.isLoading = true;
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/validate"],
+        ["nethserver-vpn-ui/openvpn-rw/validate"],
         configObj,
         null,
         function(success) {
@@ -1778,7 +1778,7 @@ export default {
 
           // update values
           nethserver.exec(
-            ["nethserver-vpn/openvpn-rw/update"],
+            ["nethserver-vpn-ui/openvpn-rw/update"],
             configObj,
             function(stream) {
               console.info("update-config", stream);
@@ -1842,7 +1842,7 @@ export default {
       context.currentAccount.isLoading = true;
       context.$forceUpdate();
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/validate"],
+        ["nethserver-vpn-ui/openvpn-rw/validate"],
         accountObj,
         null,
         function(success) {
@@ -1864,7 +1864,7 @@ export default {
           // update values
           if (account.isEdit) {
             nethserver.exec(
-              ["nethserver-vpn/openvpn-rw/update"],
+              ["nethserver-vpn-ui/openvpn-rw/update"],
               accountObj,
               function(stream) {
                 console.info("account-edit", stream);
@@ -1879,7 +1879,7 @@ export default {
             );
           } else {
             nethserver.exec(
-              ["nethserver-vpn/openvpn-rw/create"],
+              ["nethserver-vpn-ui/openvpn-rw/create"],
               accountObj,
               function(stream) {
                 console.info("account-create", stream);
@@ -1931,7 +1931,7 @@ export default {
 
       $("#deleteAccountModal").modal("hide");
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/delete"],
+        ["nethserver-vpn-ui/openvpn-rw/delete"],
         {
           name: account.name
         },
@@ -1964,7 +1964,7 @@ export default {
 
       $("#killAccountModal").modal("hide");
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/update"],
+        ["nethserver-vpn-ui/openvpn-rw/update"],
         {
           action: "kill",
           name: account.name
@@ -1993,7 +1993,7 @@ export default {
 
       // update values
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/update"],
+        ["nethserver-vpn-ui/openvpn-rw/update"],
         {
           action: account.status == "enabled" ? "disable" : "enable",
           name: account.name
@@ -2030,7 +2030,7 @@ export default {
 
       // download actions
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/read"],
+        ["nethserver-vpn-ui/openvpn-rw/read"],
         {
           action: "download",
           type: type,
@@ -2069,7 +2069,7 @@ export default {
 
       // send email action
       nethserver.exec(
-        ["nethserver-vpn/openvpn-rw/read"],
+        ["nethserver-vpn-ui/openvpn-rw/read"],
         {
           action: "mail",
           name: this.toSendEmailAccount.name,
@@ -2133,7 +2133,7 @@ export default {
       if (!this.connectionHistory[timeInterval][accountName]) {
         var context = this;
         nethserver.exec(
-          ["nethserver-vpn/openvpn-rw/read"],
+          ["nethserver-vpn-ui/openvpn-rw/read"],
           {
             action: "connectionHistory",
             account: accountName,

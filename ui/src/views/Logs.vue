@@ -140,7 +140,7 @@ export default {
 
       context.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/logs/read"],
+        ["nethserver-vpn-ui/logs/read"],
         null,
         null,
         function(success) {

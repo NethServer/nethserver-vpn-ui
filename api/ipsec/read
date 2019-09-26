@@ -27,7 +27,7 @@ use esmith::NetworksDB;
 use NetAddr::IP;
 use JSON;
 
-require '/usr/libexec/nethserver/api/nethserver-vpn/lib/vpn_functions.pl';
+require '/usr/libexec/nethserver/api/nethserver-vpn-ui/lib/vpn_functions.pl';
 
 my $input = readInput();
 my $cmd = $input->{'action'};

@@ -2,24 +2,24 @@
 # nsapi_nethserver_vpn_ui
 #
 Cmnd_Alias NSAPI_NETHSERVER_VPN_UI = \
-    /usr/libexec/nethserver/api/nethserver-vpn/dashboard/read, \
-    /usr/libexec/nethserver/api/nethserver-vpn/feature/read, \
-    /usr/libexec/nethserver/api/nethserver-vpn/feature/update, \
-    /usr/libexec/nethserver/api/nethserver-vpn/ipsec/create, \
-    /usr/libexec/nethserver/api/nethserver-vpn/ipsec/delete, \
-    /usr/libexec/nethserver/api/nethserver-vpn/ipsec/read, \
-    /usr/libexec/nethserver/api/nethserver-vpn/ipsec/update, \
-    /usr/libexec/nethserver/api/nethserver-vpn/ipsec/validate, \
-    /usr/libexec/nethserver/api/nethserver-vpn/logs/read, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/create, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/delete, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/read, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/update, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-rw/validate, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/create, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/delete, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/read, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/update, \
-    /usr/libexec/nethserver/api/nethserver-vpn/openvpn-tunnel/validate
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/dashboard/read, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/feature/read, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/feature/update, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/ipsec/create, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/ipsec/delete, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/ipsec/read, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/ipsec/update, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/ipsec/validate, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/logs/read, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/create, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/delete, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/read, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/update, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/validate, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/create, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/delete, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/read, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/update, \
+    /usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-tunnel/validate
 
 Defaults!NSAPI_NETHSERVER_VPN_UI !requiretty

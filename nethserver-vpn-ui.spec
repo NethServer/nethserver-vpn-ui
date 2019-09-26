@@ -30,10 +30,10 @@ rm -rf %{buildroot}
 
 mkdir -p %{buildroot}/usr/share/cockpit/%{name}/
 mkdir -p %{buildroot}/usr/share/cockpit/nethserver/applications/
-mkdir -p %{buildroot}/usr/libexec/nethserver/api/nethserver-vpn/
+mkdir -p %{buildroot}/usr/libexec/nethserver/api/nethserver-vpn-ui/
 tar xf %{SOURCE1} -C %{buildroot}/usr/share/cockpit/%{name}/
 cp -a %{name}.json %{buildroot}/usr/share/cockpit/nethserver/applications/
-cp -a api/* %{buildroot}/usr/libexec/nethserver/api/nethserver-vpn/
+cp -a api/* %{buildroot}/usr/libexec/nethserver/api/nethserver-vpn-ui/
 
 %{genfilelist} %{buildroot} --file /etc/sudoers.d/50_nsapi_nethserver_vpn_ui 'attr(0440,root,root)' > %{name}-%{version}-filelist
 echo "%doc COPYING" >> %{name}-%{version}-filelist

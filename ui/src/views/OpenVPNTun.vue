@@ -1387,7 +1387,7 @@ export default {
     next(vm => {
       vm.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/feature/read"],
+        ["nethserver-vpn-ui/feature/read"],
         {
           name: "openvpn"
         },
@@ -1576,7 +1576,7 @@ export default {
       nethserver.notifications.error = this.$i18n.t("packages_installed_error");
 
       nethserver.exec(
-        ["nethserver-vpn/feature/update"],
+        ["nethserver-vpn-ui/feature/update"],
         {
           name: 'openvpn'
         },
@@ -1807,7 +1807,7 @@ export default {
 
       context.view.isLoaded = false;
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/read"],
+        ["nethserver-vpn-ui/openvpn-tunnel/read"],
         {
           action: "tunnels"
         },
@@ -1839,7 +1839,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/read"],
+        ["nethserver-vpn-ui/openvpn-tunnel/read"],
         {
           action: "interfaces"
         },
@@ -1861,7 +1861,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/read"],
+        ["nethserver-vpn-ui/openvpn-tunnel/read"],
         {
           action: "server-defaults"
         },
@@ -1883,7 +1883,7 @@ export default {
       var context = this;
 
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/read"],
+        ["nethserver-vpn-ui/openvpn-tunnel/read"],
         {
           action: "algorithms"
         },
@@ -1938,7 +1938,7 @@ export default {
 
       // update values
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/update"],
+        ["nethserver-vpn-ui/openvpn-tunnel/update"],
         {
           action: tunnel.status == "enabled" ? "disable" : "enable",
           name: tunnel.name
@@ -1967,7 +1967,7 @@ export default {
 
       // update values
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/update"],
+        ["nethserver-vpn-ui/openvpn-tunnel/update"],
         {
           action: tunnel.status == "enabled" ? "disable" : "enable",
           name: tunnel.name
@@ -2116,7 +2116,7 @@ export default {
       context.currentTunnelServer.isLoading = true;
       context.$forceUpdate();
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/validate"],
+        ["nethserver-vpn-ui/openvpn-tunnel/validate"],
         tunnelObj,
         null,
         function(success) {
@@ -2138,7 +2138,7 @@ export default {
           // update values
           if (tunnel.isEdit) {
             nethserver.exec(
-              ["nethserver-vpn/openvpn-tunnel/update"],
+              ["nethserver-vpn-ui/openvpn-tunnel/update"],
               tunnelObj,
               function(stream) {
                 console.info("tunnel-edit", stream);
@@ -2153,7 +2153,7 @@ export default {
             );
           } else {
             nethserver.exec(
-              ["nethserver-vpn/openvpn-tunnel/create"],
+              ["nethserver-vpn-ui/openvpn-tunnel/create"],
               tunnelObj,
               function(stream) {
                 console.info("tunnel-create", stream);
@@ -2260,7 +2260,7 @@ export default {
       context.currentTunnelClient.isLoading = true;
       context.$forceUpdate();
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/validate"],
+        ["nethserver-vpn-ui/openvpn-tunnel/validate"],
         tunnelObj,
         null,
         function(success) {
@@ -2282,7 +2282,7 @@ export default {
           // update values
           if (tunnel.isEdit) {
             nethserver.exec(
-              ["nethserver-vpn/openvpn-tunnel/update"],
+              ["nethserver-vpn-ui/openvpn-tunnel/update"],
               tunnelObj,
               function(stream) {
                 console.info("tunnel-edit", stream);
@@ -2297,7 +2297,7 @@ export default {
             );
           } else {
             nethserver.exec(
-              ["nethserver-vpn/openvpn-tunnel/create"],
+              ["nethserver-vpn-ui/openvpn-tunnel/create"],
               tunnelObj,
               function(stream) {
                 console.info("tunnel-create", stream);
@@ -2355,7 +2355,7 @@ export default {
 
       $("#deleteServerTunnelModal").modal("hide");
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/delete"],
+        ["nethserver-vpn-ui/openvpn-tunnel/delete"],
         {
           name: tunnel.name
         },
@@ -2384,7 +2384,7 @@ export default {
 
       $("#deleteClientTunnelModal").modal("hide");
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/delete"],
+        ["nethserver-vpn-ui/openvpn-tunnel/delete"],
         {
           name: tunnel.name
         },
@@ -2420,7 +2420,7 @@ export default {
 
       // download actions
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/read"],
+        ["nethserver-vpn-ui/openvpn-tunnel/read"],
         {
           action: "download",
           type: type,
@@ -2463,7 +2463,7 @@ export default {
 
       context.toUploadTunnelClient.errors.isLoading = true;
       nethserver.exec(
-        ["nethserver-vpn/openvpn-tunnel/validate"],
+        ["nethserver-vpn-ui/openvpn-tunnel/validate"],
         configUp,
         null,
         function(success) {
@@ -2480,7 +2480,7 @@ export default {
 
           // upload config
           nethserver.exec(
-            ["nethserver-vpn/openvpn-tunnel/create"],
+            ["nethserver-vpn-ui/openvpn-tunnel/create"],
             configUp,
             function(stream) {
               console.info("upload-tunnel", stream);
