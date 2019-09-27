@@ -47,6 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}-%{version}-filelist
 %defattr(-,root,root)
+%dir %{_nseventsdir}/%{name}-update
 %dir %{_nsdbconfdir}/vpn
 
 %changelog
