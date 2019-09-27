@@ -24,6 +24,9 @@ VPN UI module for NethServer.
 sed -i 's/_RELEASE_/%{version}/' %{name}.json
 %{makedocs}
 
+# build the esmith vpn db
+mkdir -p root/%{_nsdbconfdir}/vpn/{migrate,force,defaults}
+
 %install
 rm -rf %{buildroot}
 (cd root; find . -depth -print | cpio -dump %{buildroot})
@@ -44,6 +47,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}-%{version}-filelist
 %defattr(-,root,root)
+%dir %{_nsdbconfdir}/vpn
 
 %changelog
 * Wed Sep 18 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.1.0-1
