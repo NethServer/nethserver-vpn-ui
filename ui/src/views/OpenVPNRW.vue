@@ -1107,6 +1107,7 @@
       </div>
     </div>
     <!-- END MODALS -->
+    <iframe width="1" height="1" id="download-backup" style="display: none;"></iframe>
   </div>
 </template>
 
@@ -2043,7 +2044,14 @@ export default {
           } catch (e) {
             console.error(e);
           }
-          require("downloadjs")(atob(success.data), success.filename);
+          if (navigator.userAgent.indexOf("Firefox") != -1) {
+            var blob = "data:application/octet-stream;base64," + success.data;
+            var encodedUri = encodeURI(blob);
+            var link = document.getElementById("download-backup");
+            link.setAttribute("src", encodedUri);
+          } else {
+            require("downloadjs")(atob(success.data), success.filename);
+          }
         },
         function(error, data) {
           console.error(error, data);

@@ -1,4 +1,4 @@
 {
   "version": 0,
-  "content-security-policy": "style-src 'self' 'unsafe-inline'"
+  "content-security-policy": "default-src 'self' data:; style-src 'self' 'unsafe-inline'"
 }
