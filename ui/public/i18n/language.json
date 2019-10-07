@@ -81,7 +81,7 @@
     "rightsubnets": "Remote subnets (one per line)",
     "leftid": "Local identifier",
     "rightid": "Remote identifier",
-    "psk": "Pre-Shared Key",
+    "psk": "Pre-shared Key",
     "dpdaction": "Enable DPD (Dead Peer Detection)",
     "pfs": "Enable PFS (Perfect Forward Secrecy)",
     "compress": "Enable compression",
@@ -119,7 +119,7 @@
     "tunnel_deleted_error": "Tunnel not deleted.",
     "name": "Name",
     "connection": "Connection",
-    "public_addresses": "Public addesses",
+    "public_addresses": "Public addresses",
     "port": "Port",
     "routes": "Routes",
     "local_networks": "Local networks",
@@ -130,7 +130,7 @@
     "vpn_network": "VPN Network",
     "local_p2p_ip": "Local P2P IP",
     "remote_p2p_ip": "Remote P2P IP",
-    "psk": "Pre-Shared Key",
+    "psk": "Pre-shared Key",
     "protocol": "Protocol",
     "udp": "UDP",
     "tcp": "TCP",
@@ -142,7 +142,7 @@
     "download_configuration": "Download tunnel configurations of",
     "client_configuration": "Client configuration",
     "private_key_tun_ca": "Private key, tunnel and CA certificates",
-    "psk_download": "PSK (Pre-Shared Key)",
+    "psk_download": "PSK (Pre-shared Key)",
     "tun_servers": "Tunnel servers",
     "tun_clients": "Tunnel clients",
     "remote_port": "Remote port",
@@ -305,8 +305,8 @@
   },
   "docs": {
     "more_info_about": "More info about {docsLink}.",
-    "right": "Specify the statuc public IP adress or %any if the remote has a dynamic public IP.",
-    "vpn_remote_network": "Configure these parameters only if you want to create a Net to Net VPN using this account (compatibile with NethServer 6). Do not compile these fields if you're configuring a host to net VPN.",
+    "right": "Specify the static public IP address or %any if the remote has a dynamic public IP.",
+    "vpn_remote_network": "Configure these parameters only if you want to create a Net to Net VPN using this account (compatible with NethServer 6). Do not compile these fields if you're configuring a host to net VPN.",
     "vpn_remote_netmask": "Compile this field only if you've already filled the Remote network field"
   }
 }
