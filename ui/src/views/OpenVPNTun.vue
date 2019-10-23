@@ -421,7 +421,7 @@
                     type="text"
                     v-model="currentTunnelServer.name"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelServer.errors.name.hasError"
                     class="help-block"
@@ -467,7 +467,7 @@
                     type="number"
                     v-model="currentTunnelServer.Port"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelServer.errors.Port.hasError"
                     class="help-block"
@@ -543,7 +543,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.vpn_network')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="currentTunnelServer.Network" class="form-control">
+                  <input type="text" v-model="currentTunnelServer.Network" class="form-control" />
                   <span
                     v-if="currentTunnelServer.errors.Network.hasError"
                     class="help-block"
@@ -560,7 +560,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.local_p2p_ip')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="currentTunnelServer.LocalPeer" class="form-control">
+                  <input type="text" v-model="currentTunnelServer.LocalPeer" class="form-control" />
                   <span
                     v-if="currentTunnelServer.errors.LocalPeer.hasError"
                     class="help-block"
@@ -577,7 +577,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.remote_p2p_ip')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="currentTunnelServer.RemotePeer" class="form-control">
+                  <input type="text" v-model="currentTunnelServer.RemotePeer" class="form-control" />
                   <span
                     v-if="currentTunnelServer.errors.RemotePeer.hasError"
                     class="help-block"
@@ -849,7 +849,7 @@
                     type="text"
                     v-model="currentTunnelClient.name"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelClient.errors.name.hasError"
                     class="help-block"
@@ -895,7 +895,7 @@
                     type="number"
                     v-model="currentTunnelClient.RemotePort"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelClient.errors.RemotePort.hasError"
                     class="help-block"
@@ -978,7 +978,7 @@
                     type="text"
                     v-model="currentTunnelClient.User"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelClient.errors.User.hasError"
                     class="help-block"
@@ -1000,7 +1000,7 @@
                     :type="currentTunnelClient.togglePass ? 'text' : 'password'"
                     v-model="currentTunnelClient.Password"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelClient.errors.Password.hasError"
                     class="help-block"
@@ -1051,7 +1051,7 @@
                     type="text"
                     v-model="currentTunnelClient.LocalPeer"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelClient.errors.LocalPeer.hasError"
                     class="help-block"
@@ -1073,7 +1073,7 @@
                     type="text"
                     v-model="currentTunnelClient.RemotePeer"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelClient.errors.RemotePeer.hasError"
                     class="help-block"
@@ -1239,7 +1239,7 @@
                     type="checkbox"
                     v-model="currentTunnelClient.WanPriorities"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnelClient.errors.WanPriorities.hasError"
                     class="help-block"
@@ -1356,7 +1356,7 @@
                     id="config-file"
                     name="config-upload-tun"
                     type="file"
-                  >
+                  />
                   <span
                     v-if="toUploadTunnelClient.errors.file.hasError"
                     class="help-block"
@@ -1447,9 +1447,13 @@ export default {
         },
         {
           label: this.$i18n.t("openvpn_tun.vpn_network"),
-          field: "Network",
+          field: function(rowObj) {
+            return rowObj.Network ? rowObj.Network : rowObj.LocalPeer;
+          },
           filterable: true,
           sortFn: function(a, b, col, rowX, rowY) {
+            a = a.indexOf("-") > -1 ? a.split("-")[0] : a;
+            b = b.indexOf("-") > -1 ? b.split("-")[0] : b;
             a = a.split(".");
             b = b.split(".");
             for (var i = 0; i < a.length; i++) {
@@ -1463,8 +1467,8 @@ export default {
           field: "LocalNetworks",
           filterable: true,
           sortFn: function(a, b, col, rowX, rowY) {
-            a = a.split(".");
-            b = b.split(".");
+            a = a[0].split(".");
+            b = b[0].split(".");
             for (var i = 0; i < a.length; i++) {
               if ((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i]))) return -1;
               else if (a[i] > b[i]) return 1;
@@ -1475,14 +1479,7 @@ export default {
           label: this.$i18n.t("openvpn_tun.remote_networks"),
           field: "RemoteNetworks",
           filterable: true,
-          sortFn: function(a, b, col, rowX, rowY) {
-            a = a.split(".");
-            b = b.split(".");
-            for (var i = 0; i < a.length; i++) {
-              if ((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i]))) return -1;
-              else if (a[i] > b[i]) return 1;
-            }
-          }
+          sortable: false
         },
         {
           label: this.$i18n.t("openvpn_tun.state"),
@@ -1578,7 +1575,7 @@ export default {
       nethserver.exec(
         ["nethserver-vpn-ui/feature/update"],
         {
-          name: 'openvpn'
+          name: "openvpn"
         },
         function(stream) {
           console.info("install-package", stream);
@@ -1828,6 +1825,7 @@ export default {
           setTimeout(function() {
             $('[data-toggle="tooltip"]').tooltip();
           }, 750);
+          context.getDefaults();
           context.view.isLoaded = true;
         },
         function(error) {
