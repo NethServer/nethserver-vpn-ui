@@ -110,10 +110,14 @@ if ($cmd eq 'tunnels') {
     $ret->{'interfaces'} = \@interfaces;
 
 } elsif ($cmd eq 'server-defaults') {
+    my $vdb = esmith::ConfigDB->open_ro('vpn');
+    my $count = $vdb->get_all();
+    my $limitMin = 1200;
+    my $limitMax = $limitMin + $count + 1;
 
-    my $port = random(1200, 1300);
+    my $port = random($limitMin, $limitMax);
     while (is_used_port($port)) {
-        $port = random(1200, 1300);
+        $port = random($limitMin, $limitMax);
     }
 
     $ret->{'Port'} = $port;
