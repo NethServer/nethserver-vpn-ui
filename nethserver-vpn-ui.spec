@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.2.2
+Version: 1.2.3
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 28 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.3-1
+- Cockpit: error in managing more than 100 tunnels openvpn-server - Bug Nethserver/dev#5886
+- Logs page in Cockpit - Bug NethServer/dev#5866
+
 * Thu Oct 10 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.2-1
 - Cockpit: improve English labels - NethServer/dev#5856
 
