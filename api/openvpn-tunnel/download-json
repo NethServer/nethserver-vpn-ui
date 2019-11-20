@@ -34,7 +34,7 @@ function downloadJson($name)
     }
     $ret['filename'] = "$name.json";
 
-    # remap OpenVPN optino for TCP
+    # remap OpenVPN option for TCP
     if ($record['Protocol'] == 'tcp-server') {
         $record['Protocol'] = 'tcp-client';
     }
