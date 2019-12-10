@@ -2517,71 +2517,67 @@ export default {
     showServerStatistics(stats) {
       var html = "";
 
-      html += "<dl>";
       html +=
-        "<dt>" +
+        "<b>" +
         this.$i18n.t("openvpn_rw.since") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.since +
-        "</dd>";
+        "</span>";
 
       if (stats.virtual_address) {
         html +=
-          "<dt>" +
+          "<br><br><b>" +
           this.$i18n.t("openvpn_rw.virtual_address") +
-          "</dt><dd>" +
+          "</b><br><span>" +
           stats.virtual_address +
-          "</dd>";
+          "</span>";
       }
 
       if (stats.real_address) {
         html +=
-          "<dt>" +
+          "<br><br><b>" +
           this.$i18n.t("openvpn_rw.real_address") +
-          "</dt><dd>" +
+          "</b><br><span>" +
           stats.real_address +
-          "</dd>";
+          "</span>";
       }
 
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.bytes_sent") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         this.$options.filters.byteFormat(stats.bytes_sent) +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.bytes_received") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         this.$options.filters.byteFormat(stats.bytes_received) +
-        "</dd>";
-      html += "</dl>";
+        "</span>";
 
       return html;
     },
     showClientStatistics(stats) {
       var html = "";
 
-      html += "<dl>";
       html +=
-        "<dt>" +
+        "<b>" +
         this.$i18n.t("openvpn_rw.since") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         this.$options.filters.dateFormat(stats.since * 1000) +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.virtual_address") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.virtual_address +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_tun.remote_server") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.remote_server +
-        "</dd>";
-      html += "</dl>";
+        "</span>";
 
       return html;
     }
