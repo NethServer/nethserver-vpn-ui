@@ -937,11 +937,10 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.ovpn_download')}}</label>
                 <div class="col-sm-5 control-div" for="textInput-modal-markup">
-                  <button
+                  <a
                     id="ovpn-button"
                     class="btn btn-primary"
-                    type="button"
-                  >{{$t('download')}}</button>
+                  >{{$t('download')}}</a>
                 </div>
               </div>
 
@@ -954,11 +953,10 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.pem_download')}}</label>
                 <div class="col-sm-5 control-div" for="textInput-modal-markup">
-                  <button
+                  <a
                     id="pem-button"
                     class="btn btn-primary"
-                    type="button"
-                  >{{$t('download')}}</button>
+                  >{{$t('download')}}</a>
                 </div>
               </div>
 
@@ -975,11 +973,10 @@
                   <tt>{{toDownloadAccount.name}}</tt>
                 </span>
                 <div class="col-sm-5 control-div" for="textInput-modal-markup">
-                  <button
+                  <a
                     id="pkcs12-button"
                     class="btn btn-primary"
-                    type="button"
-                  >{{$t('download')}}</button>
+                  >{{$t('download')}}</a>
                 </div>
               </div>
             </div>

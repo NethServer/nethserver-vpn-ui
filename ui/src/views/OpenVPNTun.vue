@@ -775,11 +775,10 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.tunnel_client_configuration')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
-                  <button
+                  <a
                     id="configuration-button"
                     class="btn btn-primary"
-                    type="button"
-                  >{{$t('download')}}</button>
+                  >{{$t('download')}}</a>
                 </div>
               </div>
 
@@ -789,11 +788,10 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.private_key_tun_ca')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
-                  <button
+                  <a
                     id="certificate-button"
                     class="btn btn-primary"
-                    type="button"
-                  >{{$t('download')}}</button>
+                  >{{$t('download')}}</a>
                 </div>
               </div>
 
@@ -803,11 +801,10 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_tun.psk_download')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
-                  <button
+                  <a
                     id="psk-button"
                     class="btn btn-primary"
-                    type="button"
-                  >{{$t('download')}}</button>
+                  >{{$t('download')}}</a>
                 </div>
               </div>
             </div>
