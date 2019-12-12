@@ -938,7 +938,7 @@
                 >{{$t('openvpn_rw.ovpn_download')}}</label>
                 <div class="col-sm-5 control-div" for="textInput-modal-markup">
                   <button
-                    @click="downloadAccount(toDownloadAccount.name, 'ovpn')"
+                    id="ovpn-button"
                     class="btn btn-primary"
                     type="button"
                   >{{$t('download')}}</button>
@@ -955,7 +955,7 @@
                 >{{$t('openvpn_rw.pem_download')}}</label>
                 <div class="col-sm-5 control-div" for="textInput-modal-markup">
                   <button
-                    @click="downloadAccount(toDownloadAccount.name, 'pem')"
+                    id="pem-button"
                     class="btn btn-primary"
                     type="button"
                   >{{$t('download')}}</button>
@@ -976,7 +976,7 @@
                 </span>
                 <div class="col-sm-5 control-div" for="textInput-modal-markup">
                   <button
-                    @click="downloadAccount(toDownloadAccount.name, 'pkcs12')"
+                    id="pkcs12-button"
                     class="btn btn-primary"
                     type="button"
                   >{{$t('download')}}</button>
@@ -1107,7 +1107,6 @@
       </div>
     </div>
     <!-- END MODALS -->
-    <iframe width="1" height="1" id="download-backup" style="display: none;"></iframe>
   </div>
 </template>
 
@@ -2013,6 +2012,9 @@ export default {
     },
     openDownloadAccount(account) {
       this.toDownloadAccount = JSON.parse(JSON.stringify(account));
+      this.downloadAccount(this.toDownloadAccount.name, "ovpn");
+      this.downloadAccount(this.toDownloadAccount.name, "pem");
+      this.downloadAccount(this.toDownloadAccount.name, "pkcs12");
       $("#downloadAccountModal").modal("show");
     },
     downloadAccount(name, type) {
@@ -2044,14 +2046,10 @@ export default {
           } catch (e) {
             console.error(e);
           }
-          if (navigator.userAgent.indexOf("Firefox") != -1) {
-            var blob = "data:application/octet-stream;base64," + success.data;
-            var encodedUri = encodeURI(blob);
-            var link = document.getElementById("download-backup");
-            link.setAttribute("src", encodedUri);
-          } else {
-            require("downloadjs")(atob(success.data), success.filename);
-          }
+          var blob = "data:application/octet-stream;base64," + success.data;
+          var encodedUri = encodeURI(blob);
+          $("#" + type + "-button").attr('download', success.filename)
+                                   .attr('href', encodedUri);
         },
         function(error, data) {
           console.error(error, data);

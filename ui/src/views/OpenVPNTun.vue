@@ -776,7 +776,7 @@
                 >{{$t('openvpn_tun.tunnel_client_configuration')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
                   <button
-                    @click="downloadServer(toDownloadTunnelServer.name, 'configuration')"
+                    id="configuration-button"
                     class="btn btn-primary"
                     type="button"
                   >{{$t('download')}}</button>
@@ -790,7 +790,7 @@
                 >{{$t('openvpn_tun.private_key_tun_ca')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
                   <button
-                    @click="downloadServer(toDownloadTunnelServer.name, 'certificate')"
+                    id="certificate-button"
                     class="btn btn-primary"
                     type="button"
                   >{{$t('download')}}</button>
@@ -804,7 +804,7 @@
                 >{{$t('openvpn_tun.psk_download')}}</label>
                 <div class="col-sm-7 control-div" for="textInput-modal-markup">
                   <button
-                    @click="downloadServer(toDownloadTunnelServer.name, 'psk')"
+                    id="psk-button"
                     class="btn btn-primary"
                     type="button"
                   >{{$t('download')}}</button>
@@ -2400,6 +2400,9 @@ export default {
     },
     openDownloadServer(tunnel) {
       this.toDownloadTunnelServer = JSON.parse(JSON.stringify(tunnel));
+      this.downloadServer(this.toDownloadTunnelServer.name, "configuration");
+      this.downloadServer(this.toDownloadTunnelServer.name, "certificate");
+      this.downloadServer(this.toDownloadTunnelServer.name, "psk");
       $("#downloadServerTunnelModal").modal("show");
     },
     downloadServer(name, type) {
@@ -2431,7 +2434,10 @@ export default {
           } catch (e) {
             console.error(e);
           }
-          require("downloadjs")(atob(success.data), success.filename);
+          var blob = "data:application/octet-stream;base64," + success.data;
+          var encodedUri = encodeURI(blob);
+          $("#" + type + "-button").attr('download', success.filename)
+                                   .attr('href', encodedUri);
         },
         function(error, data) {
           console.error(error, data);
