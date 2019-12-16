@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.2.6
+Version: 1.2.7
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Dec 16 2019 Davide Principi <davide.principi@nethesis.it> - 1.2.7-1
+- Cockpit: firefox downloaded files are not named properly - Bug NethServer/dev#5988
+- ui. fixed missing popup with vpn stats
+
 * Fri Nov 22 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.6-1
 - OpenVPN: re-created user can't access roadwarrior server - Bug NethServer/dev#5949
 
