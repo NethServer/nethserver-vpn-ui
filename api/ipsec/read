@@ -66,10 +66,11 @@ if ($cmd eq 'tunnels') {
     my @interfaces;
     my $ndb = esmith::NetworksDB->open_ro();
     foreach ($ndb->red()) {
-        next if ($_->prop('type') eq 'xdsl' || $_->prop('type') eq 'xdsl-disabled');
+        next if ($_->prop('type') eq 'xdsl-disabled');
         my $bootproto = $_->prop('bootproto') || 'none';
+        my $ipaddr = $_->prop('ipaddr') || 'pppoe';
         if ($bootproto eq 'none') {
-            push(@interfaces, {"name" => $_->key, "address" => $_->prop('ipaddr')});
+            push(@interfaces, {"name" => $_->key, "address" => $ipaddr});
         } else {
             push(@interfaces, {"name" => $_->key, "address" => 'dhcp'});
         }
