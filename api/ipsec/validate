@@ -53,14 +53,37 @@ foreach ($db->getAll() as $n => $props) {
     }
 }
 
+$v_leftsubs = $v->createValidator()->cidrBlock();
+if(isset($data['leftsubnets']) && $data['leftsubnets']) {
+    foreach ($data['leftsubnets'] as $d){
+        # skip empty objects
+        if (!$d) {
+            continue;
+        }
+        if( !$v_leftsubs->evaluate($d)) {
+            $v->addValidationError('leftsubnets', 'invalid_network');
+        }
+    }
+}
+$v_rightsubs = $v->createValidator()->cidrBlock();
+if(isset($data['rightsubnets']) && $data['rightsubnets']) {
+    foreach ($data['rightsubnets'] as $d){
+        # skip empty objects
+        if (!$d) {
+            continue;
+        }
+        if( !$v_rightsubs->evaluate($d)) {
+            $v->addValidationError('rightsubnets', 'invalid_network');
+        }
+    }
+}
+
 $lc = $v->createValidator()->memberOf($i_names);
 $rv = $v->createValidator()->orValidator($v->createValidator(Validate::HOSTADDRESS), $v->createValidator()->equalTo('%any'));
 $idv = $v->createValidator()->maxLength(63);
 $v->declareParameter('left', $lc);
-$v->declareParameter('leftsubnets', Validate::NOTEMPTY);
 $v->declareParameter('leftid', $idv);
 $v->declareParameter('right', $rv);
-$v->declareParameter('rightsubnets', Validate::NOTEMPTY);
 $v->declareParameter('rightid', $idv);
 $v->declareParameter('psk', $v->createValidator()->minLength(6));
 $v->declareParameter('ikelifetime', Validate::POSITIVE_INTEGER);
