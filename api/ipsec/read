@@ -75,9 +75,13 @@ if ($cmd eq 'tunnels') {
             push(@interfaces, {"name" => $_->key, "address" => 'dhcp'});
         }
     }
+    foreach ($ndb->get_by_role('alias')) {
+        my $ipaddr = $_->prop('ipaddr');
+        push(@interfaces, {"name" => $_->key, "address" => $ipaddr});
+    }
 
     $ret->{'interfaces'} = \@interfaces;
-    
+
 } elsif ($cmd eq 'subnets') {
     my @nets;
     my $ndb = esmith::NetworksDB->open_ro();

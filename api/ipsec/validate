@@ -48,7 +48,7 @@ $ac = $v->createValidator()->memberOf(array('auto', 'custom'));
 $db = new EsmithDatabase('networks');
 $i_names = array();
 foreach ($db->getAll() as $n => $props) {
-    if (isset($props['role']) && $props['role'] === 'red' && in_array($props['type'], array('ethernet', 'vlan', 'bridge', 'bond', 'xdsl'))) {
+    if (isset($props['role']) && ($props['role'] === 'red' || $props['role'] === 'alias') && in_array($props['type'], array('ethernet', 'vlan', 'bridge', 'bond', 'xdsl', 'alias'))) {
         $i_names[] = $n;
     }
 }
