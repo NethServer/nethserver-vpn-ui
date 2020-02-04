@@ -77,7 +77,10 @@ if ($cmd eq 'tunnels') {
     }
     foreach ($ndb->get_by_role('alias')) {
         my $ipaddr = $_->prop('ipaddr');
-        push(@interfaces, {"name" => $_->key, "address" => $ipaddr});
+        my ($parent, $tag) = split(/:/, $_->key);
+        if($ndb->get_prop($parent, 'role') eq 'red') {
+            push(@interfaces, {"name" => $_->key, "address" => $ipaddr});
+        }
     }
 
     $ret->{'interfaces'} = \@interfaces;
