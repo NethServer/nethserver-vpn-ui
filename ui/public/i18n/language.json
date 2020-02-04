@@ -95,7 +95,12 @@
     "cipher": "Encryption algorithm",
     "hash": "Integrity algorithm",
     "pfsgroup": "Diffie-Hellman group",
-    "key_lifetime": "Key life time (seconds)"
+    "key_lifetime": "Key life time (seconds)",
+    "ike_version": "IKE version",
+    "ikev1": "IKEv1",
+    "ikev2": "IKEv2",
+    "force_ikev1": "Force IKEv1",
+    "force_ikev2": "Force IKEv2"
   },
   "openvpn_tun": {
     "menu_title": "OVPN Tunnels",

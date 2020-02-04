@@ -44,7 +44,7 @@ if ($cmd eq 'update') {
     }
     $db->set_prop($input->{'name'}, 'dpdaction', $input->{'dpdaction'} ? 'restart' : 'hold');
 
-    foreach (qw(esp ikelifetime esphash ikehash espcipher psk esppfsgroup salifetime right ikepfsgroup ikecipher ike leftid rightid)) {
+    foreach (qw(esp ikelifetime esphash ikev2 ikehash espcipher psk esppfsgroup salifetime right ikepfsgroup ikecipher ike leftid rightid)) {
         $db->set_prop($input->{'name'}, $_, $input->{$_});
     }
 

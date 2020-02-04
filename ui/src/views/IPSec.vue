@@ -422,6 +422,23 @@
                 <label
                   class="col-sm-5 control-label"
                   for="textInput-modal-markup"
+                >{{$t('ipsec.ike_version')}}</label>
+                <div class="col-sm-7">
+                  <select v-model="currentTunnel.ikev2" class="form-control">
+                    <option value="permit">{{$t('ipsec.ikev1')}}</option>
+                    <option value="yes">{{$t('ipsec.ikev2')}}</option>
+                    <option value="no">{{$t('ipsec.force_ikev1')}}</option>
+                    <option value="insist">{{$t('ipsec.force_ikev2')}}</option>
+                  </select>
+                </div>
+              </div>
+              <div
+                v-show="currentTunnel.advanced && currentTunnel.ike == 'custom'"
+                class="form-group"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
                 >{{$t('ipsec.cipher')}}</label>
                 <div class="col-sm-7">
                   <select v-model="currentTunnel.ikecipher" class="form-control">
@@ -693,6 +710,7 @@ export default {
         compress: false,
         rightsubnets: [],
         ike: "auto",
+        ikev2: "permit",
         esphash: "md5",
         espcipher: "3des",
         esppfsgroup: "modp1024",
@@ -901,6 +919,12 @@ export default {
       this.currentTunnel.rightsubnets = this.currentTunnel.rightsubnets.join(
         "\n"
       );
+      this.currentTunnel.ikev2 =
+        this.currentTunnel.ikev2 == false
+          ? "no"
+          : this.currentTunnel.ikev2 == true
+          ? "yes"
+          : this.currentTunnel.ikev2;
       this.currentTunnel.isEdit = true;
       this.currentTunnel.isLoading = false;
       this.currentTunnel.advanced = false;
@@ -935,6 +959,10 @@ export default {
         espcipher: context.currentTunnel.espcipher,
         esppfsgroup: context.currentTunnel.esppfsgroup,
         salifetime: context.currentTunnel.salifetime,
+        ikev2:
+          context.currentTunnel.ike == "auto"
+            ? ""
+            : context.currentTunnel.ikev2,
         ikehash: context.currentTunnel.ikehash,
         ikecipher: context.currentTunnel.ikecipher,
         ikepfsgroup: context.currentTunnel.ikepfsgroup,
