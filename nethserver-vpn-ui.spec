@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.2.8
+Version: 1.2.9
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Feb 05 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.9-1
+- Cockpit - VPN. IPSec improvements - NethServer/dev#6049
+
 * Wed Dec 18 2019 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.8-1
 - Cockpit: the wan pppoe cannot be selected in the ipsec menu - Bug NethServer/dev#5989
 
