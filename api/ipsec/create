@@ -48,7 +48,7 @@ foreach (qw(pfs compress)) {
 }
 $obj->{'dpdaction'} = $input->{'dpdaction'} ? 'restart' : 'hold';
 
-foreach (qw(esp ikelifetime esphash ikehash espcipher psk esppfsgroup salifetime right ikepfsgroup ikecipher ike leftid rightid)) {
+foreach (qw(esp ikelifetime esphash ikev2 ikehash espcipher psk esppfsgroup salifetime right ikepfsgroup ikecipher ike leftid rightid)) {
     $obj->{$_} = $input->{$_};
 }
 

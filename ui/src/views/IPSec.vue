@@ -118,7 +118,7 @@
                   <div class="list-group-item-text">
                     <div class="inline-block middle">
                       <b>{{$t('ipsec.local_subnets')}}</b>
-                      <br>
+                      <br />
                       <div
                         v-show="r.leftsubnets.length > 1"
                         v-for="(i,ik) in r.leftsubnets"
@@ -129,7 +129,7 @@
                     <span class="fa fa-arrow-right adjust-span-margin middle"></span>
                     <div class="inline-block middle">
                       <b>{{$t('ipsec.remote_subnets')}}</b>
-                      <br>
+                      <br />
                       <div
                         v-show="r.rightsubnets.length > 1"
                         v-for="(i,ik) in r.rightsubnets"
@@ -193,7 +193,7 @@
                     type="text"
                     v-model="currentTunnel.name"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnel.errors.name.hasError"
                     class="help-block"
@@ -235,7 +235,7 @@
                   ></doc-info>
                 </label>
                 <div class="col-sm-4">
-                  <input required type="text" v-model="currentTunnel.right" class="form-control">
+                  <input required type="text" v-model="currentTunnel.right" class="form-control" />
                   <span
                     v-if="currentTunnel.errors.right.hasError"
                     class="help-block"
@@ -291,7 +291,7 @@
                     type="text"
                     v-model="currentTunnel.leftid"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnel.errors.leftid.hasError"
                     class="help-block"
@@ -307,7 +307,7 @@
                     type="text"
                     v-model="currentTunnel.rightid"
                     class="form-control"
-                  >
+                  />
                   <span
                     v-if="currentTunnel.errors.rightid.hasError"
                     class="help-block"
@@ -357,7 +357,7 @@
                   for="textInput-modal-markup"
                 >{{$t('ipsec.dpdaction')}}</label>
                 <div class="col-sm-9">
-                  <input type="checkbox" v-model="currentTunnel.dpdaction" class="form-control">
+                  <input type="checkbox" v-model="currentTunnel.dpdaction" class="form-control" />
                   <span
                     v-if="currentTunnel.errors.dpdaction.hasError"
                     class="help-block"
@@ -373,7 +373,7 @@
                   for="textInput-modal-markup"
                 >{{$t('ipsec.pfs')}}</label>
                 <div class="col-sm-9">
-                  <input type="checkbox" v-model="currentTunnel.pfs" class="form-control">
+                  <input type="checkbox" v-model="currentTunnel.pfs" class="form-control" />
                   <span
                     v-if="currentTunnel.errors.pfs.hasError"
                     class="help-block"
@@ -389,7 +389,7 @@
                   for="textInput-modal-markup"
                 >{{$t('ipsec.compress')}}</label>
                 <div class="col-sm-9">
-                  <input type="checkbox" v-model="currentTunnel.compress" class="form-control">
+                  <input type="checkbox" v-model="currentTunnel.compress" class="form-control" />
                   <span
                     v-if="currentTunnel.errors.compress.hasError"
                     class="help-block"
@@ -413,6 +413,23 @@
                     v-if="currentTunnel.errors.ike.hasError"
                     class="help-block"
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnel.errors.ike.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-show="currentTunnel.advanced && currentTunnel.ike == 'custom'"
+                class="form-group"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('ipsec.ike_version')}}</label>
+                <div class="col-sm-7">
+                  <select v-model="currentTunnel.ikev2" class="form-control">
+                    <option value="permit">{{$t('ipsec.ikev1')}}</option>
+                    <option value="yes">{{$t('ipsec.ikev2')}}</option>
+                    <option value="no">{{$t('ipsec.force_ikev1')}}</option>
+                    <option value="insist">{{$t('ipsec.force_ikev2')}}</option>
+                  </select>
                 </div>
               </div>
               <div
@@ -466,7 +483,7 @@
                   for="textInput-modal-markup"
                 >{{$t('ipsec.key_lifetime')}}</label>
                 <div class="col-sm-7">
-                  <input type="number" v-model="currentTunnel.ikelifetime" class="form-control">
+                  <input type="number" v-model="currentTunnel.ikelifetime" class="form-control" />
                 </div>
               </div>
 
@@ -540,7 +557,7 @@
                   for="textInput-modal-markup"
                 >{{$t('ipsec.key_lifetime')}}</label>
                 <div class="col-sm-7">
-                  <input type="number" v-model="currentTunnel.salifetime" class="form-control">
+                  <input type="number" v-model="currentTunnel.salifetime" class="form-control" />
                 </div>
               </div>
             </div>
@@ -693,6 +710,7 @@ export default {
         compress: false,
         rightsubnets: [],
         ike: "auto",
+        ikev2: "permit",
         esphash: "md5",
         espcipher: "3des",
         esppfsgroup: "modp1024",
@@ -901,6 +919,12 @@ export default {
       this.currentTunnel.rightsubnets = this.currentTunnel.rightsubnets.join(
         "\n"
       );
+      this.currentTunnel.ikev2 =
+        this.currentTunnel.ikev2 == false
+          ? "no"
+          : this.currentTunnel.ikev2 == true
+          ? "yes"
+          : this.currentTunnel.ikev2;
       this.currentTunnel.isEdit = true;
       this.currentTunnel.isLoading = false;
       this.currentTunnel.advanced = false;
@@ -935,6 +959,10 @@ export default {
         espcipher: context.currentTunnel.espcipher,
         esppfsgroup: context.currentTunnel.esppfsgroup,
         salifetime: context.currentTunnel.salifetime,
+        ikev2:
+          context.currentTunnel.ike == "auto"
+            ? ""
+            : context.currentTunnel.ikev2,
         ikehash: context.currentTunnel.ikehash,
         ikecipher: context.currentTunnel.ikecipher,
         ikepfsgroup: context.currentTunnel.ikepfsgroup,
