@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.2.9
+Version: 1.2.10
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 04 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.10-1
+- Cockpit : OpenVPN tunnel client p2p mode not working - Bug NethServer/dev#6077
+
 * Wed Feb 05 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.9-1
 - Cockpit - VPN. IPSec improvements - NethServer/dev#6049
 
