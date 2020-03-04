@@ -2215,7 +2215,7 @@ export default {
         AuthMode:
           context.currentTunnelClient.Topology == "subnet"
             ? context.currentTunnelClient.AuthMode
-            : undefined,
+            : "psk",
         RemotePeer:
           context.currentTunnelClient.Topology == "p2p"
             ? context.currentTunnelClient.RemotePeer
