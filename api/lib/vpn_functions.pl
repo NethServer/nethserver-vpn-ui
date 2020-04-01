@@ -221,6 +221,12 @@ sub write_file {
     my $filename = shift;
     my $data = shift;
 
+    # trim to remove extra unwanted spaces
+    $data =~ s/^\s+|\s+$//g;
+    # always add a new line: this is required to generate
+    # a valid VPN configuration file
+    $data .= "\n";
+
     open(my $fh, '>', $filename) or return 0;
     print $fh $data;
     close $fh;
