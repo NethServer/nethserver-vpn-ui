@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.2.10
+Version: 1.2.11
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Fri Apr 03 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.11-1
+- Pasting PSK Missing newline OVPN P2P - Bug NethServer/dev#6103
+
 * Wed Mar 04 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.2.10-1
 - Cockpit : OpenVPN tunnel client p2p mode not working - Bug NethServer/dev#6077
 
