@@ -186,6 +186,8 @@
     "configure_rw_server": "Configure RoadWarrior server",
     "username_password_certificate": "Username, Password and Certificate",
     "username_password": "Username and Password",
+    "username_otp_certificate": "Username, One time password and Certificate",
+    "username_otp_certificate_waning_all_users_must_install_an_otp_application": "This VPN policy enforces the security, each system-user must enable his OTP setting and install an OTP application on his mobile phone",
     "certificate": "Certificate",
     "mode": "Mode",
     "routed": "Routed",

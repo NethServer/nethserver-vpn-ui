@@ -84,7 +84,7 @@ if ($data['action'] == 'create-account') {
     }
 } else if ($data['action'] == 'configuration') {
 
-    $authModes = $v->createValidator()->memberOf(array('password', 'certificate','password-certificate'));
+    $authModes = $v->createValidator()->memberOf(array('password', 'certificate','password-certificate','certificate-otp'));
     $modes = $v->createValidator()->memberOf(array('bridged', 'routed'));
     $bridges = $v->createValidator()->memberOf(getBridges());
 
