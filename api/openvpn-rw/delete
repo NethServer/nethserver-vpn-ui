@@ -33,7 +33,7 @@ my $key = $input->{'name'};
 if($input->{'name'}) {
     my $record = $db->get($input->{'name'});
     $record->delete();
-
+    unlink "/var/lib/nethserver/openvpn-certificate-otp/$input->{'name'}";
     system(("/usr/libexec/nethserver/pki-vpn-revoke", "-d", $input->{'name'}));
     system(("/sbin/e-smith/signal-event", "-j", "nethserver-vpn-save"));
 }

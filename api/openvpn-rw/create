@@ -43,8 +43,17 @@ if ($cmd eq 'create-account') {
         openvpn_create_host($input->{'name'}, $input->{'OpenVpnIp'});
     }
 
+    #we add the file openvpn-certificate-otp/user@domain.org if AuthMode is certificate-otp 
+    # and client type is vpn-user
+    my $db = esmith::ConfigDB->open_ro();
+    my $AuthMode = $db->get_prop('openvpn@host-to-net','AuthMode') || 'password';
+    if (($input->{'type'} eq 'vpn-user') && ($AuthMode eq 'certificate-otp')) {
+        open my $FILE, ">>", "/var/lib/nethserver/openvpn-certificate-otp/$input->{'name'}" || die("Cannot open file:".$!);
+        print $FILE "";
+        close($FILE);
+    }
+
 } else {
     error();
 }
 system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
-
