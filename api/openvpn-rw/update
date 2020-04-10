@@ -64,43 +64,13 @@ if ($cmd eq 'update-account') {
             $db->set_prop('openvpn@host-to-net', $_, $input->{$_});
         }
     }
-
-
-    # We remove the files openvpn-certificate-otp/user@domain.org if R2W status is disabled
-    my $AuthMode = $db->get_prop('openvpn@host-to-net','AuthMode') || 'password';
-    if ($input->{'status'}  eq 'disabled') {
-        unlink (glob("/var/lib/nethserver/openvpn-certificate-otp/*"));
-    } elsif (($input->{'status'}  eq 'enabled') && ( $AuthMode eq 'certificate-otp')) {
-        # we add the file openvpn-certificate-otp/user@domain.org if AuthMode is certificate-otp 
-        # and client type is vpn-user
-        my $vdb = esmith::ConfigDB->open_ro('vpn');
-        foreach ($vdb->get_all_by_prop('type', 'vpn-user')) {
-            my $key = $_->key;
-            open my $FILE, ">>", "/var/lib/nethserver/openvpn-certificate-otp/$key" || die("Cannot open file:".$!);
-            print $FILE "";
-            close($FILE);
-        }
-    }
-
 } elsif ($cmd eq 'disable') {
-    my $vdb = esmith::ConfigDB->open('vpn');
-    $vdb->set_prop($input->{'name'}, 'status', 'disabled');
-    #We remove the file openvpn-certificate-otp/user@domain.org if client status is disabled
-    unlink "/var/lib/nethserver/openvpn-certificate-otp/$input->{'name'}";
-    success();
+     my $vdb = esmith::ConfigDB->open('vpn');
+     $vdb->set_prop($input->{'name'}, 'status', 'disabled');
+     success();
 } elsif ($cmd eq 'enable') {
-    my $vdb = esmith::ConfigDB->open('vpn');
-    $vdb->set_prop($input->{'name'}, 'status', 'enabled');
-
-    #we add the file openvpn-certificate-otp/user@domain.org if AuthMode is certificate-otp 
-    # and client type is vpn-user
-    my $db = esmith::ConfigDB->open_ro();
-    my $AuthMode = $db->get_prop('openvpn@host-to-net','AuthMode') || 'password';
-    if (($vdb->get_prop($input->{'name'},'type') eq 'vpn-user') && ($AuthMode eq 'certificate-otp')) {
-        open my $FILE, ">>", "/var/lib/nethserver/openvpn-certificate-otp/$input->{'name'}" || die("Cannot open file:".$!);
-        print $FILE "";
-        close($FILE);
-     }
+     my $vdb = esmith::ConfigDB->open('vpn');
+     $vdb->set_prop($input->{'name'}, 'status', 'enabled');
      success();
 } elsif ($cmd eq 'kill') {
     system(("/usr/libexec/nethserver/openvpn-kill", "/var/spool/openvpn/host-to-net", $input->{'name'}));
@@ -113,3 +83,4 @@ if ($cmd eq 'update-account') {
     error();
 }
 system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
+
