@@ -39,7 +39,7 @@ if ($cmd eq 'update-account') {
         $input->{'name'} =~ s/(@.*)$//; # remove domain part
         openvpn_create_or_update_host($input->{'name'}, $input->{'OpenVpnIp'});
     }
-
+    system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
 } elsif ($cmd eq 'configuration') {
 
     my $db = esmith::ConfigDB->open();
@@ -64,16 +64,15 @@ if ($cmd eq 'update-account') {
             $db->set_prop('openvpn@host-to-net', $_, $input->{$_});
         }
     }
+    system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
 } elsif ($cmd eq 'disable') {
      my $vdb = esmith::ConfigDB->open('vpn');
      $vdb->set_prop($input->{'name'}, 'status', 'disabled');
-     system(("/sbin/e-smith/signal-event", "-j", "R2W-OTP-enable"));
-     success();
+     system(("/sbin/e-smith/signal-event", "-j", "nethserver-vpn-ui-save"));
 } elsif ($cmd eq 'enable') {
      my $vdb = esmith::ConfigDB->open('vpn');
      $vdb->set_prop($input->{'name'}, 'status', 'enabled');
-     system(("/sbin/e-smith/signal-event", "-j", "R2W-OTP-enable"));
-     success();
+     system(("/sbin/e-smith/signal-event", "-j", "nethserver-vpn-ui-save"));
 } elsif ($cmd eq 'kill') {
     system(("/usr/libexec/nethserver/openvpn-kill", "/var/spool/openvpn/host-to-net", $input->{'name'}));
     if ($? > 0) {
@@ -84,4 +83,3 @@ if ($cmd eq 'update-account') {
 } else {
     error();
 }
-system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
