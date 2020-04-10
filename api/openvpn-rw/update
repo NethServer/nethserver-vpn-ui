@@ -67,10 +67,12 @@ if ($cmd eq 'update-account') {
 } elsif ($cmd eq 'disable') {
      my $vdb = esmith::ConfigDB->open('vpn');
      $vdb->set_prop($input->{'name'}, 'status', 'disabled');
+     system(("/sbin/e-smith/signal-event", "-j", "R2W-OTP-enable"));
      success();
 } elsif ($cmd eq 'enable') {
      my $vdb = esmith::ConfigDB->open('vpn');
      $vdb->set_prop($input->{'name'}, 'status', 'enabled');
+     system(("/sbin/e-smith/signal-event", "-j", "R2W-OTP-enable"));
      success();
 } elsif ($cmd eq 'kill') {
     system(("/usr/libexec/nethserver/openvpn-kill", "/var/spool/openvpn/host-to-net", $input->{'name'}));
@@ -83,4 +85,3 @@ if ($cmd eq 'update-account') {
     error();
 }
 system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
-

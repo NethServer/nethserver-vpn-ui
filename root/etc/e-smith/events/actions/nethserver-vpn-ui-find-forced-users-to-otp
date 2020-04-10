@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+use esmith::ConfigDB;
+my $db = esmith::ConfigDB->open_ro();
+my $vdb = esmith::ConfigDB->open_ro('vpn');
+my $AuthMode = $db->get_prop('openvpn@host-to-net','AuthMode') || 'password';
+my $status = $db->get_prop('openvpn@host-to-net','status') || 'disabled';
+
+# first remove 
+unlink (glob("/var/lib/nethserver/openvpn-certificate-otp/*"));
+
+if (($status  eq 'enabled') && ( $AuthMode eq 'certificate-otp')) {
+    # we add the file openvpn-certificate-otp/user@domain.org if :
+    #   AuthMode is certificate-otp 
+    #   R2W is enabled
+    #   client type is vpn-user
+    #   client is enabled
+    # If we find this file, we display a checkbox (disabled, checked) in the user setting page
+    
+    foreach ($vdb->get_all_by_prop('type', 'vpn-user')) {
+        my $key = $_->key;
+        my $userEnabled = $vdb->get_prop($key,'status') || 'enabled';
+        next if ($userEnabled ne 'enabled');
+        open my $FILE, ">>", "/var/lib/nethserver/openvpn-certificate-otp/$key" || die("Cannot open file:".$!);
+        print $FILE "";
+        close($FILE);
+    }
+}
