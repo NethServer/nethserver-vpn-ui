@@ -23,6 +23,7 @@ VPN UI module for NethServer.
 %build
 sed -i 's/_RELEASE_/%{version}/' %{name}.json
 %{makedocs}
+perl createlinks
 
 %install
 rm -rf %{buildroot}

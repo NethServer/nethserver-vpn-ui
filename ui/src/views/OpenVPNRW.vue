@@ -251,6 +251,9 @@
                     <option
                       value="password-certificate"
                     >{{$t('openvpn_rw.username_password_certificate')}}</option>
+                    <option
+                      value="certificate-otp"
+                    >{{$t('openvpn_rw.username_otp_certificate')}}</option>
                   </select>
                   <span
                     v-if="newConfiguration.errors.AuthMode.hasError"
@@ -258,7 +261,14 @@
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.AuthMode.message)}}</span>
                 </div>
               </div>
-
+              <div
+                v-if="newConfiguration.AuthMode === 'certificate-otp'"
+                class="alert alert-info alert-dismissable"
+              >
+                <span class="pficon pficon-info"></span>
+                <strong>{{$t('info')}}:</strong>
+                {{$t('openvpn_rw.username_otp_certificate_waning_all_users_must_install_an_otp_application')}}.
+              </div>
               <div
                 :class="['form-group', newConfiguration.errors.Mode.hasError ? 'has-error' : '']"
               >
@@ -1339,6 +1349,9 @@ export default {
 
         case "password-certificate":
           return "username_password_certificate";
+
+        case "certificate-otp":
+          return "username_otp_certificate";
       }
     },
     initAccount() {
