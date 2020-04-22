@@ -623,6 +623,33 @@
                 </div>
               </div>
 
+              <div
+                v-show="newConfiguration.advanced"
+                :class="['form-group', newConfiguration.errors.Topology.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.topology')}}
+                <doc-info
+                  :placement="'top'"
+                  :title="$t('openvpn_rw.topology_selection')"
+                  :chapter="'topology_selection'"
+                  :inline="true"
+                ></doc-info>
+              </label>
+                <div class="col-sm-7">
+                  <select v-model="newConfiguration.Topology" class="form-control">
+                    <option value="net30">{{$t('openvpn_rw.net30')}}</option>
+                    <option value="subnet">{{$t('openvpn_rw.subnet')}}</option>
+                  </select>
+                  <span
+                    v-if="newConfiguration.errors.Topology.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.Topology.message)}}</span>
+                </div>
+              </div>
+
               <legend
                 v-show="newConfiguration.advanced"
                 class="fields-section-header-pf"
@@ -1494,6 +1521,10 @@ export default {
         CustomRoutes: {
           hasError: false,
           message: ""
+        },
+        Topology: {
+          hasError: false,
+          message: ""
         }
       };
     },
@@ -1766,6 +1797,7 @@ export default {
           this.newConfiguration.CustomRoutes.length > 0
             ? this.newConfiguration.CustomRoutes.split("\n")
             : [],
+        Topology: this.newConfiguration.Topology,
         action: "configuration"
       };
 

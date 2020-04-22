@@ -283,7 +283,11 @@
     "ended": "Ended",
     "today": "Today",
     "last_week": "Last week",
-    "last_month": "Last month"
+    "last_month": "Last month",
+    "subnet": "subnet",
+    "net30": "net30 (obsolete)",
+    "topology_selection": "RoadWarrior topology",
+    "topology": "Topology"
   },
   "logs": {
     "title": "Logs",
@@ -316,6 +320,7 @@
     "more_info_about": "More info about {docsLink}.",
     "right": "Specify the static public IP address or %any if the remote has a dynamic public IP.",
     "vpn_remote_network": "Configure these parameters only if you want to create a Net to Net VPN using this account (compatible with NethServer 6). Do not compile these fields if you're configuring a host to net VPN.",
-    "vpn_remote_netmask": "Compile this field only if you've already filled the Remote network field"
+    "vpn_remote_netmask": "Compile this field only if you've already filled the Remote network field",
+    "topology_selection": "The subnet topology is suitable for most use cases and allow the usage of all IPs inside the pool. The net30 is an old topology for support with Windows clients running 2.0.9 or older clients: each client is allocated a virtual /30, taking 4 IPs per client, plus 4 for the server."
   }
 }
