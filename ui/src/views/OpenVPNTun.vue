@@ -2209,7 +2209,7 @@ export default {
         Topology: context.currentTunnelClient.Topology,
         RemoteHost:
           context.currentTunnelClient.RemoteHost.length > 0
-            ? context.currentTunnelClient.RemoteHost.split("\n")
+            ? this.cleanTextarea(context.currentTunnelClient.RemoteHost.split("\n"))
             : [],
         Digest:
           context.currentTunnelClient.Digest == "auto"
