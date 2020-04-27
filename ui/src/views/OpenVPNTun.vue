@@ -2060,6 +2060,16 @@ export default {
       this.currentTunnelClient.advanced = false;
       $("#createClientTunnelModal").modal("show");
     },
+    cleanTextarea(data) {
+      var dirty = data;
+      var clean = [];
+      for (var i = 0; i < dirty.length; i++) {
+        if (dirty[i] !== '') {
+            clean.push(dirty[i]);
+        }
+      }
+      return clean;
+    },
     saveTunnelServer(tunnel) {
       var context = this;
 
@@ -2073,7 +2083,7 @@ export default {
             : undefined,
         PublicAddresses:
           context.currentTunnelServer.PublicAddresses.length > 0
-            ? context.currentTunnelServer.PublicAddresses.split("\n")
+            ? this.cleanTextarea(context.currentTunnelServer.PublicAddresses.split("\n"))
             : [],
         Topology: context.currentTunnelServer.Topology,
         Digest:
@@ -2090,12 +2100,12 @@ export default {
         TlsVersionMin: context.currentTunnelServer.TlsVersionMin,
         RemoteNetworks:
           context.currentTunnelServer.RemoteNetworks.length > 0
-            ? context.currentTunnelServer.RemoteNetworks.split("\n")
+            ? this.cleanTextarea(context.currentTunnelServer.RemoteNetworks.split("\n"))
             : [],
         Protocol: context.currentTunnelServer.Protocol,
         LocalNetworks:
           context.currentTunnelServer.LocalNetworks.length > 0
-            ? context.currentTunnelServer.LocalNetworks.split("\n")
+            ? this.cleanTextarea(context.currentTunnelServer.LocalNetworks.split("\n"))
             : [],
         Psk: context.currentTunnelServer.Psk,
         LocalPeer:
@@ -2228,7 +2238,7 @@ export default {
         RemoteNetworks:
           context.currentTunnelClient.Topology == "p2p"
             ? context.currentTunnelClient.RemoteNetworks.length > 0
-              ? context.currentTunnelClient.RemoteNetworks.split("\n")
+              ? this.cleanTextarea(context.currentTunnelClient.RemoteNetworks.split("\n"))
               : []
             : undefined,
         Protocol: context.currentTunnelClient.Protocol,
