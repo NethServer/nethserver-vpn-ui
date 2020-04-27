@@ -930,6 +930,16 @@ export default {
       this.currentTunnel.advanced = false;
       $("#createTunnelModal").modal("show");
     },
+    cleanTextarea(data) {
+      var dirty = data;
+      var clean = [];
+      for (var i = 0; i < dirty.length; i++) {
+        if (dirty[i] !== '') {
+            clean.push(dirty[i]);
+        }
+      }
+      return clean;
+    },
     saveTunnel(tunnel) {
       var context = this;
 
@@ -943,11 +953,11 @@ export default {
         right: context.currentTunnel.right,
         leftsubnets:
           context.currentTunnel.leftsubnets.length > 0
-            ? context.currentTunnel.leftsubnets.split("\n")
+            ? this.cleanTextarea(context.currentTunnel.leftsubnets.split("\n"))
             : [],
         rightsubnets:
           context.currentTunnel.rightsubnets.length > 0
-            ? context.currentTunnel.rightsubnets.split("\n")
+            ? this.cleanTextarea(context.currentTunnel.rightsubnets.split("\n"))
             : [],
         rightid: context.currentTunnel.rightid,
         leftid: context.currentTunnel.leftid,
