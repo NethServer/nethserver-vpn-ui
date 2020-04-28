@@ -931,14 +931,7 @@ export default {
       $("#createTunnelModal").modal("show");
     },
     cleanTextarea(data) {
-      var dirty = data;
-      var clean = [];
-      for (var i = 0; i < dirty.length; i++) {
-        if (dirty[i] !== '') {
-            clean.push(dirty[i]);
-        }
-      }
-      return clean;
+      return data.filter(function(i){return i != ""});
     },
     saveTunnel(tunnel) {
       var context = this;
