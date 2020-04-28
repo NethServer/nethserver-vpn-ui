@@ -1752,6 +1752,9 @@ export default {
         this.newConfiguration.errors = this.initConfigurationErrors();
       }
     },
+    cleanTextarea(data) {
+      return data.filter(function(i){return i != ""});
+    },
     saveConfiguration() {
       var context = this;
 
@@ -1774,7 +1777,7 @@ export default {
         RouteToVPN: this.newConfiguration.RouteToVPN,
         Remote:
           this.newConfiguration.Remote.length > 0
-            ? this.newConfiguration.Remote.split("\n")
+            ? this.cleanTextarea(this.newConfiguration.Remote.split("\n"))
             : [],
         Network:
           this.newConfiguration.Mode == "routed"
@@ -1795,7 +1798,7 @@ export default {
         Protocol: this.newConfiguration.Protocol,
         CustomRoutes:
           this.newConfiguration.CustomRoutes.length > 0
-            ? this.newConfiguration.CustomRoutes.split("\n")
+            ? this.cleanTextarea(this.newConfiguration.CustomRoutes.split("\n"))
             : [],
         Topology: this.newConfiguration.Topology,
         action: "configuration"
