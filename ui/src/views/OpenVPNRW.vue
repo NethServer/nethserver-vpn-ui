@@ -658,8 +658,32 @@
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.extra_params')}}</span>
               </legend>
 
-              <div
+              <div 
                 v-show="newConfiguration.advanced"
+                :class="['form-group',newConfiguration.errors.PushDhcpOptionsStatus.hasError ? 'has-error' : '']"
+                >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.PushDhcpOptionsStatus')}}</label>
+                <div class="col-sm-9">
+                  <toggle-button
+                    class="min-toggle"
+                    :width="40"
+                    :height="20"
+                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                    :value="newConfiguration.PushDhcpOptionsStatus"
+                    :sync="true"
+                    @change="togglePushDhcpOptionsStatus()"
+                  />
+                  <span
+                    v-if="newConfiguration.errors.PushDhcpOptionsStatus.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.PushDhcpOptionsStatus.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushDomain.hasError ? 'has-error' : '']"
               >
                 <label
@@ -675,7 +699,7 @@
                 </div>
               </div>
               <div
-                v-show="newConfiguration.advanced"
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushDns.hasError ? 'has-error' : '']"
               >
                 <label
@@ -691,7 +715,7 @@
                 </div>
               </div>
               <div
-                v-show="newConfiguration.advanced"
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushWins.hasError ? 'has-error' : '']"
               >
                 <label
@@ -707,7 +731,7 @@
                 </div>
               </div>
               <div
-                v-show="newConfiguration.advanced"
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushNbdd.hasError ? 'has-error' : '']"
               >
                 <label
@@ -1490,6 +1514,10 @@ export default {
           hasError: false,
           message: ""
         },
+        PushDhcpOptionsStatus: {
+          hasError: false,
+          message: ""
+        },
         PushDns: {
           hasError: false,
           message: ""
@@ -1573,6 +1601,8 @@ export default {
             console.error(e);
           }
           context.configuration = success.configuration;
+          context.configuration.PushDhcpOptionsStatus = success.configuration.PushDhcpOptionsStatus == "enabled";
+
           context.configuration.Remote = context.configuration.Remote.join(
             "\n"
           );
@@ -1708,6 +1738,10 @@ export default {
         }
       );
     },
+    togglePushDhcpOptionsStatus () {
+      this.newConfiguration.PushDhcpOptionsStatus = !this.newConfiguration.PushDhcpOptionsStatus;
+      this.$forceUpdate();
+    },
     toggleAdvancedConfiguration() {
       this.newConfiguration.advanced = !this.newConfiguration.advanced;
       this.$forceUpdate();
@@ -1789,6 +1823,7 @@ export default {
       var configObj = {
         status: this.newConfiguration.status,
         PushDomain: this.newConfiguration.PushDomain,
+        PushDhcpOptionsStatus: this.newConfiguration.PushDhcpOptionsStatus ? "enabled" : "disabled",
         PushExtraRoutes: this.newConfiguration.PushExtraRoutes,
         PushDns: this.newConfiguration.PushDns,
         PushWins: this.newConfiguration.PushWins,
