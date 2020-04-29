@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.3.0
+Version: 1.3.1
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -47,6 +47,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Apr 29 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.1-1
+- VPN R2W : Custom certificate EOL - NethServer/dev#6145
+- nethserver-vpn-ui: display the shortname before to email the client configuration - NethServer/dev#6142
+
 * Tue Apr 28 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.0-1
 - nethserver-vpn: textarea save empty line - Bug NethServer/dev#6141
 - Use subnet topology for OpenVPN roadwarrior - NethServer/dev#6133
