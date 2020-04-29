@@ -663,10 +663,10 @@
                 :class="['form-group',newConfiguration.errors.PushDhcpOptionsStatus.hasError ? 'has-error' : '']"
                 >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.PushDhcpOptionsStatus')}}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                   <toggle-button
                     class="min-toggle"
                     :width="40"
@@ -687,10 +687,10 @@
                 :class="['form-group', newConfiguration.errors.PushDomain.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_domain')}}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                   <input :placeholder="Placeholders.DomainName" type="text" v-model="newConfiguration.PushDomain" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushDomain.hasError"
@@ -703,10 +703,10 @@
                 :class="['form-group', newConfiguration.errors.PushDns.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_dns')}}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                   <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushDns" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushDns.hasError"
@@ -719,10 +719,10 @@
                 :class="['form-group', newConfiguration.errors.PushWins.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_wins')}}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                   <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushWins" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushWins.hasError"
@@ -735,10 +735,10 @@
                 :class="['form-group', newConfiguration.errors.PushNbdd.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_nbdd')}}</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                   <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushNbdd" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushNbdd.hasError"
