@@ -24,6 +24,7 @@ use strict;
 use warnings;
 use esmith::ConfigDB;
 use esmith::NetworksDB;
+use NethServer::Service;
 use NetAddr::IP;
 use JSON;
 use File::Temp qw/tempfile/;
@@ -81,8 +82,36 @@ if ($cmd eq 'users') {
 } elsif ($cmd eq 'configuration') {
 
     my $db = esmith::ConfigDB->open_ro();
+    my $ndb = esmith::ConfigDB->open_ro('networks');
     my $record = $db->get('openvpn@host-to-net');
     my $accountProvider = ($db->get_prop('sssd', 'Provider') ne '') ? JSON::true : JSON::false;
+    my $mode = $record->prop('Mode') || '';
+    my $dnsServers = $db->get_prop('dns','NameServers')|| '';
+    my $domainName = $db->get_value('DomainName') || '';
+    my @dns;
+    my $s = new NethServer::Service('dnsmasq');
+    if( $s->is_owned() && $s->is_enabled() ) {
+        if ($mode eq 'bridged') { # use green address
+            foreach ($ndb->get_all_by_prop('role' => 'green')) {
+                push(@dns, $_->prop('ipaddr'));
+            }
+        } else { # use tun address
+            my ($tot, $first, $last) = esmith::util::computeHostRange($record->prop('Network'),  $record->prop('Netmask'));
+            $first = esmith::util::IPquadToAddr($first); # convert to integer
+            $first = esmith::util::IPaddrToQuad($first+1);
+            push(@dns, $first);
+        }
+    } else {
+        @dns = split(',', $dnsServers, 2);
+    }
+
+    if (@dns) {
+        $ret->{'Placeholders'}{Dns} = join(',', @dns);
+        $ret->{'Placeholders'}{DomainName} = $domainName;
+    } else {
+        $ret->{'Placeholders'} = {Dns => "", DomainName => ""};
+    }
+
     if ($record) {
         my %props = $record->props;
         foreach (qw(type access TapInterface)) {
