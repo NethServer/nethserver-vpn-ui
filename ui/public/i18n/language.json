@@ -287,7 +287,9 @@
     "subnet": "subnet",
     "net30": "net30 (obsolete)",
     "topology_selection": "RoadWarrior topology",
-    "topology": "Topology"
+    "topology": "Topology",
+    "certEOL": "Certificate end of life",
+    "days_life": "Number of days"
   },
   "logs": {
     "title": "Logs",

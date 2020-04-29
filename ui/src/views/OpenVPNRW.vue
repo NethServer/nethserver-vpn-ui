@@ -826,6 +826,29 @@
               </legend>
 
               <legend
+                v-if="currentAccount.advanced && !currentAccount.isEdit"
+                class="fields-section-header-pf"
+                aria-expanded="true"
+              >
+                <span class="field-section-toggle-pf">{{$t('openvpn_rw.certEOL')}}</span>
+              </legend>
+              <div
+                :class="['form-group', currentAccount.errors.certEOL.hasError ? 'has-error' : '']"
+                v-if="currentAccount.advanced && !currentAccount.isEdit"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.days_life')}}</label>
+                <div class="col-sm-9">
+                  <input type="number" min="7" max="3650" v-model="currentAccount.certEOL" class="form-control">
+                  <span
+                    v-if="currentAccount.errors.certEOL.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentAccount.errors.certEOL.message)}}</span>
+                </div>
+              </div>
+              <legend
                 v-if="currentAccount.advanced"
                 class="fields-section-header-pf"
                 aria-expanded="true"
@@ -1384,6 +1407,7 @@ export default {
     initAccount() {
       return {
         name: "",
+        certEOL: 3650,
         OpenVpnIp: "",
         VPNRemoteNetmask: "",
         VPNRemoteNetwork: "",
@@ -1395,6 +1419,10 @@ export default {
     initAccountErrors() {
       return {
         name: {
+          hasError: false,
+          message: ""
+        },
+        certEOL: {
           hasError: false,
           message: ""
         },
@@ -1879,6 +1907,7 @@ export default {
         action: account.isEdit ? "update-account" : "create-account",
         type: context.currentAccount.Mode == "system" ? "vpn-user" : "vpn",
         name: context.currentAccount.name,
+        certEOL: context.currentAccount.certEOL,
         OpenVpnIp: context.currentAccount.OpenVpnIp,
         VPNRemoteNetmask: context.currentAccount.VPNRemoteNetmask,
         VPNRemoteNetwork: context.currentAccount.VPNRemoteNetwork

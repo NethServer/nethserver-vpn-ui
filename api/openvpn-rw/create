@@ -36,7 +36,7 @@ if ($cmd eq 'create-account') {
     foreach (qw(OpenVpnIp VPNRemoteNetmask VPNRemoteNetwork)) {
         $vdb->set_prop($input->{'name'}, $_, $input->{$_});
     }
-    system(("/usr/libexec/nethserver/pki-vpn-gencert", $input->{'name'}));
+    system(("/usr/libexec/nethserver/pki-vpn-gencert", $input->{'name'}, $input->{'certEOL'}));
 
     if ($input->{'OpenVpnIp'} ne '') {
         $input->{'name'} =~ s/(@.*)$//; # remove domain part
@@ -47,4 +47,3 @@ if ($cmd eq 'create-account') {
     error();
 }
 system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
-
