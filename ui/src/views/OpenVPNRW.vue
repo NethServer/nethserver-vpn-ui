@@ -691,7 +691,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_domain')}}</label>
                 <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushDomain" class="form-control">
+                  <input :placeholder="Placeholders.DomainName" type="text" v-model="newConfiguration.PushDomain" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushDomain.hasError"
                     class="help-block"
@@ -707,7 +707,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_dns')}}</label>
                 <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushDns" class="form-control">
+                  <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushDns" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushDns.hasError"
                     class="help-block"
@@ -723,7 +723,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_wins')}}</label>
                 <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushWins" class="form-control">
+                  <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushWins" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushWins.hasError"
                     class="help-block"
@@ -739,7 +739,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_nbdd')}}</label>
                 <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushNbdd" class="form-control">
+                  <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushNbdd" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushNbdd.hasError"
                     class="help-block"
@@ -1601,6 +1601,7 @@ export default {
             console.error(e);
           }
           context.configuration = success.configuration;
+          context.Placeholders = success.Placeholders;
           context.configuration.PushDhcpOptionsStatus = success.configuration.PushDhcpOptionsStatus == "enabled";
 
           context.configuration.Remote = context.configuration.Remote.join(
