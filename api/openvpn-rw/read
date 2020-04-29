@@ -106,7 +106,7 @@ if ($cmd eq 'users') {
     }
 
     if (@dns) {
-        $ret->{'Placeholders'}{Dns} = join(',', @dns);
+        $ret->{'Placeholders'}{Dns} = $dns[0];
         $ret->{'Placeholders'}{DomainName} = $domainName;
     } else {
         $ret->{'Placeholders'} = {Dns => "", DomainName => ""};
