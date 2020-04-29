@@ -1035,7 +1035,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title">{{$t('openvpn_rw.send_email_configuration')}}</h4>
+            <h4 class="modal-title">{{$t('openvpn_rw.send_email_configuration')}} {{toSendEmailAccount.ShortName}}</h4>
           </div>
           <form class="form-horizontal" v-on:submit.prevent="sendEmailAccount()">
             <div class="modal-body">

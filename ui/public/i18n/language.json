@@ -267,7 +267,7 @@
     "account_killed_ok": "Account disconnected successfully!",
     "account_killed_error": "Account not disconnected.",
     "custom_routes": "Custom routes",
-    "send_email_configuration": "Send configuration via email",
+    "send_email_configuration": "Send configuration via email to ",
     "address": "Email address",
     "email_sent_ok": "Email sent successfully!",
     "email_sent_error": "Email not sent.",
