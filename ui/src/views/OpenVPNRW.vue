@@ -281,7 +281,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.mode')}}</label>
                 <div class="col-sm-9">
-                  <select v-model="newConfiguration.Mode" class="form-control">
+                  <select @change="placeholder(newConfiguration.Network, newConfiguration.Netmask)" v-model="newConfiguration.Mode" class="form-control">
                     <option value="routed">{{$t('openvpn_rw.routed')}}</option>
                     <option value="bridged">{{$t('openvpn_rw.bridged')}}</option>
                   </select>
@@ -301,7 +301,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.network')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="newConfiguration.Network" class="form-control">
+                  <input @input="placeholder(newConfiguration.Network, newConfiguration.Netmask)" type="text" v-model="newConfiguration.Network" class="form-control">
                   <span
                     v-if="newConfiguration.errors.Network.hasError"
                     class="help-block"
@@ -317,7 +317,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.netmask')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="newConfiguration.Netmask" class="form-control">
+                  <input @input="placeholder(newConfiguration.Network, newConfiguration.Netmask)" type="text" v-model="newConfiguration.Netmask" class="form-control">
                   <span
                     v-if="newConfiguration.errors.Netmask.hasError"
                     class="help-block"
@@ -661,16 +661,40 @@
                 <span class="field-section-toggle-pf">{{$t('openvpn_rw.extra_params')}}</span>
               </legend>
 
-              <div
+              <div 
                 v-show="newConfiguration.advanced"
+                :class="['form-group',newConfiguration.errors.PushDhcpOptionsStatus.hasError ? 'has-error' : '']"
+                >
+                <label
+                  class="col-sm-5 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_rw.PushDhcpOptionsStatus')}}</label>
+                <div class="col-sm-7">
+                  <toggle-button
+                    class="min-toggle"
+                    :width="40"
+                    :height="20"
+                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                    :value="newConfiguration.PushDhcpOptionsStatus"
+                    :sync="true"
+                    @change="togglePushDhcpOptionsStatus()"
+                  />
+                  <span
+                    v-if="newConfiguration.errors.PushDhcpOptionsStatus.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+newConfiguration.errors.PushDhcpOptionsStatus.message)}}</span>
+                </div>
+              </div>
+              <div
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushDomain.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_domain')}}</label>
-                <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushDomain" class="form-control">
+                <div class="col-sm-7">
+                  <input :placeholder="Placeholders.DomainName" type="text" v-model="newConfiguration.PushDomain" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushDomain.hasError"
                     class="help-block"
@@ -678,15 +702,15 @@
                 </div>
               </div>
               <div
-                v-show="newConfiguration.advanced"
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushDns.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_dns')}}</label>
-                <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushDns" class="form-control">
+                <div class="col-sm-7">
+                  <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushDns" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushDns.hasError"
                     class="help-block"
@@ -694,15 +718,15 @@
                 </div>
               </div>
               <div
-                v-show="newConfiguration.advanced"
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushWins.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_wins')}}</label>
-                <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushWins" class="form-control">
+                <div class="col-sm-7">
+                  <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushWins" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushWins.hasError"
                     class="help-block"
@@ -710,15 +734,15 @@
                 </div>
               </div>
               <div
-                v-show="newConfiguration.advanced"
+                v-show="newConfiguration.advanced && newConfiguration.PushDhcpOptionsStatus"
                 :class="['form-group', newConfiguration.errors.PushNbdd.hasError ? 'has-error' : '']"
               >
                 <label
-                  class="col-sm-3 control-label"
+                  class="col-sm-5 control-label"
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.dhcp_nbdd')}}</label>
-                <div class="col-sm-9">
-                  <input type="text" v-model="newConfiguration.PushNbdd" class="form-control">
+                <div class="col-sm-7">
+                  <input :placeholder="Placeholders.Dns" type="text" v-model="newConfiguration.PushNbdd" class="form-control">
                   <span
                     v-if="newConfiguration.errors.PushNbdd.hasError"
                     class="help-block"
@@ -1217,6 +1241,10 @@ export default {
           packages: []
         }
       },
+      Placeholders:{
+        DomainName: "",
+        Dns: ""
+      },
       configuration: {
         status: "disabled"
       },
@@ -1369,6 +1397,22 @@ export default {
     };
   },
   methods: {
+    placeholder(network, netmask) {
+      var context = this;
+      var ip = require('ip');
+      if (context.newConfiguration.Mode === 'routed') {
+        if (ip.isV4Format(network) && ip.isV4Format(netmask)){
+          var first = ip.subnet(network, netmask);
+          context.Placeholders.Dns =  first.firstAddress;
+        } else {
+          context.Placeholders.Dns =  context.$i18n.t(
+            "openvpn_rw.The_IP_cannot_be_calculated");
+        }
+      } else if (context.newConfiguration.Mode === 'bridged') {
+          context.Placeholders.Dns = context.$i18n.t(
+            "openvpn_rw.The_IP_cannot_be_calculated");
+      }
+    },
     installPackages() {
       this.view.isInstalling = true;
       // notification
@@ -1493,6 +1537,10 @@ export default {
           hasError: false,
           message: ""
         },
+        PushDhcpOptionsStatus: {
+          hasError: false,
+          message: ""
+        },
         PushDns: {
           hasError: false,
           message: ""
@@ -1576,6 +1624,13 @@ export default {
             console.error(e);
           }
           context.configuration = success.configuration;
+          context.Placeholders = success.Placeholders;
+          if (context.Placeholders.Dns === '0.0.0.1') {
+            context.Placeholders.Dns = context.$i18n.t(
+            "openvpn_rw.The_r2w_is_not_set");
+          }
+          context.configuration.PushDhcpOptionsStatus = success.configuration.PushDhcpOptionsStatus == "enabled";
+
           context.configuration.Remote = context.configuration.Remote.join(
             "\n"
           );
@@ -1711,6 +1766,10 @@ export default {
         }
       );
     },
+    togglePushDhcpOptionsStatus () {
+      this.newConfiguration.PushDhcpOptionsStatus = !this.newConfiguration.PushDhcpOptionsStatus;
+      this.$forceUpdate();
+    },
     toggleAdvancedConfiguration() {
       this.newConfiguration.advanced = !this.newConfiguration.advanced;
       this.$forceUpdate();
@@ -1792,6 +1851,7 @@ export default {
       var configObj = {
         status: this.newConfiguration.status,
         PushDomain: this.newConfiguration.PushDomain,
+        PushDhcpOptionsStatus: this.newConfiguration.PushDhcpOptionsStatus ? "enabled" : "disabled",
         PushExtraRoutes: this.newConfiguration.PushExtraRoutes,
         PushDns: this.newConfiguration.PushDns,
         PushWins: this.newConfiguration.PushWins,

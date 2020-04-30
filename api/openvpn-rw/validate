@@ -100,6 +100,7 @@ if ($data['action'] == 'create-account') {
     $v->declareParameter('ClientToClient', Validate::SERVICESTATUS);
     $v->declareParameter('RouteToVPN', Validate::SERVICESTATUS);
     $v->declareParameter('PushExtraRoutes', Validate::SERVICESTATUS);
+    $v->declareParameter('PushDhcpOptionsStatus', Validate::SERVICESTATUS);
     if ($data['PushDomain']) {
         $v->declareParameter('PushDomain', $v->createValidator()->hostname(1));
     }
