@@ -297,7 +297,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.network')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="newConfiguration.Network" class="form-control">
+                  <input @input="placeholder(newConfiguration.Network, newConfiguration.Netmask)" type="text" v-model="newConfiguration.Network" class="form-control">
                   <span
                     v-if="newConfiguration.errors.Network.hasError"
                     class="help-block"
@@ -313,7 +313,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.netmask')}}</label>
                 <div class="col-sm-7">
-                  <input type="text" v-model="newConfiguration.Netmask" class="form-control">
+                  <input @input="placeholder(newConfiguration.Network, newConfiguration.Netmask)" type="text" v-model="newConfiguration.Netmask" class="form-control">
                   <span
                     v-if="newConfiguration.errors.Netmask.hasError"
                     class="help-block"
@@ -1238,6 +1238,10 @@ export default {
           packages: []
         }
       },
+      Placeholders:{
+        DomainName: "",
+        Dns: ""
+      },
       configuration: {
         status: "disabled"
       },
@@ -1390,6 +1394,17 @@ export default {
     };
   },
   methods: {
+    placeholder(network, netmask) {
+      var context = this;
+      var ip = require('ip');
+      if (ip.isV4Format(network) && ip.isV4Format(netmask)){
+          var first = ip.subnet(network, netmask);
+          context.Placeholders.Dns =  first.firstAddress;
+      } else {
+          context.Placeholders.Dns =  context.$i18n.t(
+            "openvpn_rw.The_IP_cannot_be_calculated");
+      }
+    },
     installPackages() {
       this.view.isInstalling = true;
       // notification
@@ -1602,6 +1617,10 @@ export default {
           }
           context.configuration = success.configuration;
           context.Placeholders = success.Placeholders;
+          if (context.Placeholders.Dns === '0.0.0.1') {
+            context.Placeholders.Dns = context.$i18n.t(
+            "openvpn_rw.The_r2w_is_not_set");
+          }
           context.configuration.PushDhcpOptionsStatus = success.configuration.PushDhcpOptionsStatus == "enabled";
 
           context.configuration.Remote = context.configuration.Remote.join(
