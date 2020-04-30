@@ -189,6 +189,9 @@ if ($cmd eq 'users') {
         my $name = $input->{'name'};
         $ret->{'data'} = encode_base64(`cat /var/lib/nethserver/certs/$name.p12`);
         $ret->{'filename'} = $input->{'name'}.".p12";
+    } elsif ($input->{'type'} eq 'connectionHistoryCsv') {
+        $ret->{'data'} = encode_base64(`/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/connection-history-csv`);
+        $ret->{'filename'} = $input->{'name'}.".csv";
     } else {
         error();
     }

@@ -292,7 +292,8 @@
     "days_life": "Number of days",
     "PushDhcpOptionsStatus": "Push DHCP options",
     "The_IP_cannot_be_calculated": "The IP cannot be calculated",
-    "The_r2w_is_not_set": "The R2W is not set"
+    "The_r2w_is_not_set": "The R2W is not set",
+    "export_connection_history": "Export connection history"
   },
   "logs": {
     "title": "Logs",
