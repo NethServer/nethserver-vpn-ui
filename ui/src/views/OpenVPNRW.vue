@@ -524,7 +524,6 @@
               </div>
 
               <div
-                v-if="newConfiguration.Mode == 'routed'"
                 v-show="newConfiguration.advanced"
                 :class="['form-group', newConfiguration.errors.ClientToClient.hasError ? 'has-error' : '']"
               >
