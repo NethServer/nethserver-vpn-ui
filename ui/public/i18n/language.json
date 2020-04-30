@@ -289,7 +289,8 @@
     "topology_selection": "RoadWarrior topology",
     "topology": "Topology",
     "certEOL": "Certificate end of life",
-    "days_life": "Number of days"
+    "days_life": "Number of days",
+    "export_connection_history": "Export connection history"
   },
   "logs": {
     "title": "Logs",

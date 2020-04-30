@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+
+#
+# Copyright (C) 2020 Nethesis S.r.l.
+# http://www.nethesis.it - nethserver@nethesis.it
+#
+# This script is part of NethServer.
+#
+# NethServer is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License,
+# or any later version.
+#
+# NethServer is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NethServer.  If not, see COPYING.
+#
+
+import sqlite3
+import datetime
+from pytz import timezone
+
+conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+c = conn.cursor()
+connections = []
+
+rows = c.execute('''SELECT virtual_ip_addr, remote_ip_addr, start_time, duration, bytes_received, bytes_sent, common_name
+                    FROM connections
+                    ORDER BY start_time DESC''')
+
+print("Started,Ended,Duration (seconds),User,Virtual IP,Remote IP,Received (KB),Sent (KB)")
+
+for row in rows:
+    virtual_ip_addr = row[0]
+    remote_ip_addr = row[1]
+    start_time = row[2]
+    duration = row[3]
+
+    if row[4]:
+        bytes_received = format((float(row[4]) / 1024), '.2f')
+    else:
+        bytes_received = 0
+
+    if row[5]:
+        bytes_sent = format((float(row[5]) / 1024), '.2f')
+    else:
+        bytes_sent = 0
+
+    username = row[6]
+    end_time = start_time + duration if duration else None
+
+    if not duration:
+        duration = ""
+
+    start_time_utc = timezone('UTC').localize(datetime.datetime.utcfromtimestamp(start_time))
+    start_time_local = start_time_utc.astimezone(timezone('Europe/Rome')).strftime("%Y-%m-%d %H:%M:%S")
+
+    if end_time:
+        end_time_utc = timezone('UTC').localize(datetime.datetime.utcfromtimestamp(end_time))
+        end_time_local = end_time_utc.astimezone(timezone('Europe/Rome')).strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        end_time_local = ""
+
+    print(','.join(map(str, [start_time_local, end_time_local, duration, username, virtual_ip_addr,remote_ip_addr, bytes_received, bytes_sent])))
+
+conn.close()
