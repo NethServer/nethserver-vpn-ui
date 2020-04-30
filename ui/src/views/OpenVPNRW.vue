@@ -277,7 +277,7 @@
                   for="textInput-modal-markup"
                 >{{$t('openvpn_rw.mode')}}</label>
                 <div class="col-sm-9">
-                  <select v-model="newConfiguration.Mode" class="form-control">
+                  <select @change="placeholder(newConfiguration.Network, newConfiguration.Netmask)" v-model="newConfiguration.Mode" class="form-control">
                     <option value="routed">{{$t('openvpn_rw.routed')}}</option>
                     <option value="bridged">{{$t('openvpn_rw.bridged')}}</option>
                   </select>
@@ -1397,11 +1397,16 @@ export default {
     placeholder(network, netmask) {
       var context = this;
       var ip = require('ip');
-      if (ip.isV4Format(network) && ip.isV4Format(netmask)){
+      if (context.newConfiguration.Mode === 'routed') {
+        if (ip.isV4Format(network) && ip.isV4Format(netmask)){
           var first = ip.subnet(network, netmask);
           context.Placeholders.Dns =  first.firstAddress;
-      } else {
+        } else {
           context.Placeholders.Dns =  context.$i18n.t(
+            "openvpn_rw.The_IP_cannot_be_calculated");
+        }
+      } else if (context.newConfiguration.Mode === 'bridged') {
+          context.Placeholders.Dns = context.$i18n.t(
             "openvpn_rw.The_IP_cannot_be_calculated");
       }
     },
