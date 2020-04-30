@@ -99,6 +99,10 @@
       >{{$t('openvpn_rw.add_account')}}</button>
 
       <h3>{{ $t('openvpn_rw.rw_accounts') }}</h3>
+      <button
+        @click="exportConnectionsHistory()"
+        class="btn btn-default btn-lg bt-export-connection-history"
+      >{{$t('openvpn_rw.export_connection_history')}}</button>
       <vue-good-table
         :customRowsPerPageDropdown="[25,50,100]"
         :perPage="25"
@@ -2234,7 +2238,43 @@ export default {
           }
         );
       }
-    }
+    },
+    exportConnectionsHistory() {
+      nethserver.exec(
+        ["nethserver-vpn-ui/openvpn-rw/read"],
+        {
+          action: "download",
+          type: "connectionHistoryCsv",
+          name: this.$i18n.t("openvpn_rw.connection_history")
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+          } catch (e) {
+            console.error(e);
+          }
+          var blob = "data:application/octet-stream;base64," + success.data;
+          var encodedUri = encodeURI(blob);
+
+          var dlink = document.createElement('a');
+          dlink.download = success.filename;
+          dlink.href = encodedUri;
+
+          dlink.onclick = function(e) {
+            var that = this;
+            setTimeout(function() {
+              window.URL.revokeObjectURL(that.href);
+            }, 1000);
+          };
+          dlink.click();
+          dlink.remove();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
   }
 };
 </script>
@@ -2263,5 +2303,11 @@ export default {
 }
 .margin-bottom-15 {
   margin-bottom: 15px;
+}
+.bt-export-connection-history {
+  position: absolute;
+  right: 20px;
+  margin-top: 8px;
+  z-index: 1;
 }
 </style>
