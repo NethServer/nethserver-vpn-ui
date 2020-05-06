@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.3.1
+Version: 1.4.0
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -47,6 +47,11 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed May 06 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.4.0-1
+- VPN RW: optional push dhcp settings - NethServer/dev#6146
+- VPN RW: Export connection history - NethServer/dev#6147
+- VPN RW: Show client-to-client mode in bridged mode - Bug NethServer/dev#6148
+
 * Wed Apr 29 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.3.1-1
 - VPN R2W : Custom certificate EOL - NethServer/dev#6145
 - nethserver-vpn-ui: display the shortname before to email the client configuration - NethServer/dev#6142
