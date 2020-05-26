@@ -22,7 +22,6 @@
 use esmith::Build::CreateLinks qw(:all);
 
 foreach $event (qw(
-      nethserver-vpn-save
       nethserver-openvpn-save
       nethserver-vpn-ui-save
     )) {

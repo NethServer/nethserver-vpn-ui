@@ -39,7 +39,8 @@ if ($cmd eq 'update-account') {
         $input->{'name'} =~ s/(@.*)$//; # remove domain part
         openvpn_create_or_update_host($input->{'name'}, $input->{'OpenVpnIp'});
     }
-    system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
+    # set pending changes
+    system("/usr/bin/touch /var/spool/openvpn/road-warrior-lock");
 } elsif ($cmd eq 'configuration') {
 
     my $db = esmith::ConfigDB->open();
@@ -69,10 +70,14 @@ if ($cmd eq 'update-account') {
      my $vdb = esmith::ConfigDB->open('vpn');
      $vdb->set_prop($input->{'name'}, 'status', 'disabled');
      system(("/sbin/e-smith/signal-event", "-j", "nethserver-vpn-ui-save"));
+     # set pending changes
+     system("/usr/bin/touch /var/spool/openvpn/road-warrior-lock");
 } elsif ($cmd eq 'enable') {
      my $vdb = esmith::ConfigDB->open('vpn');
      $vdb->set_prop($input->{'name'}, 'status', 'enabled');
      system(("/sbin/e-smith/signal-event", "-j", "nethserver-vpn-ui-save"));
+     # set pending changes
+     system("/usr/bin/touch /var/spool/openvpn/road-warrior-lock");
 } elsif ($cmd eq 'kill') {
     system(("/usr/libexec/nethserver/openvpn-kill", "/var/spool/openvpn/host-to-net", $input->{'name'}));
     if ($? > 0) {
@@ -80,6 +85,9 @@ if ($cmd eq 'update-account') {
     } else {
         success();
     }
+} elsif ($cmd eq 'pending-changes') {
+    # apply pending changes that need a service restart
+    system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
 } else {
     error();
 }

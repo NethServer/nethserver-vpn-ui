@@ -259,6 +259,14 @@ iOS: https://itunes.apple.com/it/app/openvpn-connect/id590379981
     } else {
         error();
     }
+} elsif ($cmd eq 'pending-changes') {
+    # check for pending changes that need a service restart
+    my $pendingChanges = 0;
+
+    if (-e '/var/spool/openvpn/road-warrior-lock') {
+        $pendingChanges = 1;
+    }
+    $ret->{'pendingChanges'} = $pendingChanges;
 } else {
     error();
 }

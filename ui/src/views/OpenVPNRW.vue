@@ -22,6 +22,51 @@
 
 <template>
   <div>
+    <!-- pending changes -->
+    <div
+      v-if="pendingChanges"
+      :class="['alert', 'alert-warning', 'alert-dismissable', 'mg-top-10']"
+    >
+      <button
+        class="btn btn-primary pull-right"
+        data-toggle="modal"
+        data-target="#applyPendingChangesModal"
+      >
+        {{$t('openvpn_rw.apply_changes')}}
+      </button>
+      <span :class="['pficon', 'pficon-warning-triangle-o']"></span>
+      <strong>{{$t('warning')}}.</strong>
+      <span class="mg-left-5">{{$t('openvpn_rw.pending_changes')}}</span>.
+    </div>
+    <!-- apply pending changes modal -->
+    <div class="modal" id="applyPendingChangesModal" tabindex="-1" role="dialog" data-backdrop="static">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">{{$t('openvpn_rw.apply_changes')}}</h4>
+          </div>
+          <form class="form-horizontal" v-on:submit.prevent="applyPendingChanges()">
+            <div class="modal-body">
+              <div class="alert alert-warning alert-dismissable">
+                <span class="pficon pficon-warning-triangle-o"></span>
+                <strong>{{$t('warning')}}.</strong>
+                {{$t('openvpn_rw.warning_apply_changes')}}.
+              </div>
+              <div class="form-group">
+                <label
+                  class="col-sm-3 control-label"
+                >{{$t('are_you_sure')}}?</label>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-default" type="button" data-dismiss="modal">{{$t('cancel')}}</button>
+              <button class="btn btn-primary" type="submit">{{$t('apply')}}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <h2>{{ $t('openvpn_rw.title') }}</h2>
 
     <div v-if="!view.isLoaded" class="spinner spinner-lg view-spinner"></div>
@@ -1393,7 +1438,8 @@ export default {
           }
         }
       ],
-      connectionHistoryInterval: 'today'
+      connectionHistoryInterval: 'today',
+      pendingChanges: false,
     };
   },
   methods: {
@@ -1662,6 +1708,7 @@ export default {
             console.error(e);
           }
           context.accounts = success.accounts;
+          context.checkPendingChanges();
 
           setTimeout(function() {
             $('[data-toggle="tooltip"]').tooltip();
@@ -2334,6 +2381,57 @@ export default {
         }
       );
     },
+    checkPendingChanges() {
+      var context = this;
+
+      nethserver.exec(
+        ["nethserver-vpn-ui/openvpn-rw/read"],
+        {
+          action: "pending-changes"
+        },
+        null,
+        function(success) {
+          try {
+            success = JSON.parse(success);
+            context.pendingChanges = success.pendingChanges;
+          } catch (e) {
+            console.error(e);
+          }
+        },
+        function(error) {
+          console.error(error);
+        }
+      );
+    },
+    applyPendingChanges() {
+      var context = this;
+
+      // notification
+      nethserver.notifications.success = context.$i18n.t(
+        "openvpn_rw.configuration_updated_ok"
+      );
+      nethserver.notifications.error = context.$i18n.t(
+        "openvpn_rw.configuration_updated_error"
+      );
+
+      $("#applyPendingChangesModal").modal("hide");
+
+      nethserver.exec(
+        ["nethserver-vpn-ui/openvpn-rw/update"],
+        {
+          action: "pending-changes"
+        },
+        function(stream) {
+          console.info("update-config", stream);
+        },
+        function(success) {
+          context.getConfiguration();
+        },
+        function(error, data) {
+          console.error(error, data);
+        }
+      );
+    },
   }
 };
 </script>
@@ -2368,5 +2466,11 @@ export default {
   right: 20px;
   margin-top: 8px;
   z-index: 1;
+}
+.mg-left-5 {
+  margin-left: 5px !important;
+}
+.mg-top-10 {
+  margin-top: 10px !important;
 }
 </style>
