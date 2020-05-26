@@ -35,7 +35,7 @@
         {{$t('openvpn_rw.apply_changes')}}
       </button>
       <span :class="['pficon', 'pficon-warning-triangle-o']"></span>
-      <strong>{{$t('warning')}}.</strong>
+      <strong>{{$t('warning')}}:</strong>
       <span class="mg-left-5">{{$t('openvpn_rw.pending_changes')}}</span>.
     </div>
     <!-- apply pending changes modal -->
@@ -49,7 +49,7 @@
             <div class="modal-body">
               <div class="alert alert-warning alert-dismissable">
                 <span class="pficon pficon-warning-triangle-o"></span>
-                <strong>{{$t('warning')}}.</strong>
+                <strong>{{$t('warning')}}:</strong>
                 {{$t('openvpn_rw.warning_apply_changes')}}.
               </div>
               <div class="form-group">
