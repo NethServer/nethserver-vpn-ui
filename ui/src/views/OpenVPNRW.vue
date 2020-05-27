@@ -24,7 +24,7 @@
   <div>
     <!-- pending changes -->
     <div
-      v-if="pendingChanges"
+      v-if="pendingChanges && configuration.status == 'enabled' && view.isLoaded"
       :class="['alert', 'alert-warning', 'alert-dismissable', 'mg-top-10']"
     >
       <button
@@ -286,6 +286,14 @@
           </div>
           <form class="form-horizontal" v-on:submit.prevent="saveConfiguration(newConfiguration)">
             <div class="modal-body">
+              <div
+                v-if="configuration.isEdit"
+                class="alert alert-warning alert-dismissable"
+              >
+                <span class="pficon pficon-warning-triangle-o"></span>
+                <strong>{{$t('warning')}}:</strong>
+                {{$t('openvpn_rw.warning_apply_changes')}}.
+              </div>
               <div
                 :class="['form-group', newConfiguration.errors.AuthMode.hasError ? 'has-error' : '']"
               >
@@ -806,7 +814,7 @@
               <button
                 class="btn btn-primary"
                 type="submit"
-              >{{newConfiguration.isEdit ? $t('edit') : $t('save')}}</button>
+              >{{configuration.isEdit ? $t('edit') : $t('save')}}</button>
             </div>
           </form>
         </div>
@@ -1830,17 +1838,20 @@ export default {
       this.$forceUpdate();
     },
     toggleStatus(isEdit) {
+
       var context = this;
+      var newStatus = context.configuration.status;
+
       if (!isEdit) {
-        context.configuration.status =
-          context.configuration.status == "enabled" ? "disabled" : "enabled";
+        newStatus = newStatus == "enabled" ? "disabled" : "enabled";
       }
       context.configuration.isEdit = isEdit;
 
-      if (context.configuration.status == "enabled") {
+      if (newStatus == "enabled") {
         context.newConfiguration = JSON.parse(
           JSON.stringify(context.configuration)
         );
+        context.newConfiguration.status = newStatus;
         context.newConfiguration.errors = context.initConfigurationErrors();
         context.newConfiguration.isLoading = false;
         context.newConfiguration.isEdit = false;
