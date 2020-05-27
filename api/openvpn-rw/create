@@ -46,4 +46,6 @@ if ($cmd eq 'create-account') {
 } else {
     error();
 }
-system(("/sbin/e-smith/signal-event", "-j", "nethserver-openvpn-save"));
+
+# set pending changes
+system("/usr/bin/touch /var/spool/openvpn/road-warrior-lock");

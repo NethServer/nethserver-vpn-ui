@@ -35,5 +35,7 @@ if($input->{'name'}) {
     $record->delete();
 
     system(("/usr/libexec/nethserver/pki-vpn-revoke", "-d", $input->{'name'}));
-    system(("/sbin/e-smith/signal-event", "-j", "nethserver-vpn-save"));
+
+    # set pending changes
+    system("/usr/bin/touch /var/spool/openvpn/road-warrior-lock");
 }
