@@ -1225,20 +1225,21 @@
 
               <div
                 v-show="currentTunnelClient.advanced"
-                :class="['form-group', currentTunnelClient.errors.WanPriorities.hasError ? 'has-error' : '']"
+                :class="['form-group', (currentTunnelClient.errors.WanPriorities.hasError && currentTunnelClient.WanPriorities) ? 'has-error' : '']"
               >
                 <label
                   class="col-sm-3 control-label"
-                  for="textInput-modal-markup"
+                  for="wan-priorities"
                 >{{$t('openvpn_tun.wan_priorities')}}</label>
                 <div class="col-sm-9">
                   <input
                     type="checkbox"
                     v-model="currentTunnelClient.WanPriorities"
                     class="form-control"
+                    id="wan-priorities"
                   />
                   <span
-                    v-if="currentTunnelClient.errors.WanPriorities.hasError"
+                    v-if="(currentTunnelClient.errors.WanPriorities.hasError && currentTunnelClient.WanPriorities)"
                     class="help-block"
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnelClient.errors.WanPriorities.message)}}</span>
                 </div>
@@ -2236,7 +2237,7 @@ export default {
             : undefined,
         Protocol: context.currentTunnelClient.Protocol,
         WanPriorities:
-          context.currentTunnelClient.WanPrioritiesIFace.length > 0
+          (context.currentTunnelClient.WanPrioritiesIFace.length > 0 && context.currentTunnelClient.WanPriorities)
             ? context.currentTunnelClient.WanPrioritiesIFace
             : [],
         User:
