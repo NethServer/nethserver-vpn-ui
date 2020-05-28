@@ -1225,20 +1225,21 @@
 
               <div
                 v-show="currentTunnelClient.advanced"
-                :class="['form-group', currentTunnelClient.errors.WanPriorities.hasError ? 'has-error' : '']"
+                :class="['form-group', (currentTunnelClient.errors.WanPriorities.hasError && currentTunnelClient.WanPriorities) ? 'has-error' : '']"
               >
                 <label
                   class="col-sm-3 control-label"
-                  for="textInput-modal-markup"
+                  for="wan-priorities"
                 >{{$t('openvpn_tun.wan_priorities')}}</label>
                 <div class="col-sm-9">
                   <input
                     type="checkbox"
                     v-model="currentTunnelClient.WanPriorities"
                     class="form-control"
+                    id="wan-priorities"
                   />
                   <span
-                    v-if="currentTunnelClient.errors.WanPriorities.hasError"
+                    v-if="(currentTunnelClient.errors.WanPriorities.hasError && currentTunnelClient.WanPriorities)"
                     class="help-block"
                   >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnelClient.errors.WanPriorities.message)}}</span>
                 </div>
@@ -1258,11 +1259,14 @@
                   <select
                     v-model="currentTunnelClient.WanPrioritiesIFace[intk]"
                     class="form-control"
+                    @change="onInterfaceSelected(currentTunnelClient.WanPrioritiesIFace[intk])"
                   >
+                    <option value="">-</option>
                     <option
                       v-for="(i,ik) in interfaces"
                       :key="ik"
                       :value="i.name"
+                      v-show="!isInterfaceSelected(i.name)"
                     >{{i.name}} - {{i.address | uppercase}}</option>
                   </select>
                   <span
@@ -1555,6 +1559,7 @@ export default {
         }
       },
       interfaces: [],
+      selectedInterfaces: {},
       defaults: {},
       ciphers: [],
       digests: [],
@@ -2236,8 +2241,8 @@ export default {
             : undefined,
         Protocol: context.currentTunnelClient.Protocol,
         WanPriorities:
-          context.currentTunnelClient.WanPrioritiesIFace.length > 0
-            ? context.currentTunnelClient.WanPrioritiesIFace
+          (context.currentTunnelClient.WanPrioritiesIFace.length > 0 && context.currentTunnelClient.WanPriorities)
+            ? context.currentTunnelClient.WanPrioritiesIFace.filter(iface => iface != "")
             : [],
         User:
           context.currentTunnelClient.Topology == "subnet" &&
@@ -2586,6 +2591,16 @@ export default {
         "</span>";
 
       return html;
+    },
+    onInterfaceSelected(iface) {
+      this.selectedInterfaces = {};
+
+      for (var iface of this.currentTunnelClient.WanPrioritiesIFace) {
+        this.selectedInterfaces[iface] = true;
+      }
+    },
+    isInterfaceSelected(iface) {
+      return Object.keys(this.selectedInterfaces).indexOf(iface) > -1;
     }
   }
 };
