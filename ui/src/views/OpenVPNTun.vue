@@ -1259,11 +1259,14 @@
                   <select
                     v-model="currentTunnelClient.WanPrioritiesIFace[intk]"
                     class="form-control"
+                    @change="onInterfaceSelected(currentTunnelClient.WanPrioritiesIFace[intk])"
                   >
+                    <option value="">-</option>
                     <option
                       v-for="(i,ik) in interfaces"
                       :key="ik"
                       :value="i.name"
+                      v-show="!isInterfaceSelected(i.name)"
                     >{{i.name}} - {{i.address | uppercase}}</option>
                   </select>
                   <span
@@ -1556,6 +1559,7 @@ export default {
         }
       },
       interfaces: [],
+      selectedInterfaces: {},
       defaults: {},
       ciphers: [],
       digests: [],
@@ -2238,7 +2242,7 @@ export default {
         Protocol: context.currentTunnelClient.Protocol,
         WanPriorities:
           (context.currentTunnelClient.WanPrioritiesIFace.length > 0 && context.currentTunnelClient.WanPriorities)
-            ? context.currentTunnelClient.WanPrioritiesIFace
+            ? context.currentTunnelClient.WanPrioritiesIFace.filter(iface => iface != "")
             : [],
         User:
           context.currentTunnelClient.Topology == "subnet" &&
@@ -2587,6 +2591,16 @@ export default {
         "</span>";
 
       return html;
+    },
+    onInterfaceSelected(iface) {
+      this.selectedInterfaces = {};
+
+      for (var iface of this.currentTunnelClient.WanPrioritiesIFace) {
+        this.selectedInterfaces[iface] = true;
+      }
+    },
+    isInterfaceSelected(iface) {
+      return Object.keys(this.selectedInterfaces).indexOf(iface) > -1;
     }
   }
 };
