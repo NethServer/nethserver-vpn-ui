@@ -1229,14 +1229,17 @@
               >
                 <label
                   class="col-sm-3 control-label"
-                  for="wan-priorities"
                 >{{$t('openvpn_tun.wan_priorities')}}</label>
                 <div class="col-sm-9">
-                  <input
-                    type="checkbox"
-                    v-model="currentTunnelClient.WanPriorities"
-                    class="form-control"
-                    id="wan-priorities"
+                  <toggle-button
+                    class="min-toggle"
+                    :width="40"
+                    :height="20"
+                    :color="{checked: '#0088ce', unchecked: '#bbbbbb'}"
+                    :value="interfaces.length >= 2 ? currentTunnelClient.WanPriorities : false"
+                    :sync="true"
+                    :disabled="interfaces.length < 2"
+                    @change="toggleWanPriorities()"
                   />
                   <span
                     v-if="(currentTunnelClient.errors.WanPriorities.hasError && currentTunnelClient.WanPriorities)"
@@ -1246,7 +1249,7 @@
               </div>
 
               <div
-                v-show="currentTunnelClient.advanced && currentTunnelClient.WanPriorities"
+                v-show="currentTunnelClient.advanced && currentTunnelClient.WanPriorities && interfaces.length >= 2"
                 :class="['form-group', currentTunnelClient.errors.WanPrioritiesIFace.hasError ? 'has-error' : '']"
                 v-for="(int,intk) in interfaces"
                 :key="intk"
@@ -1259,7 +1262,7 @@
                   <select
                     v-model="currentTunnelClient.WanPrioritiesIFace[intk]"
                     class="form-control"
-                    @change="onInterfaceSelected(currentTunnelClient.WanPrioritiesIFace[intk])"
+                    @change="updateSelectedInterfaces(currentTunnelClient.WanPrioritiesIFace[intk])"
                   >
                     <option value="">-</option>
                     <option
@@ -2003,7 +2006,7 @@ export default {
     openCreateClient() {
       this.currentTunnelClient = this.initTunnelClient();
       this.currentTunnelClient.Psk = "";
-
+      this.updateSelectedInterfaces();
       $("#createClientTunnelModal").modal("show");
     },
     openEditServer(tunnel) {
@@ -2063,6 +2066,7 @@ export default {
       this.currentTunnelClient.isEdit = true;
       this.currentTunnelClient.isLoading = false;
       this.currentTunnelClient.advanced = false;
+      this.updateSelectedInterfaces();
       $("#createClientTunnelModal").modal("show");
     },
     cleanTextarea(data) {
@@ -2592,7 +2596,7 @@ export default {
 
       return html;
     },
-    onInterfaceSelected(iface) {
+    updateSelectedInterfaces(iface) {
       this.selectedInterfaces = {};
 
       for (var iface of this.currentTunnelClient.WanPrioritiesIFace) {
@@ -2601,7 +2605,10 @@ export default {
     },
     isInterfaceSelected(iface) {
       return Object.keys(this.selectedInterfaces).indexOf(iface) > -1;
-    }
+    },
+    toggleWanPriorities() {
+      this.currentTunnelClient.WanPriorities = !this.currentTunnelClient.WanPriorities;
+    },
   }
 };
 </script>
