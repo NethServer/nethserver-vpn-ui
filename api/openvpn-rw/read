@@ -232,6 +232,19 @@ Android: https://play.google.com/store/apps/details?id=net.openvpn.openvpn
 iOS: https://itunes.apple.com/it/app/openvpn-connect/id590379981
 ";
 
+    # Allow mail override
+    # The configuration file must contain the mail text.
+    # A $name variable will be replaced with the actual account name
+    my $config_file = "/etc/nethserver/openvpn-mail.cfg";
+    if (-f $config_file) {
+        # slurp file
+        my $file_content = do{ local(@ARGV,$/) = $config_file; <> };
+        # replace $name variable
+        $file_content =~ s/\$name/$name/;
+        if ($file_content) {
+            $text = $file_content;
+        }
+    }
 
     my $msg = MIME::Lite->new(
         From    => $sender,
