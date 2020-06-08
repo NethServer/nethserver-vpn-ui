@@ -240,7 +240,7 @@ iOS: https://itunes.apple.com/it/app/openvpn-connect/id590379981
         # slurp file
         my $file_content = do{ local(@ARGV,$/) = $config_file; <> };
         # replace $name variable
-        $file_content =~ s/\$name/$name/;
+        $file_content =~ s/\$name/$name/g;
         if ($file_content) {
             $text = $file_content;
         }
