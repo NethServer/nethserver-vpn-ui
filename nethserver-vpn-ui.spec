@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.5.0
+Version: 1.5.1
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Mon Jun 08 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.5.1-1
+- OpenVPN: custom mail text - NethServer/dev#6193
+
 * Fri May 29 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.5.0-1
 - OpenVPN Tunnels: Cannot disable WAN priority rule - Bug NethServer/dev#6182
 - OpenVPN RW: Don't restart service immediately on user creation/deletion - NethServer/dev#6177
