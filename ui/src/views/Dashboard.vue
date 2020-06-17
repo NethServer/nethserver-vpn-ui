@@ -30,8 +30,8 @@
         <h3>{{ $t('dashboard.ipsec_stats') }}</h3>
         <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
           <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.ipsec.connected}}</span>
+            class="card-pf-utilization-card-details-count stats-count" :title="status.ipsec.connected"
+          >{{status.ipsec.connected | humanFormat}}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -39,7 +39,9 @@
           </span>
         </div>
         <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
-          <span class="card-pf-utilization-card-details-count stats-count">{{status.ipsec.total}}</span>
+          <span class="card-pf-utilization-card-details-count stats-count" :title="status.ipsec.total">
+            {{status.ipsec.total | humanFormat}}
+          </span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -54,8 +56,8 @@
         <h3>{{ $t('dashboard.openvpn_tun_stats') }}</h3>
         <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
           <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.openvpn.tunnels.connected}}</span>
+            class="card-pf-utilization-card-details-count stats-count" :title="status.openvpn.tunnels.connected"
+          >{{status.openvpn.tunnels.connected | humanFormat}}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -64,8 +66,8 @@
         </div>
         <div class="stats-container col-xs-6 col-sm-6 col-md-6 col-lg-6">
           <span
-            class="card-pf-utilization-card-details-count stats-count"
-          >{{status.openvpn.tunnels.total}}</span>
+            class="card-pf-utilization-card-details-count stats-count" :title="status.openvpn.tunnels.total"
+          >{{status.openvpn.tunnels.total | humanFormat}}</span>
           <span class="card-pf-utilization-card-details-description stats-description">
             <span
               class="card-pf-utilization-card-details-line-2 stats-text"
@@ -117,8 +119,8 @@
           </div>
           <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
             <span
-              class="card-pf-utilization-card-details-count stats-count"
-            >{{status.openvpn.roadwarrior.connected}}</span>
+              class="card-pf-utilization-card-details-count stats-count" :title="status.openvpn.roadwarrior.connected"
+            >{{status.openvpn.roadwarrior.connected | humanFormat}}</span>
             <span class="card-pf-utilization-card-details-description stats-description">
               <span
                 class="card-pf-utilization-card-details-line-2 stats-text"
@@ -127,8 +129,8 @@
           </div>
           <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
             <span
-              class="card-pf-utilization-card-details-count stats-count"
-            >{{status.openvpn.roadwarrior.total}}</span>
+              class="card-pf-utilization-card-details-count stats-count" :title="status.openvpn.roadwarrior.total"
+            >{{status.openvpn.roadwarrior.total | humanFormat}}</span>
             <span class="card-pf-utilization-card-details-description stats-description">
               <span
                 class="card-pf-utilization-card-details-line-2 stats-text"
