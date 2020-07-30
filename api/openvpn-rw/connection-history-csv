@@ -22,17 +22,29 @@
 
 import sqlite3
 import datetime
+import sys
+import os
 from pytz import timezone
 
-conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+DATABASE_PATH = '/var/lib/nethserver/openvpn/connections.db'
+database_exists = os.path.isfile(DATABASE_PATH)
+
+if not database_exists:
+    sys.stderr.write('Error: {} does not exist. Please execute /etc/e-smith/events/actions/nethserver-openvpn-create-connections-db'.format(DATABASE_PATH))
+    sys.exit(1)
+
+conn = sqlite3.connect(DATABASE_PATH)
 c = conn.cursor()
 connections = []
-
-rows = c.execute('''SELECT virtual_ip_addr, remote_ip_addr, start_time, duration, bytes_received, bytes_sent, common_name
-                    FROM connections
-                    ORDER BY start_time DESC''')
-
 print("Started,Ended,Duration (seconds),User,Virtual IP,Remote IP,Received (KB),Sent (KB)")
+
+try:
+    rows = c.execute('''SELECT virtual_ip_addr, remote_ip_addr, start_time, duration, bytes_received, bytes_sent, common_name
+                        FROM connections
+                        ORDER BY start_time DESC''')
+except:
+    conn.close()
+    sys.exit(0)
 
 for row in rows:
     virtual_ip_addr = row[0]

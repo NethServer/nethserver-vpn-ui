@@ -23,17 +23,26 @@
 import os
 import sqlite3
 import simplejson
+import sys
 
-conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+DATABASE_PATH = '/var/lib/nethserver/openvpn/connections.db'
+database_exists = os.path.isfile(DATABASE_PATH)
+
+if not database_exists:
+    sys.stderr.write('Error: {} does not exist. Please execute /etc/e-smith/events/actions/nethserver-openvpn-create-connections-db'.format(DATABASE_PATH))
+    sys.exit(1)
+
+conn = sqlite3.connect(DATABASE_PATH)
 c = conn.cursor()
 
 accounts = []
-rows = c.execute('''SELECT common_name, MAX(start_time) 
-					FROM connections
-					GROUP BY common_name''')
+
+rows = c.execute('''SELECT common_name, MAX(start_time)
+                    FROM connections
+                    GROUP BY common_name''')
 
 for row in rows:
-	accounts.append({'account': row[0], 'lastConnected': row[1]})
+    accounts.append({'account': row[0], 'lastConnected': row[1]})
 
 conn.close()
 print(simplejson.dumps(accounts))

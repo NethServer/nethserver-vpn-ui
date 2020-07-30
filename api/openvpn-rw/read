@@ -150,7 +150,7 @@ if ($cmd eq 'users') {
     my $db = esmith::HostsDB->open_ro();
     my $accounts_status = safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net 2>/dev/null`);
     my $accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/list-accounts 2>/dev/null`);
-    my $last_connected = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/accounts-last-connected 2>/dev/null`);
+    my $last_connected = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/accounts-last-connected`);
 
     foreach (@{$accounts}) {
         my $host = find_host($db, $_->{'OpenVpnIp'}) || '';

@@ -26,8 +26,16 @@ import simplejson
 import time
 import subprocess
 import operator
+import sys
 
-conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+DATABASE_PATH = '/var/lib/nethserver/openvpn/connections.db'
+database_exists = os.path.isfile(DATABASE_PATH)
+
+if not database_exists:
+    sys.stderr.write('Error: {} does not exist. Please execute /etc/e-smith/events/actions/nethserver-openvpn-create-connections-db'.format(DATABASE_PATH))
+    sys.exit(1)
+
+conn = sqlite3.connect(DATABASE_PATH)
 c = conn.cursor()
 
 # today at 00:00 (epoch time)
@@ -39,20 +47,23 @@ traffic_accounts = {}
 
 # closed connections traffic
 
-rows = c.execute('''SELECT common_name, SUM(bytes_received + bytes_sent)
-						FROM connections
-						WHERE start_time > ?
-						GROUP BY common_name
-						LIMIT ?''', (today_epoch, limit))
+try:
+	rows = c.execute('''SELECT common_name, SUM(bytes_received + bytes_sent)
+							FROM connections
+							WHERE start_time > ?
+							GROUP BY common_name
+							LIMIT ?''', (today_epoch, limit))
 
-for row in rows:
-	account_name = row[0]
-	bytes_total = row[1]
+	for row in rows:
+		account_name = row[0]
+		bytes_total = row[1]
 
-	if bytes_total is not None:
-		traffic_accounts[account_name] = bytes_total
+		if bytes_total is not None:
+			traffic_accounts[account_name] = bytes_total
 
-conn.close()
+	conn.close()
+except:
+    conn.close()
 
 # live connections traffic
 

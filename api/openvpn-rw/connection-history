@@ -37,6 +37,13 @@ if time_interval != "today" and time_interval != "last_week" and time_interval !
     sys.stderr.write('Time interval must be one of "today", "last_week" or "last_month"\n')
     exit(1)
 
+DATABASE_PATH = '/var/lib/nethserver/openvpn/connections.db'
+database_exists = os.path.isfile(DATABASE_PATH)
+
+if not database_exists:
+    sys.stderr.write('Error: {} does not exist. Please execute /etc/e-smith/events/actions/nethserver-openvpn-create-connections-db'.format(DATABASE_PATH))
+    sys.exit(1)
+
 # today at 00:00 (epoch time)
 start_str = time.strftime( "%m/%d/%Y" ) + " 00:00:00"
 today_epoch = int( time.mktime( time.strptime( start_str, "%m/%d/%Y %H:%M:%S" ) ) )
@@ -48,14 +55,19 @@ elif time_interval == "last_week":
 elif time_interval == "last_month":
     start_time_since = today_epoch - (31 * 24 * 60 * 60) # 2678400 seconds in a month
 
-conn = sqlite3.connect('/var/lib/nethserver/openvpn/connections.db')
+conn = sqlite3.connect(DATABASE_PATH)
 c = conn.cursor()
 connections = []
 
-rows = c.execute('''SELECT virtual_ip_addr, remote_ip_addr, start_time, duration, bytes_received, bytes_sent 
-                    FROM connections
-                    WHERE common_name = ?
-                    AND start_time > ?''', (account, start_time_since))
+try:
+    rows = c.execute('''SELECT virtual_ip_addr, remote_ip_addr, start_time, duration, bytes_received, bytes_sent 
+                        FROM connections
+                        WHERE common_name = ?
+                        AND start_time > ?''', (account, start_time_since))
+except:
+    conn.close()
+    print(simplejson.dumps(connections))
+    sys.exit(0)
 
 for row in rows:
     virtual_ip_addr = row[0]
