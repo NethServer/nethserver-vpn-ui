@@ -88,6 +88,7 @@ if ($cmd eq 'users') {
     my $mode = $record->prop('Mode') || '';
     my $dnsServers = $db->get_prop('dns','NameServers')|| '';
     my $domainName = $db->get_value('DomainName') || '';
+    my $SystemName = $db->get_value('SystemName') || '';
     my @dns;
     my $s = new NethServer::Service('dnsmasq');
     if( $s->is_owned() && $s->is_enabled() ) {
@@ -108,8 +109,9 @@ if ($cmd eq 'users') {
     if (@dns) {
         $ret->{'Placeholders'}{Dns} = $dns[0];
         $ret->{'Placeholders'}{DomainName} = $domainName;
+        $ret->{'Placeholders'}{FullyQualifiedDomainName} = $SystemName.'.'.$domainName;
     } else {
-        $ret->{'Placeholders'} = {Dns => "", DomainName => ""};
+        $ret->{'Placeholders'} = {Dns => "", DomainName => "", FullyQualifiedDomainName => ""};
     }
 
     if ($record) {

@@ -442,6 +442,7 @@
                 >{{$t('openvpn_rw.remote_host_ip_name')}}</label>
                 <div class="col-sm-9">
                   <textarea
+                    :placeholder="Placeholders.FullyQualifiedDomainName"
                     type="text"
                     v-model="newConfiguration.Remote"
                     class="form-control min-textarea-height"
@@ -1295,6 +1296,7 @@ export default {
         }
       },
       Placeholders:{
+        FullyQualifiedDomainName: "",
         DomainName: "",
         Dns: ""
       },
@@ -1927,7 +1929,7 @@ export default {
         Remote:
           this.newConfiguration.Remote.length > 0
             ? this.cleanTextarea(this.newConfiguration.Remote.split("\n"))
-            : [],
+            : this.Placeholders.FullyQualifiedDomainName.split(),
         Network:
           this.newConfiguration.Mode == "routed"
             ? this.newConfiguration.Network
