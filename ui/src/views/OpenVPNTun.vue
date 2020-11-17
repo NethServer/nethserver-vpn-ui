@@ -1131,6 +1131,34 @@
               </legend>
 
               <div
+                v-if="currentTunnelClient.Topology == 'subnet' && currentTunnelClient.advanced"
+                :class="['form-group', currentTunnelClient.errors.RemoteNetworks.hasError ? 'has-error' : '']"
+              >
+                <label
+                  class="col-sm-3 control-label"
+                  for="textInput-modal-markup"
+                >{{$t('openvpn_tun.remote_networks')}}
+                  <doc-info
+                    :placement="'top'"
+                    :title="$t('openvpn_tun.remote_networks')"
+                    :chapter="'remote_networks'"
+                    :inline="true"
+                  ></doc-info>
+                </label>
+                <div class="col-sm-9">
+                  <textarea
+                    type="text"
+                    v-model="currentTunnelClient.RemoteNetworks"
+                    class="form-control min-textarea-height"
+                  ></textarea>
+                  <span
+                    v-if="currentTunnelClient.errors.RemoteNetworks.hasError"
+                    class="help-block"
+                  >{{$t('validation.validation_failed')}}: {{$t('validation.'+currentTunnelClient.errors.RemoteNetworks.message)}}</span>
+                </div>
+              </div>
+
+              <div
                 v-show="currentTunnelClient.advanced"
                 :class="['form-group', currentTunnelClient.errors.Mode.hasError ? 'has-error' : '']"
               >
@@ -2238,11 +2266,9 @@ export default {
             : undefined,
         name: context.currentTunnelClient.name,
         RemoteNetworks:
-          context.currentTunnelClient.Topology == "p2p"
-            ? context.currentTunnelClient.RemoteNetworks.length > 0
+          context.currentTunnelClient.RemoteNetworks.length > 0
               ? this.cleanTextarea(context.currentTunnelClient.RemoteNetworks.split("\n"))
-              : []
-            : undefined,
+              : [],
         Protocol: context.currentTunnelClient.Protocol,
         WanPriorities:
           (context.currentTunnelClient.WanPrioritiesIFace.length > 0 && context.currentTunnelClient.WanPriorities)
