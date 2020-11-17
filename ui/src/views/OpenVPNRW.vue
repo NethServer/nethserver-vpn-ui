@@ -1929,7 +1929,7 @@ export default {
         Remote:
           this.newConfiguration.Remote.length > 0
             ? this.cleanTextarea(this.newConfiguration.Remote.split("\n"))
-            : this.Placeholders.FullyQualifiedDomainName.split(),
+            : [],
         Network:
           this.newConfiguration.Mode == "routed"
             ? this.newConfiguration.Network
