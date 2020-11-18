@@ -136,7 +136,7 @@ if ($data['action'] == 'create-account') {
     }
 
     $v->declareParameter('Port', Validate::PORTNUMBER);
-    $v->declareParameter('Remote', Validate::ANYTHING);
+    $v->declareParameter('Remote', Validate::NOTEMPTY);
     $v->declareParameter('Compression', $v->createValidator()->memberOf(array('disabled','lzo','lz4')));
 
     if (isset($data['Remote'])) {
