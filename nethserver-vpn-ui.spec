@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.5.3
+Version: 1.5.4
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Thu Nov 19 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.5.4-1
+- OpenVPN RW: certificate not created if account name contains key spaces - Bug NethServer/dev#6336
+
 * Tue Aug 25 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.5.3-1
 - VPN Roadwarrior: unable to load accounts - Bug NethServer/dev#6242
 

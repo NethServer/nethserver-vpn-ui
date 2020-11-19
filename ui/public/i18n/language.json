@@ -326,7 +326,8 @@
     "invalid_certificate": "Invalid certificate",
     "valid_minLength_8": "Minimum length is 8 characters",
     "missing_wanpriority_rules": "Missing interface in priority order",
-    "valid_notEmpty":"This field cannot be empty"
+    "valid_notEmpty":"This field cannot be empty",
+    "valid_username":"First character must be a letter, than only lower letters, numbers and symbols like '-' and '_'"
   },
   "docs": {
     "more_info_about": "More info about {docsLink}.",
