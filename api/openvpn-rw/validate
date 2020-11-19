@@ -64,6 +64,9 @@ if ($data['action'] == 'create-account') {
     if ($sdb->getKey($data['name'])) {
         $v->addValidationError('name', 'account_already_exists');
     }
+    if ($data['name'] && $data['type'] === 'vpn') {
+        $v->declareParameter('name', Validate::USERNAME);
+    }
     if ($data['OpenVpnIp']) {
         $v->declareParameter('OpenVpnIp', Validate::IPv4);
     }
