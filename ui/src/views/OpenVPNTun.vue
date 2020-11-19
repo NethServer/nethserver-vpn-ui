@@ -324,6 +324,16 @@
                   <span v-if="props.row.RemoteHost.length == 1">{{props.row.RemoteHost[0]}}</span>
                 </td>
                 <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                  <div
+                    v-show="props.row.RemoteNetworks.length > 1"
+                    class="mg-top-view"
+                    v-for="(i,ik) in props.row.RemoteNetworks"
+                    :key="ik"
+                  >{{i}}</div>
+                  <span v-if="props.row.RemoteNetworks.length == 1">{{props.row.RemoteNetworks[0]}}</span>
+                  <span v-else-if="props.row.RemoteNetworks.length == 0">-</span>
+                </td>
+                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <span class="right-20">
                     <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span>
                     {{$t('openvpn_tun.running')}}
@@ -1554,6 +1564,12 @@ export default {
               else if (a[i] > b[i]) return 1;
             }
           }
+        },
+        {
+          label: this.$i18n.t("openvpn_tun.remote_networks"),
+          field: "RemoteNetworks",
+          filterable: true,
+          sortable: false
         },
         {
           label: this.$i18n.t("openvpn_tun.state"),
