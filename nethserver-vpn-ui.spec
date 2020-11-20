@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.5.4
+Version: 1.5.5
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Fri Nov 20 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.5.5-1
+- OpenVPN: Display a FQDN placeholder When Remote is empty - NethServer/dev#6337
+
 * Thu Nov 19 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.5.4-1
 - OpenVPN RW: certificate not created if account name contains key spaces - Bug NethServer/dev#6336
 
