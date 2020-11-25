@@ -335,6 +335,6 @@
     "vpn_remote_network": "Configure these parameters only if you want to create a Net to Net VPN using this account (compatible with NethServer 6). Do not compile these fields if you're configuring a host to net VPN.",
     "vpn_remote_netmask": "Compile this field only if you've already filled the Remote network field",
     "topology_selection": "The subnet topology is suitable for most use cases and allow the usage of all IPs inside the pool. The net30 is an old topology for support with Windows clients running 2.0.9 or older clients: each client is allocated a virtual /30, taking 4 IPs per client, plus 4 for the server.",
-    "vpn_remote_network": "This field is optional, enter remote networks if you need to create specific firewall rules for this tunnel, otherwise it can be left blank."
+    "remote_networks": "This field is optional, enter remote networks if you need to create specific firewall rules for this tunnel, otherwise it can be left blank."
   }
 }
