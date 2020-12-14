@@ -153,11 +153,7 @@
                   </span>
                   <span
                     v-if="props.row.statistics"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    data-html="true"
-                    :title="showServerStatistics(props.row.statistics)"
-                    class="handle-overflow"
+                    v-tooltip="showServerStatistics(props.row.statistics)"
                   >
                     <span class="fa fa-check green"></span>
                     {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address ? props.row.statistics.virtual_address : props.row.RemotePeer}})
@@ -340,11 +336,7 @@
                   </span>
                   <span
                     v-if="props.row.statistics && props.row.statistics.state == 'connected'"
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    data-html="true"
-                    :title="showClientStatistics(props.row.statistics)"
-                    class="handle-overflow"
+                    v-tooltip="showClientStatistics(props.row.statistics)"
                   >
                     <span class="fa fa-check green"></span>
                     {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
@@ -1871,9 +1863,6 @@ export default {
             t.WanPrioritiesIFace = [];
             return t.type == "tunnel";
           });
-          setTimeout(function() {
-            $('[data-toggle="tooltip"]').tooltip();
-          }, 750);
           context.getDefaults();
           context.view.isLoaded = true;
         },

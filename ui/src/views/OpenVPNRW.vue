@@ -188,12 +188,8 @@
           >{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
           <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <div
-              v-if="props.row.statistics"
-              data-toggle="tooltip"
-              data-placement="top"
-              data-html="true"
-              :title="showStatistics(props.row.statistics)"
-              class="handle-overflow"
+              v-if="props.row.connected"
+              v-tooltip="showStatistics(props.row.statistics)"
             >
               <span class="fa fa-check green"></span>
               {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
@@ -1336,7 +1332,7 @@ export default {
         },
         {
           label: this.$i18n.t("openvpn_rw.certificate_expiration"),
-          field: "Certificate",
+          field: "Expiration",
           filterable: true
         },
         {
@@ -1367,7 +1363,8 @@ export default {
         },
         {
           label: this.$i18n.t("openvpn_rw.state"),
-          field: "",
+          field: "connected",
+          type: "number",
           filterable: true,
           sortable: true
         },
@@ -1719,10 +1716,6 @@ export default {
           }
           context.accounts = success.accounts;
           context.checkPendingChanges();
-
-          setTimeout(function() {
-            $('[data-toggle="tooltip"]').tooltip();
-          }, 750);
           context.view.isLoaded = true;
         },
         function(error) {
@@ -2292,38 +2285,36 @@ export default {
     showStatistics(stats) {
       var html = "";
 
-      html += "<dl>";
       html +=
-        "<dt>" +
+        "<b>" +
         this.$i18n.t("openvpn_rw.since") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.since +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.virtual_address") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.virtual_address +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.real_address") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.real_address +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.bytes_sent") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         this.$options.filters.byteFormat(stats.bytes_sent) +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.bytes_received") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         this.$options.filters.byteFormat(stats.bytes_received) +
-        "</dd>";
-      html += "</dl>";
+        "</span>";
 
       return html;
     },
