@@ -48,9 +48,6 @@ import "./filters";
 import UtilService from "./services/util";
 Vue.mixin(UtilService);
 
-import VTooltip from "v-tooltip";
-Vue.use(VTooltip);
-
 Vue.config.productionTip = false;
 
 Vue.directive("focus", {
