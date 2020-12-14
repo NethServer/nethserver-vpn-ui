@@ -95,40 +95,46 @@
             <h3>{{$t('list')}}</h3>
             <vue-good-table
               v-show="view.isLoaded"
-              :customRowsPerPageDropdown="[25,50,100]"
-              :perPage="25"
               :columns="serverTunnelsColumns"
               :rows="serverTunnels"
-              :lineNumbers="false"
-              :defaultSortBy="{field: 'name', type: 'asc'}"
-              :globalSearch="true"
-              :paginate="true"
-              styleClass="table"
-              :nextText="tableLangsTexts.nextText"
-              :prevText="tableLangsTexts.prevText"
-              :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-              :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-              :ofText="tableLangsTexts.ofText"
+              :pagination-options="{
+                enabled: true,
+                perPageDropdown: [25, 50, 100],
+                perPage: 25,
+                nextLabel: tableLangsTexts.nextText,
+                prevLabel: tableLangsTexts.prevText,
+                ofLabel: tableLangsTexts.ofText,
+                rowsPerPageLabel: tableLangsTexts.rowsPerPageText,
+              }"
+              :sort-options="{
+                enabled: true,
+                initialSortBy: {field: 'name', type: 'asc'},
+              }"
+              :search-options="{
+                enabled: true,
+                placeholder: tableLangsTexts.globalSearchPlaceholder,
+              }"
+              styleClass="table vgt2"
             >
               <template slot="table-row" slot-scope="props">
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                <span v-if="props.column.field == 'name'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <a
                     :class="[props.row.status == 'enabled' ? '' : 'gray']"
                     @click="props.row.status == 'enabled' ? openEditServer(props.row) : undefined"
                   >
                     <strong>{{ props.row.name}}</strong>
                   </a>
-                </td>
-                <td
+                </span>
+                <span v-if="props.column.field == 'Port'"
                   :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
-                >{{props.row.Port}} ({{props.row.Protocol | uppercase}})</td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                >{{props.row.Port}} ({{props.row.Protocol | uppercase}})</span>
+                <span v-if="props.column.field == 'Topology'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <b>{{ props.row.Topology | uppercase}}</b>
-                </td>
-                <td
+                </span>
+                <span v-if="props.column.field == props.row.Network ? props.row.Network : props.row.LocalPeer"
                   :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
-                >{{ props.row.Network ? props.row.Network : props.row.LocalPeer+" - "+ props.row.RemotePeer}}</td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                >{{ props.row.Network ? props.row.Network : props.row.LocalPeer+" - "+ props.row.RemotePeer}}</span>
+                <span v-if="props.column.field == 'LocalNetworks'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
                     v-show="props.row.LocalNetworks.length > 1"
                     class="mg-top-view"
@@ -136,8 +142,8 @@
                     :key="ik"
                   >{{i}}</div>
                   <span v-if="props.row.LocalNetworks.length == 1">{{props.row.LocalNetworks[0]}}</span>
-                </td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                </span>
+                <span v-if="props.column.field == 'RemoteNetworks'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
                     v-show="props.row.RemoteNetworks.length > 1"
                     class="mg-top-view"
@@ -145,8 +151,8 @@
                     :key="ik"
                   >{{i}}</div>
                   <span v-if="props.row.RemoteNetworks.length == 1">{{props.row.RemoteNetworks[0]}}</span>
-                </td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                </span>
+                <span v-if="props.column.field == 'status'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <span class="right-20">
                     <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span>
                     {{$t('openvpn_tun.running')}}
@@ -162,8 +168,8 @@
                     <span class="fa fa-times grey"></span>
                     {{$t('openvpn_rw.not_connected')}}
                   </span>
-                </td>
-                <td>
+                </span>
+                <span v-if="props.column.field == 'action'">
                   <button
                     @click="props.row.status == 'disabled' ? toggleStatusServer(props.row) : openEditServer(props.row)"
                     :class="['btn btn-default', props.row.status == 'disabled' ? 'btn-primary' : '']"
@@ -207,7 +213,7 @@
                       </li>
                     </ul>
                   </div>
-                </td>
+                </span>
               </template>
             </vue-good-table>
           </div>
@@ -280,37 +286,43 @@
             <h3>{{$t('list')}}</h3>
             <vue-good-table
               v-show="view.isLoaded"
-              :customRowsPerPageDropdown="[25,50,100]"
-              :perPage="25"
               :columns="clientTunnelsColumns"
               :rows="clientTunnels"
-              :lineNumbers="false"
-              :defaultSortBy="{field: 'name', type: 'asc'}"
-              :globalSearch="true"
-              :paginate="true"
-              styleClass="table"
-              :nextText="tableLangsTexts.nextText"
-              :prevText="tableLangsTexts.prevText"
-              :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-              :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-              :ofText="tableLangsTexts.ofText"
+              :pagination-options="{
+                enabled: true,
+                perPageDropdown: [25, 50, 100],
+                perPage: 25,
+                nextLabel: tableLangsTexts.nextText,
+                prevLabel: tableLangsTexts.prevText,
+                ofLabel: tableLangsTexts.ofText,
+                rowsPerPageLabel: tableLangsTexts.rowsPerPageText,
+              }"
+              :sort-options="{
+                enabled: true,
+                initialSortBy: {field: 'name', type: 'asc'},
+              }"
+              :search-options="{
+                enabled: true,
+                placeholder: tableLangsTexts.globalSearchPlaceholder,
+              }"
+              styleClass="table vgt2"
             >
               <template slot="table-row" slot-scope="props">
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                <span v-if="props.column.field == 'name'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <a
                     :class="[props.row.status == 'enabled' ? '' : 'gray']"
                     @click="props.row.status == 'enabled' ? openEditClient(props.row) : undefined"
                   >
                     <strong>{{ props.row.name}}</strong>
                   </a>
-                </td>
-                <td
+                </span>
+                <span v-if="props.column.field == 'RemotePort'"
                   :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
-                >{{props.row.RemotePort}}</td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                >{{props.row.RemotePort}}</span>
+                <span v-if="props.column.field == 'Topology'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <b>{{ props.row.Topology | uppercase}}</b>
-                </td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                </span>
+                <span v-if="props.column.field == 'RemoteHost'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
                     v-show="props.row.RemoteHost.length > 1"
                     class="mg-top-view"
@@ -318,8 +330,8 @@
                     :key="ik"
                   >{{i}}</div>
                   <span v-if="props.row.RemoteHost.length == 1">{{props.row.RemoteHost[0]}}</span>
-                </td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                </span>
+                <span v-if="props.column.field == 'RemoteNetworks'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
                     v-show="props.row.RemoteNetworks.length > 1"
                     class="mg-top-view"
@@ -328,8 +340,8 @@
                   >{{i}}</div>
                   <span v-if="props.row.RemoteNetworks.length == 1">{{props.row.RemoteNetworks[0]}}</span>
                   <span v-else-if="props.row.RemoteNetworks.length == 0">-</span>
-                </td>
-                <td :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
+                </span>
+                <span v-if="props.column.field == 'status'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <span class="right-20">
                     <span :class="['fa', props.row.running ? 'fa-check green' : 'fa-times']"></span>
                     {{$t('openvpn_tun.running')}}
@@ -345,8 +357,8 @@
                     <span class="fa fa-times grey"></span>
                     {{$t('openvpn_rw.not_connected')}}
                   </span>
-                </td>
-                <td>
+                </span>
+                <span v-if="props.column.field == 'action'">
                   <button
                     @click="props.row.status == 'disabled' ? toggleStatusClient(props.row) : openEditClient(props.row)"
                     :class="['btn btn-default', props.row.status == 'disabled' ? 'btn-primary' : '']"
@@ -384,7 +396,7 @@
                       </li>
                     </ul>
                   </div>
-                </td>
+                </span>
               </template>
             </vue-good-table>
           </div>
@@ -1522,7 +1534,7 @@ export default {
         },
         {
           label: this.$i18n.t("action"),
-          field: "",
+          field: "action",
           filterable: true,
           sortable: false
         }
@@ -1570,7 +1582,7 @@ export default {
         },
         {
           label: this.$i18n.t("action"),
-          field: "",
+          field: "action",
           filterable: true,
           sortable: false
         }
