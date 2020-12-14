@@ -160,8 +160,10 @@ if ($cmd eq 'users') {
         $_->{'Host'} = $host;
         if ($accounts_status->{$account_name}) {
             $_->{'statistics'} = $accounts_status->{$account_name};
+            $_->{'connected'} = 1;
         } else {
             $_->{'statistics'} = undef;
+            $_->{'connected'} = 0;
         }
         my ($item) = grep {
             $_->{'account'} eq $account_name
