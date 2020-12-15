@@ -149,51 +149,53 @@
         class="btn btn-default btn-lg bt-export-connection-history"
       >{{$t('openvpn_rw.export_connection_history')}}</button>
       <vue-good-table
-        :customRowsPerPageDropdown="[25,50,100]"
-        :perPage="25"
         :columns="accountsColumns"
         :rows="accounts"
-        :lineNumbers="false"
-        :defaultSortBy="{field: 'name', type: 'asc'}"
-        :globalSearch="true"
-        :paginate="true"
-        styleClass="table"
-        :nextText="tableLangsTexts.nextText"
-        :prevText="tableLangsTexts.prevText"
-        :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-        :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-        :ofText="tableLangsTexts.ofText"
+        :pagination-options="{
+          enabled: true,
+          perPageDropdown: [25, 50, 100],
+          perPage: 25,
+          nextLabel: tableLangsTexts.nextText,
+          prevLabel: tableLangsTexts.prevText,
+          ofLabel: tableLangsTexts.ofText,
+          rowsPerPageLabel: tableLangsTexts.rowsPerPageText,
+        }"
+        :sort-options="{
+          enabled: true,
+          initialSortBy: {field: 'name', type: 'asc'},
+        }"
+        :search-options="{
+          enabled: true,
+          placeholder: tableLangsTexts.globalSearchPlaceholder,
+        }"
+        styleClass="table vgt2"
       >
         <template slot="table-row" slot-scope="props">
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+          <span v-if="props.column.field == 'name'" :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <a
               :class="props.row.status == 'disabled' ? 'gray': ''"
               @click="openEditAccount(props.row)"
             >
               <strong>{{ props.row.ShortName}}</strong>
             </a>
-          </td>
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+          </span>
+          <span v-if="props.column.field == 'Mode'" :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <span :class="['pficon', props.row.Mode == 'system' ? ' pficon-user' : 'pficon-key']"></span>
             <span class="span-left-margin">{{$t("openvpn_rw."+props.row.Mode+'_mode') }}</span>
-          </td>
-          <td
+          </span>
+          <span v-if="props.column.field == 'Expiration'"
             :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"
-          >{{props.row.Expiration ? (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.CertificateStatus+'_status') + ")") : "-" }}</td>
-          <td
+          >{{props.row.Expiration ? (props.row.Expiration + " (" + $t("openvpn_rw."+props.row.CertificateStatus+'_status') + ")") : "-" }}</span>
+          <span v-if="props.column.field == 'OpenVpnIp'"
             :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"
-          >{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</td>
-          <td
+          >{{ props.row.OpenVpnIp || '-'}} {{props.row.Host ? "("+props.row.Host+")" : ''}}</span>
+          <span v-if="props.column.field == 'VPNRemoteNetwork'"
             :class="['fancy', props.row.status == 'disabled' ? 'gray': '']"
-          >{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</td>
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+          >{{ props.row.VPNRemoteNetwork ? (props.row.VPNRemoteNetwork + "/" + props.row.VPNRemoteNetmask) : '-' }}</span>
+          <span v-if="props.column.field == 'connected'" :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <div
-              v-if="props.row.statistics"
-              data-toggle="tooltip"
-              data-placement="top"
-              data-html="true"
-              :title="showStatistics(props.row.statistics)"
-              class="handle-overflow"
+              v-if="props.row.connected"
+              v-tooltip="showStatistics(props.row.statistics)"
             >
               <span class="fa fa-check green"></span>
               {{$t('openvpn_rw.connected')}} ({{props.row.statistics.virtual_address}})
@@ -202,9 +204,9 @@
               <span class="fa fa-times grey"></span>
               {{$t('openvpn_rw.not_connected')}}
             </div>
-          </td>
+          </span>
 
-          <td :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
+          <span v-if="props.column.field == 'lastConnected'" :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <a href="#"
               v-if="props.row.lastConnected"
               :class="props.row.status == 'disabled' ? 'gray': ''"
@@ -214,9 +216,9 @@
               {{ props.row.lastConnected | dateFormat }}
             </a>
             <span v-else>-</span>
-          </td>
+          </span>
 
-          <td>
+          <span v-if="props.column.field == 'action'">
             <button
               @click="props.row.status == 'disabled' ? toggleStatusAccount(props.row) : openEditAccount(props.row)"
               :class="['btn btn-default', props.row.status == 'disabled' ? 'btn-primary' : '']"
@@ -272,7 +274,7 @@
                 </li>
               </ul>
             </div>
-          </td>
+          </span>
         </template>
       </vue-good-table>
     </div>
@@ -1196,43 +1198,48 @@
                   </li>
                 </ul>
                 <vue-good-table
-                  :customRowsPerPageDropdown="[5,10,20]"
-                  :perPage="5"
                   :columns="connectionHistoryColumns"
                   :rows="connectionHistory[connectionHistoryInterval][connectionHistoryAccount]"
-                  :lineNumbers="false"
-                  :defaultSortBy="{field: 'startTime', type: 'desc'}"
-                  :globalSearch="false"
-                  :paginate="true"
-                  styleClass="table"
-                  :nextText="tableLangsTexts.nextText"
-                  :prevText="tableLangsTexts.prevText"
-                  :rowsPerPageText="tableLangsTexts.rowsPerPageText"
-                  :globalSearchPlaceholder="tableLangsTexts.globalSearchPlaceholder"
-                  :ofText="tableLangsTexts.ofText"
+                  :pagination-options="{
+                    enabled: true,
+                    perPageDropdown: [5,10,20],
+                    perPage: 5,
+                    nextLabel: tableLangsTexts.nextText,
+                    prevLabel: tableLangsTexts.prevText,
+                    ofLabel: tableLangsTexts.ofText,
+                    rowsPerPageLabel: tableLangsTexts.rowsPerPageText,
+                  }"
+                  :sort-options="{
+                    enabled: true,
+                    initialSortBy: {field: 'startTime', type: 'desc'},
+                  }"
+                  :search-options="{
+                    enabled: false,
+                  }"
+                  styleClass="table vgt2"
                 >
                   <template slot="table-row" slot-scope="props">
-                    <td class="fancy">
+                    <span v-if="props.column.field == 'startTime'">
                       {{ props.row.startTime | shortDateFormat }}
-                    </td>
-                    <td class="fancy">
+                    </span>
+                    <span v-if="props.column.field == 'endTime'">
                       {{ props.row.endTime | shortDateFormat }}
-                    </td>
-                    <td class="fancy">
+                    </span>
+                    <span v-if="props.column.field == 'duration'">
                       {{ props.row.duration | secondsInHour }}
-                    </td>
-                    <td class="fancy">
+                    </span>
+                    <span v-if="props.column.field == 'virtualIpAddress'">
                       {{ props.row.virtualIpAddress }}
-                    </td>
-                    <td class="fancy">
+                    </span>
+                    <span v-if="props.column.field == 'remoteIpAddress'">
                       {{ props.row.remoteIpAddress }}
-                    </td>
-                    <td class="fancy">
+                    </span>
+                    <span v-if="props.column.field == 'bytesReceived'">
                       {{ props.row.bytesReceived | byteFormat }}
-                    </td>
-                    <td class="fancy">
+                    </span>
+                    <span v-if="props.column.field == 'bytesSent'">
                       {{ props.row.bytesSent | byteFormat }}
-                    </td>
+                    </span>
                   </template>
                 </vue-good-table>
               </div>
@@ -1336,7 +1343,7 @@ export default {
         },
         {
           label: this.$i18n.t("openvpn_rw.certificate_expiration"),
-          field: "Certificate",
+          field: "Expiration",
           filterable: true
         },
         {
@@ -1367,7 +1374,8 @@ export default {
         },
         {
           label: this.$i18n.t("openvpn_rw.state"),
-          field: "",
+          field: "connected",
+          type: "number",
           filterable: true,
           sortable: true
         },
@@ -1381,7 +1389,7 @@ export default {
         },
         {
           label: this.$i18n.t("action"),
-          field: "",
+          field: "action",
           filterable: true,
           sortable: false
         }
@@ -1719,10 +1727,6 @@ export default {
           }
           context.accounts = success.accounts;
           context.checkPendingChanges();
-
-          setTimeout(function() {
-            $('[data-toggle="tooltip"]').tooltip();
-          }, 750);
           context.view.isLoaded = true;
         },
         function(error) {
@@ -2292,38 +2296,36 @@ export default {
     showStatistics(stats) {
       var html = "";
 
-      html += "<dl>";
       html +=
-        "<dt>" +
+        "<b>" +
         this.$i18n.t("openvpn_rw.since") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.since +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.virtual_address") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.virtual_address +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.real_address") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         stats.real_address +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.bytes_sent") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         this.$options.filters.byteFormat(stats.bytes_sent) +
-        "</dd>";
+        "</span>";
       html +=
-        "<dt>" +
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.bytes_received") +
-        "</dt><dd>" +
+        "</b><br><span>" +
         this.$options.filters.byteFormat(stats.bytes_received) +
-        "</dd>";
-      html += "</dl>";
+        "</span>";
 
       return html;
     },

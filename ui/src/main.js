@@ -30,6 +30,7 @@ import VueToggleButton from "vue-js-toggle-button";
 Vue.use(VueToggleButton);
 
 import VueGoodTable from "vue-good-table";
+import 'vue-good-table/dist/vue-good-table.css'
 Vue.use(VueGoodTable);
 
 import DocInfo from "./components/DocInfo.vue";
@@ -47,6 +48,9 @@ import "./filters";
 
 import UtilService from "./services/util";
 Vue.mixin(UtilService);
+
+import VTooltip from "v-tooltip";
+Vue.use(VTooltip);
 
 Vue.config.productionTip = false;
 
