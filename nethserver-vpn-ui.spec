@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.6.0
+Version: 1.6.1
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Dec 16 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.1-1
+- OpenVPN RW: sorting not working on accounts table - Bug NethServer/dev#6360
+
 * Tue Dec 01 2020 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.0-1
 - RemoteNetworks also with the subnet topology - NethServer/dev#6345
 
