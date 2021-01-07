@@ -33,4 +33,4 @@ my $key = $input->{'name'};
 my $record = $db->get($input->{'name'});
 $record->delete();
 
-system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-modify", "delete", $input->{'name'}));
+system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-delete", $input->{'name'}));
