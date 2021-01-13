@@ -28,9 +28,8 @@ require '/usr/libexec/nethserver/api/lib/helper_functions.pl';
 my $db = esmith::ConfigDB->open('vpn');
 
 my $input = readInput();
-my $key = $input->{'name'};
-
+my $remoteIP = $db->get_prop($input->{'name'},'right');
 my $record = $db->get($input->{'name'});
 $record->delete();
 
-system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-modify", "delete", $input->{'name'}));
+system(("/sbin/e-smith/signal-event", "-j", "nethserver-ipsec-tunnels-modify", "delete", $input->{'name'}, $remoteIP));
