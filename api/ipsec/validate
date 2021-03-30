@@ -101,6 +101,10 @@ $v->declareParameter('pfs', $yn);
 $v->declareParameter('compress', $yn);
 $v->declareParameter('dpdaction', $yn);
 
+if( preg_match("/ /", $data['name'])) {
+    $v->addValidationError('name', 'ipsec_tunnel_name_cannot_contain_spaces');
+}
+
 # Validate the input
 if ($v->validate()) {
     success();
