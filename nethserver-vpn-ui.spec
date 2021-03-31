@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.6.3
+Version: 1.6.4
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Mar 31 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.4-1
+- IPSEC: Tunnel name cannot contain spaces - Bug NethServer/dev#6469
+
 * Thu Jan 28 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.3-1
 - Delete conntrack connection with ipsec tunnel - NethServer/dev#6393
 
