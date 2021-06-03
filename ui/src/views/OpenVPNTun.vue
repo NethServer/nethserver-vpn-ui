@@ -131,7 +131,7 @@
                 <span v-if="props.column.field == 'Topology'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <b>{{ props.row.Topology | uppercase}}</b>
                 </span>
-                <span v-if="props.column.field == props.row.Network ? props.row.Network : props.row.LocalPeer"
+                 <span v-if="props.column.field == 'Network'"
                   :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
                 >{{ props.row.Network ? props.row.Network : props.row.LocalPeer+" - "+ props.row.RemotePeer}}</span>
                 <span v-if="props.column.field == 'LocalNetworks'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
@@ -1493,20 +1493,9 @@ export default {
         },
         {
           label: this.$i18n.t("openvpn_tun.vpn_network"),
-          field: function(rowObj) {
-            return rowObj.Network ? rowObj.Network : rowObj.LocalPeer;
-          },
+          field: "Network",
           filterable: true,
-          sortFn: function(a, b, col, rowX, rowY) {
-            a = a.indexOf("-") > -1 ? a.split("-")[0] : a;
-            b = b.indexOf("-") > -1 ? b.split("-")[0] : b;
-            a = a.split(".");
-            b = b.split(".");
-            for (var i = 0; i < a.length; i++) {
-              if ((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i]))) return -1;
-              else if (a[i] > b[i]) return 1;
-            }
-          }
+          sortable: false
         },
         {
           label: this.$i18n.t("openvpn_tun.local_networks"),
