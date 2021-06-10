@@ -131,9 +131,9 @@
                 <span v-if="props.column.field == 'Topology'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <b>{{ props.row.Topology | uppercase}}</b>
                 </span>
-                <span v-if="props.column.field == props.row.Network ? props.row.Network : props.row.LocalPeer"
+                <span v-if="props.column.field == 'NetworkOrLocalPeer'"
                   :class="['fancy', props.row.status == 'enabled' ? '': 'gray']"
-                >{{ props.row.Network ? props.row.Network : props.row.LocalPeer+" - "+ props.row.RemotePeer}}</span>
+                > {{ props.row.NetworkOrLocalPeer }} </span>
                 <span v-if="props.column.field == 'LocalNetworks'" :class="['fancy', props.row.status == 'enabled' ? '': 'gray']">
                   <div
                     v-show="props.row.LocalNetworks.length > 1"
@@ -1493,9 +1493,7 @@ export default {
         },
         {
           label: this.$i18n.t("openvpn_tun.vpn_network"),
-          field: function(rowObj) {
-            return rowObj.Network ? rowObj.Network : rowObj.LocalPeer;
-          },
+          field: "NetworkOrLocalPeer",
           filterable: true,
           sortFn: function(a, b, col, rowX, rowY) {
             a = a.indexOf("-") > -1 ? a.split("-")[0] : a;
@@ -1869,6 +1867,7 @@ export default {
             console.error(e);
           }
           context.serverTunnels = success.tunnels.filter(function(t) {
+            t.NetworkOrLocalPeer = (t.Topology === 'subnet') ? t.Network : t.LocalPeer+' - '+t.RemotePeer;
             return t.type == "openvpn-tunnel-server";
           });
           context.clientTunnels = success.tunnels.filter(function(t) {
