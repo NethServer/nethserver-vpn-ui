@@ -2316,6 +2316,18 @@ export default {
         "</span>";
       html +=
         "<br><br><b>" +
+        this.$i18n.t("openvpn_rw.provider") +
+        "</b><br><span>" +
+        stats.provider +
+        "</span>";
+      html +=
+        "<br><br><b>" +
+        this.$i18n.t("openvpn_rw.red_interface") +
+        "</b><br><span>" +
+        stats.red_interface +
+        "</span>";
+      html +=
+        "<br><br><b>" +
         this.$i18n.t("openvpn_rw.bytes_sent") +
         "</b><br><span>" +
         this.$options.filters.byteFormat(stats.bytes_sent) +
