@@ -264,6 +264,8 @@
     "bytes_sent": "Sent",
     "real_address": "Remote IP address",
     "virtual_address": "Virtual IP address",
+    "provider": "External Internet provider",
+    "red_interface": "External IP of ISP",
     "state": "State",
     "kill": "Disconnect",
     "kill_account": "Disconnect account",
