@@ -264,7 +264,7 @@
     "bytes_sent": "Sent",
     "real_address": "Remote IP address",
     "virtual_address": "Virtual IP address",
-    "connectivity": "Connectivity",
+    "wan_ip": "Wan IP",
     "state": "State",
     "kill": "Disconnect",
     "kill_account": "Disconnect account",

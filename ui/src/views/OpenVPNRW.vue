@@ -1389,7 +1389,7 @@ export default {
           sortable: true
         },
         {
-          label: this.$i18n.t("openvpn_rw.connectivity"),
+          label: this.$i18n.t("openvpn_rw.wan_ip"),
           field: "Connectivity",
           filterable: true,
           sortFn: function(a, b, col, rowX, rowY) {
