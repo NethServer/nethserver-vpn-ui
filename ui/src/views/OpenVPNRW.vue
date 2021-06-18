@@ -208,7 +208,7 @@
           <span v-if="props.column.field == 'Connectivity'"
             :class="['fancy', props.row.status == 'disabled' ? 'gray': '']" >
           <div v-if="props.row.connected" >
-            {{ props.row.statistics.red_interface + ' ( '+ props.row.statistics.provider + ' )'}}
+            {{ props.row.statistics.red_interface + ' ('+ props.row.statistics.provider + ')'}}
           </div>
           <div v-else>
             <span class="fa fa-times grey"></span>
