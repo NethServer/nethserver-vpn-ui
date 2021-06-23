@@ -205,7 +205,16 @@
               {{$t('openvpn_rw.not_connected')}}
             </div>
           </span>
-
+          <span v-if="props.column.field == 'Connectivity'"
+            :class="['fancy', props.row.status == 'disabled' ? 'gray': '']" >
+          <div v-if="props.row.connected" >
+            {{ props.row.statistics.red_interface + ' ('+ props.row.statistics.provider + ')'}}
+          </div>
+          <div v-else>
+            <span class="fa fa-times grey"></span>
+              {{$t('openvpn_rw.not_connected')}}
+            </div>
+          </span>
           <span v-if="props.column.field == 'lastConnected'" :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <a href="#"
               v-if="props.row.lastConnected"
@@ -1380,6 +1389,19 @@ export default {
           sortable: true
         },
         {
+          label: this.$i18n.t("openvpn_rw.wan_ip"),
+          field: "Connectivity",
+          filterable: true,
+          sortFn: function(a, b, col, rowX, rowY) {
+            a = a.split(".");
+            b = b.split(".");
+            for (var i = 0; i < a.length; i++) {
+              if ((a[i] = parseInt(a[i])) < (b[i] = parseInt(b[i]))) return -1;
+              else if (a[i] > b[i]) return 1;
+            }
+          }
+        },
+        {
           label: this.$i18n.t("openvpn_rw.last_connected"),
           field: "lastConnected",
           filterable: false,
@@ -1726,6 +1748,9 @@ export default {
             console.error(e);
           }
           context.accounts = success.accounts;
+          for (var i in context.accounts) {
+            context.accounts[i].Connectivity = (context.accounts[i].statistics !== null ) ? context.accounts[i].statistics.red_interface : "0.0.0.0";
+          }
           context.checkPendingChanges();
           context.view.isLoaded = true;
         },
