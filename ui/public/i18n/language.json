@@ -52,6 +52,7 @@
     "openvpn_tun_interfaces": "OpenVPN tunnels interfaces",
     "openvpn_rw_interfaces": "OpenVPN roadwarrior interfaces",
     "openvpn_rw_top_traffic_accounts": "Today top traffic accounts",
+    "number_users_per_wan_ip": "Roadwarrior connected clients by WAN",
     "bytes": "Bytes",
     "account": "Account",
     "traffic": "Traffic"

@@ -170,21 +170,31 @@
             </span>
           </div>
         </div>
-
-        <!-- top traffic accounts -->
-        <div
-          v-if="status.openvpn.roadwarrior.topTrafficAccounts.length"
-          class="top-traffic-accounts"
-        >
-          <h3>{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
-          <div class="width-33">
-            <ul class="list-group">
-              <li v-for="(item, k) in status.openvpn.roadwarrior.topTrafficAccounts" v-bind:key="k" class="list-group-item">
-                <strong>{{k+1}}.</strong>
-                {{item.account}}
-                <span class="gray mg-left-10">({{item.traffic | byteFormat}})</span>
-              </li>
-            </ul>
+        <div class="row">
+          <!-- piechart number of users per wan IP -->
+          <div class="stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <h4 >{{$t('dashboard.number_users_per_wan_ip')}}</h4>
+            <div v-if="Object.keys(status.openvpn.roadwarrior.usersPerWanIP).length == 0" class="empty-piechart">
+                <span class="fa fa-pie-chart"></span>
+                <div>{{ $t('dashboard.empty_piechart_label') }}</div>
+            </div>
+            <div v-else id="usersPerWanPieChart-pie-chart"></div>
+          </div>
+          <!-- top traffic accounts -->
+          <div
+            v-if="status.openvpn.roadwarrior.topTrafficAccounts.length"
+            class="top-traffic-accounts stats-container col-xs-12 col-sm-4 col-md-4 col-lg-4"
+          >
+            <h3>{{ $t('dashboard.openvpn_rw_top_traffic_accounts') }}</h3>
+            <div class="width-33">
+              <ul class="list-group">
+                <li v-for="(item, k) in status.openvpn.roadwarrior.topTrafficAccounts" v-bind:key="k" class="list-group-item">
+                  <strong>{{k+1}}.</strong>
+                  {{item.account}}
+                  <span class="gray mg-left-10">({{item.traffic | byteFormat}})</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
@@ -226,6 +236,7 @@ var nethserver = window.nethserver;
 var console = window.console;
 
 import Dygraph from "dygraphs";
+import generatePieChart from "@/piechart";
 
 export default {
   name: "Dashboard",
@@ -239,6 +250,18 @@ export default {
   },
   mounted() {
     this.getStats();
+  },
+  updated() {
+    var $ = window.jQuery;
+    $('[data-toggle="tooltip"]').tooltip();
+    if (!this.usersPerWanPieChart) {
+      this.usersPerWanPieChart = generatePieChart("#usersPerWanPieChart-pie-chart", {
+         columns: []
+       },{ width: 400, height: 200});
+    }
+    this.usersPerWanPieChart.load({
+      json: this.status.openvpn.roadwarrior.usersPerWanIP
+    });
   },
   data() {
     return {
@@ -260,6 +283,7 @@ export default {
             connected: 0,
             port: 0,
             total: 0,
+            usersPerWanIP: {},
             topTrafficAccounts: []
           }
         },
@@ -485,11 +509,6 @@ export default {
 
 .divider {
   margin-top: 20px;
-}
-
-.top-traffic-accounts {
-  margin-top: 15px;
-  margin-left: 20px;
 }
 
 .width-33 {

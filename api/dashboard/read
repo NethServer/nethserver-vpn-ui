@@ -24,6 +24,7 @@ use strict;
 use warnings;
 use esmith::ConfigDB;
 use JSON;
+use NethServer::ApiTools;
 
 require '/usr/libexec/nethserver/api/nethserver-vpn-ui/lib/vpn_functions.pl';
 
@@ -61,6 +62,14 @@ if ($cmd eq 'status') {
     $rw->{'interfaces'} = ['tunrw'];
     my $top_traffic_accounts = safe_decode_json(`/usr/libexec/nethserver/api/nethserver-vpn-ui/openvpn-rw/top-traffic-accounts`);
     $rw->{'topTrafficAccounts'} = $top_traffic_accounts;
+
+    # retrieve the number of users per wanIP
+    my $data = NethServer::ApiTools::safe_decode_json(`/usr/libexec/nethserver/openvpn-status3 /var/spool/openvpn/host-to-net`);
+    foreach my $key (keys %{$data}) {
+        $rw->{usersPerWanIP}{"$data->{$key}->{'red_interface'} ($data->{$key}->{'provider'})"}++;
+    }
+    # return empty json object if no connections
+    $rw->{usersPerWanIP} = {} if scalar(keys %$data) == 0;
 
     $tunnels->{'total'} = 0;
     $tunnels->{'connected'} = 0;
