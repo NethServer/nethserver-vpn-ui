@@ -52,7 +52,7 @@
     "openvpn_tun_interfaces": "OpenVPN tunnels interfaces",
     "openvpn_rw_interfaces": "OpenVPN roadwarrior interfaces",
     "openvpn_rw_top_traffic_accounts": "Today top traffic accounts",
-    "number_users_per_wan_ip": "Roadwarrior connected clients by WAN",
+    "number_users_per_wan_ip": "Clients currently connected by WAN",
     "bytes": "Bytes",
     "account": "Account",
     "traffic": "Traffic"
@@ -265,7 +265,7 @@
     "bytes_sent": "Sent",
     "real_address": "Remote IP address",
     "virtual_address": "Virtual IP address",
-    "wan_ip": "Wan IP",
+    "wan_ip": "WAN IP",
     "state": "State",
     "kill": "Disconnect",
     "kill_account": "Disconnect account",

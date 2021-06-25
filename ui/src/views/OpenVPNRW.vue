@@ -206,14 +206,11 @@
             </div>
           </span>
           <span v-if="props.column.field == 'Connectivity'"
-            :class="['fancy', props.row.status == 'disabled' ? 'gray': '']" >
-          <div v-if="props.row.connected" >
-            {{ props.row.statistics.red_interface + ' ('+ props.row.statistics.provider + ')'}}
-          </div>
-          <div v-else>
-            <span class="fa fa-times grey"></span>
-              {{$t('openvpn_rw.not_connected')}}
+              :class="['fancy', props.row.status == 'disabled' ? 'gray': '']" >
+            <div v-if="props.row.connected" >
+              {{ props.row.statistics.red_interface + ' ('+ props.row.statistics.provider + ')'}}
             </div>
+            <div v-else>-</div>
           </span>
           <span v-if="props.column.field == 'lastConnected'" :class="['fancy', props.row.status == 'disabled' ? 'gray': '']">
             <a href="#"
