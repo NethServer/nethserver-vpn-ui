@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.6.5
+Version: 1.7.0
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Tue Jun 29 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.7.0-1
+- OpenVPN R2W: Display the server wan IP used by the client to connect - NethServer/dev#6531
+
 * Fri Jun 11 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.6.5-1
 - openVPN-Tunnel: Network VPN columns is broken - Bug NethServer/dev#6523
 
