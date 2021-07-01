@@ -94,13 +94,13 @@ if ($data['action'] == 'update-client' || $data['action'] == 'update-server') {
     if ($sdb->getKey($data['name'])) {
         $v->addValidationError('name', 'tunnel_already_exists');
     }
+    $v->declareParameter('name', $v->createValidator(Validate::USERNAME)->maxLength(10));
     validate_wrapper($data, 'Port');
     if ($data['Topology'] == 'subnet') {
         validate_wrapper($data, 'Network');
     }
 }
 
-$v->declareParameter('name', $v->createValidator(Validate::USERNAME)->maxLength(13));
 $v->declareParameter('Port', Validate::PORTNUMBER);
 $v->declareParameter('RemotePort', Validate::PORTNUMBER);
 $v->declareParameter('Network', $v->createValidator()->cidrBlock());
