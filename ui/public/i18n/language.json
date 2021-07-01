@@ -332,6 +332,7 @@
     "missing_wanpriority_rules": "Missing interface in priority order",
     "valid_notEmpty":"This field cannot be empty",
     "ipsec_tunnel_name_cannot_contain_spaces": "Tunnel name can't contain spaces",
+    "valid_maxLength_10":"The maximum length is 10 characters",
     "valid_username":"First character must be a letter, than only lower letters, numbers and symbols like '-' and '_'"
   },
   "docs": {
