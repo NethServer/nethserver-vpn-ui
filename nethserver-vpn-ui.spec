@@ -1,6 +1,6 @@
 Summary: NethServer VPN UI module
 Name: nethserver-vpn-ui
-Version: 1.7.1
+Version: 1.7.2
 Release: 1%{?dist}
 License: GPL
 Source0: %{name}-%{version}.tar.gz
@@ -46,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 
 %changelog
+* Wed Oct 06 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.7.2-1
+- roadwarrior list-accounts: improve performance (#54)
+
 * Mon Jul 05 2021 Giacomo Sanchietti <giacomo.sanchietti@nethesis.it> - 1.7.1-1
 - Openvpn: Tunnel name must be shorter - Bug NethServer/dev#6538
 
