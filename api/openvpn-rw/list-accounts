@@ -51,7 +51,7 @@ function readCertIndexAccounts() {
     $domain = $db->getType('DomainName');
     // get all vpn-users linked to system users
     $users = getUsers();
-    $vpn_users = $vdb->getAll("vpn");
+    $vpn_users = $vdb->getAll();
     foreach($users as $user => $props) {
         $vpn_user = isset($vpn_users[$user]) ? $vpn_users[$user] : null ;
         if ($vpn_user) {
@@ -69,7 +69,8 @@ function readCertIndexAccounts() {
         }
     }
     // get all vpn accounts
-    foreach($vpn_users as $user => $props) {
+    $users = $vdb->getAll('vpn');
+    foreach($users as $user => $props) {
         $status =  isset($props['status']) ? $props['status'] : 'enabled';
         $ret[$user] = array(
             'name' => $user,
