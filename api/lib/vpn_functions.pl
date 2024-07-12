@@ -48,8 +48,8 @@ sub ipsec_status {
         $ret->{$name} = {
             type => $type,
             started => int($started),
-            received_bytes => int($in),
-            sent_bytes => int($out)
+            received_bytes => $ret->{$name}->{'received_bytes'} ? $ret->{$name}->{'received_bytes'} + int($in) : int($in),
+            sent_bytes => $ret->{$name}->{'sent_bytes'} ? $ret->{$name}->{'sent_bytes'} + int($out) : int($out)
         }
     }
     close(FH);
